@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget customButton({required Function onPress}) {
+Widget customButton({required Function onPress, required String text}) {
   return Container(
     height: 50,
     width: double.infinity,
@@ -26,12 +26,9 @@ Widget customButton({required Function onPress}) {
         backgroundColor: Colors.transparent,
         shadowColor: Colors.transparent,
       ),
-      child: const Text(
-        'Sign in',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
     ),
   );
