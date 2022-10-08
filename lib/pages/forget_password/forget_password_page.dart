@@ -39,7 +39,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(height: 30),
-                  Image.asset("assets/chat.png", width: 60),
+                  Image.asset("assets/images/chat.png", width: 60),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 40, horizontal: 30),
                     child: Text(

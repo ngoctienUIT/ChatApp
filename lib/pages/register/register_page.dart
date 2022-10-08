@@ -31,7 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(height: 30),
-                  Image.asset("assets/chat.png", width: 60),
+                  Image.asset("assets/images/chat.png", width: 60),
                   const SizedBox(height: 30),
                   TextFormField(
                     controller: _nameController,

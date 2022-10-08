@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(height: 30),
-                  Image.asset("assets/chat.png", width: 60),
+                  Image.asset("assets/images/chat.png", width: 60),
                   const SizedBox(height: 30),
                   TextFormField(
                     controller: _emailController,
@@ -91,7 +91,11 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  customButton(onPress: () {}, text: "Sign in"),
+                  customButton(
+                      onPress: () {
+                        Navigator.pushReplacementNamed(context, '/home');
+                      },
+                      text: "Sign in"),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
