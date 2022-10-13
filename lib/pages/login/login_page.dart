@@ -14,13 +14,22 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool check = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Form(
+          key: _formKey,
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(20),
@@ -35,6 +44,14 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 30),
                   TextFormField(
                     controller: _emailController,
+                    validator: (value) {
+                      if (value!.isEmpty ||
+                          !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              .hasMatch(value)) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
                     style: const TextStyle(fontSize: 16),
                     decoration: const InputDecoration(
                       enabledBorder: UnderlineInputBorder(
@@ -50,6 +67,12 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _passwordController,
+                    validator: (value) {
+                      if (value!.isEmpty || value.length < 6) {
+                        return "Enter a valid password";
+                      }
+                      return null;
+                    },
                     style: const TextStyle(fontSize: 16),
                     decoration: InputDecoration(
                       enabledBorder: const UnderlineInputBorder(
@@ -94,13 +117,15 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 30),
                   customButton(
                     onPress: () async {
-                      bool result = await LoginControl.loginEmailPassword(
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                      );
-                      if (result) {
-                        if (!mounted) return;
-                        Navigator.pushReplacementNamed(context, '/home');
+                      if (_formKey.currentState!.validate()) {
+                        bool result = await LoginControl.loginEmailPassword(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        );
+                        if (result) {
+                          if (!mounted) return;
+                          Navigator.pushReplacementNamed(context, '/home');
+                        }
                       }
                     },
                     text: "Sign in",

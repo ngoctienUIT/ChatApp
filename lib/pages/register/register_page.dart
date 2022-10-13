@@ -16,6 +16,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool check = true;
 
   @override
@@ -23,6 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       body: SafeArea(
         child: Form(
+          key: _formKey,
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(20),
@@ -37,6 +39,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 30),
                   TextFormField(
                     controller: _nameController,
+                    validator: (value) {
+                      if (value!.isEmpty) return "Enter your name";
+                      return null;
+                    },
                     style: const TextStyle(fontSize: 16),
                     decoration: const InputDecoration(
                       enabledBorder: UnderlineInputBorder(
@@ -52,6 +58,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _emailController,
+                    validator: (value) {
+                      if (value!.isEmpty ||
+                          !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              .hasMatch(value)) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
                     style: const TextStyle(fontSize: 16),
                     decoration: const InputDecoration(
                       enabledBorder: UnderlineInputBorder(
@@ -67,6 +81,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _passwordController,
+                    validator: (value) {
+                      if (value!.isEmpty || value.length < 6) {
+                        return "Enter a valid password";
+                      }
+                      return null;
+                    },
                     style: const TextStyle(fontSize: 16),
                     decoration: InputDecoration(
                       enabledBorder: const UnderlineInputBorder(
@@ -96,14 +116,17 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 50),
                   customButton(
-                      onPress: () async {
+                    onPress: () async {
+                      if (_formKey.currentState!.validate()) {
                         bool result = await SignInControl.signInEmailPassword();
                         if (result) {
                           if (!mounted) return;
                           Navigator.pushReplacementNamed(context, '/home');
                         }
-                      },
-                      text: "Sign up"),
+                      }
+                    },
+                    text: "Sign up",
+                  ),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
