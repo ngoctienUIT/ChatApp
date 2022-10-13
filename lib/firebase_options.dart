@@ -49,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '172697834788',
     projectId: 'chatapp-d4407',
     authDomain: 'chatapp-d4407.firebaseapp.com',
+    databaseURL: 'https://chatapp-d4407-default-rtdb.firebaseio.com',
     storageBucket: 'chatapp-d4407.appspot.com',
     measurementId: 'G-S3Q75GK9S7',
   );
@@ -58,6 +59,7 @@ class DefaultFirebaseOptions {
     appId: '1:172697834788:android:0eb35a48926187f6214fb1',
     messagingSenderId: '172697834788',
     projectId: 'chatapp-d4407',
+    databaseURL: 'https://chatapp-d4407-default-rtdb.firebaseio.com',
     storageBucket: 'chatapp-d4407.appspot.com',
   );
 
@@ -66,7 +68,9 @@ class DefaultFirebaseOptions {
     appId: '1:172697834788:ios:83863478fc4096db214fb1',
     messagingSenderId: '172697834788',
     projectId: 'chatapp-d4407',
+    databaseURL: 'https://chatapp-d4407-default-rtdb.firebaseio.com',
     storageBucket: 'chatapp-d4407.appspot.com',
+    androidClientId: '172697834788-lcd519apf6lfkk8henudv06s8oe59t3d.apps.googleusercontent.com',
     iosClientId: '172697834788-6i9falan48rg10lp2ef2trugsnf8mnlu.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatApp',
   );
@@ -76,7 +80,9 @@ class DefaultFirebaseOptions {
     appId: '1:172697834788:ios:83863478fc4096db214fb1',
     messagingSenderId: '172697834788',
     projectId: 'chatapp-d4407',
+    databaseURL: 'https://chatapp-d4407-default-rtdb.firebaseio.com',
     storageBucket: 'chatapp-d4407.appspot.com',
+    androidClientId: '172697834788-lcd519apf6lfkk8henudv06s8oe59t3d.apps.googleusercontent.com',
     iosClientId: '172697834788-6i9falan48rg10lp2ef2trugsnf8mnlu.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatApp',
   );
