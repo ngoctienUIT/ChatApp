@@ -1,3 +1,5 @@
+import 'package:chat_app/controls/login_control.dart';
+import 'package:chat_app/controls/signin_control.dart';
 import 'package:chat_app/pages/login/custom_button.dart';
 import 'package:chat_app/pages/login/custom_button_login.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +95,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     obscureText: check,
                   ),
                   const SizedBox(height: 50),
-                  customButton(onPress: () {}, text: "Sign up"),
+                  customButton(
+                      onPress: () async {
+                        bool result = await SignInControl.signInEmailPassword();
+                        if (result) {
+                          if (!mounted) return;
+                          Navigator.pushReplacementNamed(context, '/home');
+                        }
+                      },
+                      text: "Sign up"),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -124,14 +134,26 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 20),
                   customButtonLogin(
-                    onPress: () {},
+                    onPress: () async {
+                      bool result = await LoginControl.signInWithFacebook();
+                      if (result) {
+                        if (!mounted) return;
+                        Navigator.pushReplacementNamed(context, '/home');
+                      }
+                    },
                     icon: FontAwesomeIcons.facebookF,
                     text: "Sign Up with Facebook",
                     color: Colors.deepPurple,
                   ),
                   const SizedBox(height: 10),
                   customButtonLogin(
-                    onPress: () {},
+                    onPress: () async {
+                      bool result = await LoginControl.signInWithGoogle();
+                      if (result) {
+                        if (!mounted) return;
+                        Navigator.pushReplacementNamed(context, '/home');
+                      }
+                    },
                     icon: FontAwesomeIcons.google,
                     text: "Sign Up with Google",
                     color: Colors.red,
