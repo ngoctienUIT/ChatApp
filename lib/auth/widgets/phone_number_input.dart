@@ -25,9 +25,13 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: TextFormField(
               // On end editing: which happen when user un focus the field
+              // On end editing: set state if value is valid
               validator: (value) {
-                if ((!isOnFocus) && (value!.length < 10)) {
-                  return 'Phone number must be 10 digits';
+                if (!isOnFocus) {
+                  if (value!.length < 10) {
+                    return 'Phone number must be 10 digits';
+                  }
+                  SignInController.inst.phoneNumber(value);
                 }
                 return null;
               },

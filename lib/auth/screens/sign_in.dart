@@ -82,6 +82,6 @@ class _UserIdInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: 100, child: Center(child: Obx(() => SignInController.inst.usingEmail.value ? EmailInput() : const PhoneNumberInput())));
+    return SizedBox(height: 100, child: Center(child: Obx(() => SignInController.inst.usingEmail.value ? const EmailInput() : const PhoneNumberInput())));
   }
 }

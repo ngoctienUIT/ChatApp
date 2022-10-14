@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-//SignInMethod _signInMethod;
-// final _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
-// ElevatedButton(
-//     onPressed: () {
-//       // validate form
-//       // check email
-//       // if (!_emailRegex.hasMatch(_userIdController.text)) {
-//       //   // make alert on user id field
+import '../controllers/controllers.dart';
 
 // TODO
 // styling widget
@@ -35,12 +26,14 @@ class _EmailInputState extends State<EmailInput> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: TextFormField(
               // On end editing: which happen when user un focus the field
+              // On end editing: set state if value is valid
               validator: (value) {
-                if ((!isOnFocus) && (!EmailInput.emailRegex.hasMatch(value!))) {
-                  // validate here
-                  return 'Invalid email!';
+                if (!isOnFocus) {
+                  if (!EmailInput.emailRegex.hasMatch(value!)) {
+                    return 'Invalid email!';
+                  }
+                  SignInController.inst.email(value);
                 }
-
                 return null;
               },
               decoration: const InputDecoration(border: OutlineInputBorder(), prefixIcon: Icon(Icons.email), labelText: 'Email'),
