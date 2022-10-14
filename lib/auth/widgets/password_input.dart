@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 // TODO:
 // styling widget
-// un-highlight border when keyboard get exited
 // format input
 // validate
 class PasswordTextField extends StatefulWidget {
@@ -15,7 +14,7 @@ class PasswordTextField extends StatefulWidget {
 class _PasswordTextFieldState extends State<PasswordTextField> {
   final TextEditingController controller = TextEditingController();
   bool _passwordObscure = true;
-  
+
   @override
   void dispose() {
     controller.dispose();

@@ -1,29 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// TODO
-// styling widget
-// un-highlight border when keyboard get exited
-// validate
-class EmailInput extends StatelessWidget {
-  EmailInput({super.key});
-  final TextEditingController controller = TextEditingController();
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      decoration: const InputDecoration(
-        hintText: 'Email',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.email),
-      ),
-      keyboardType: TextInputType.emailAddress,
-      autofillHints: const [AutofillHints.email],
-      inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-    );
-  }
-}
-
 //SignInMethod _signInMethod;
 // final _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
@@ -33,3 +10,43 @@ class EmailInput extends StatelessWidget {
 //       // check email
 //       // if (!_emailRegex.hasMatch(_userIdController.text)) {
 //       //   // make alert on user id field
+
+// TODO
+// styling widget
+// validate
+class EmailInput extends StatefulWidget {
+  const EmailInput({Key? key}) : super(key: key);
+  static final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+  @override
+  State<EmailInput> createState() => _EmailInputState();
+}
+
+class _EmailInputState extends State<EmailInput> {
+  bool isOnFocus = false;
+  @override
+  Widget build(BuildContext context) {
+    return FocusScope(
+        onFocusChange: (value) {
+          setState(() {
+            isOnFocus = !isOnFocus;
+          });
+        },
+        child: Form(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: TextFormField(
+              // On end editing: which happen when user un focus the field
+              validator: (value) {
+                if ((!isOnFocus) && (!EmailInput.emailRegex.hasMatch(value!))) {
+                  // validate here
+                  return 'Invalid email!';
+                }
+
+                return null;
+              },
+              decoration: const InputDecoration(border: OutlineInputBorder(), prefixIcon: Icon(Icons.email), labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+            )));
+  }
+}
