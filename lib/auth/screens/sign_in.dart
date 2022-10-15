@@ -1,6 +1,8 @@
+import 'package:chat_app/auth/screens/forgot_password.dart';
+import 'package:chat_app/auth/screens/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/state_manager.dart';
+import 'package:get/get.dart';
 import '../controllers/controllers.dart';
 import '../widgets/email_input.dart';
 import '../widgets/google_button.dart';
@@ -15,27 +17,37 @@ class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            onVerticalDragEnd: (DragEndDetails details) => FocusManager.instance.primaryFocus?.unfocus(),
-            child: Scaffold(
-              appBar: AppBar(title: const Text('Sign In')),
-                resizeToAvoidBottomInset: false,
-                body: Column(children: [
-                  const _UserIdInput(),
-                  const PasswordInput(),
-                  Container(alignment: Alignment.centerRight, child: TextButton(onPressed: () {}, child: const Text('Forgot password?'))),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Don\'t have an account?'),
-                      TextButton(onPressed: () {}, child: const Text('Sign up')),
-                    ],
-                  ),
-                  const Text('Or'),
-                  const _SignInButton(),
-                  const _SwitchSignInMethodButton(),
-                  const GoogleButton()
-                ])));
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        onVerticalDragEnd: (DragEndDetails details) => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+            appBar: AppBar(title: const Text('Sign In')),
+            resizeToAvoidBottomInset: false,
+            body: Column(children: [
+              const _UserIdInput(),
+              const PasswordInput(),
+              Container(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                      onPressed: () {
+                        Get.to(const ForgotPassword());
+                      },
+                      child: const Text('Forgot password?'))),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Don\'t have an account?'),
+                  TextButton(
+                      onPressed: () {
+                        Get.to(const SignUp());
+                      },
+                      child: const Text('Sign up')),
+                ],
+              ),
+              const Text('Or'),
+              const _SignInButton(),
+              const _SwitchSignInMethodButton(),
+              const GoogleButton()
+            ])));
   }
 }
 
@@ -46,7 +58,9 @@ class _SignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(onPressed: () {}, child: const Text('Sign In'));
+    return ElevatedButton(
+        onPressed: SignInController.inst.validateAndSignIn,
+        child: const Text('Sign In'));
   }
 }
 
