@@ -1,6 +1,7 @@
 import 'package:chat_app/auth/controllers/controllers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 // TODO
 // styling widget
@@ -22,6 +23,9 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
           // not focus on any widget: true
           // focus on other widget: false
           if (value) {
+            // reset error text
+            SignInController.inst.phoneNumberErrorText.value = null;
+
             setState(() {
               isOnFocus = !isOnFocus;
             });
@@ -33,29 +37,30 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
         },
         child: Form(
             autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: TextFormField(
-              // On end editing: which happen when user un focus the field
-              // On end editing: set state if value is valid
+            child: Obx(()=>TextFormField(
               // Cant put setState right here
+              // when user not input: no error
+              // when user input and then leave the field empty: no error
+              // when user input and then leave the field with invalid phone: error
               validator: (value) {
-                if (!isOnFocus && value!.length < 10) {
-                  return 'Phone number must be 10 digits';
+                if (!isOnFocus && value!.isNotEmpty) {
+                  return SignInController.inst.phoneNumberValidator();
                 }
                 return null;
               },
               onChanged: SignInController.inst.phoneNumber,
-              decoration: const InputDecoration(
-                  //hintText: 'Phone number',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.phone_android),
+              decoration: InputDecoration(
+                  errorText: SignInController.inst.phoneNumberErrorText.value,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.phone_android),
                   labelText: 'Phone number'),
               keyboardType: TextInputType.phone,
               autofillHints: const [AutofillHints.telephoneNumber],
-              // 10 digits phone number constraint
+              // input formatters base on SignInController.inst.validatePhone()
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(10),
               ],
-            )));
+            ))));
   }
 }

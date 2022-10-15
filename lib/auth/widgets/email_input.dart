@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import '../controllers/controllers.dart';
 
 // TODO
 // styling widget
-// validate
 class EmailInput extends StatefulWidget {
   const EmailInput({Key? key}) : super(key: key);
-  static final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
   @override
   State<EmailInput> createState() => _EmailInputState();
 }
@@ -23,6 +23,9 @@ class _EmailInputState extends State<EmailInput> {
           // not focus on any widget: true
           // focus on other widget: false
           if (value) {
+            // reset error text
+            SignInController.inst.emailErrorText.value =null;
+
             setState(() {
               isOnFocus = !isOnFocus;
             });
@@ -34,21 +37,26 @@ class _EmailInputState extends State<EmailInput> {
         },
         child: Form(
             autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: TextFormField(
-              // On end editing: which happen when user un focus the field
-              // On end editing: set state if value is valid
+            child: Obx(() => TextFormField(
               // Cant put setState right here
+              // when user not input: no error
+              // when user input and then leave the field empty: no error
+              // when user input and then leave the field with invalid email: error
               validator: (value) {
-                if (!isOnFocus && !EmailInput.emailRegex.hasMatch(value!)) {
-                  return 'Invalid email!';
+                if (!isOnFocus && value!.isNotEmpty) {
+                  return SignInController.inst.emailValidator();
                 }
                 return null;
               },
               onChanged: SignInController.inst.email,
-              decoration: const InputDecoration(border: OutlineInputBorder(), prefixIcon: Icon(Icons.email), labelText: 'Email'),
+              decoration: InputDecoration(
+                  errorText: SignInController.inst.emailErrorText.value,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.email),
+                  labelText: 'Email'),
               keyboardType: TextInputType.emailAddress,
               autofillHints: const [AutofillHints.email],
               inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-            )));
+            ))));
   }
 }
