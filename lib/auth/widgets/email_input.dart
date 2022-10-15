@@ -13,29 +13,38 @@ class EmailInput extends StatefulWidget {
 }
 
 class _EmailInputState extends State<EmailInput> {
+  // Not focus for default, if widget is settled to be auto focused, this init will make no sense
   bool isOnFocus = false;
   @override
   Widget build(BuildContext context) {
     return FocusScope(
         onFocusChange: (value) {
-          setState(() {
-            isOnFocus = !isOnFocus;
-          });
+          // focus: true
+          // not focus on any widget: true
+          // focus on other widget: false
+          if (value) {
+            setState(() {
+              isOnFocus = !isOnFocus;
+            });
+          } else {
+            setState(() {
+              isOnFocus = false;
+            });
+          }
         },
         child: Form(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: TextFormField(
               // On end editing: which happen when user un focus the field
               // On end editing: set state if value is valid
+              // Cant put setState right here
               validator: (value) {
-                if (!isOnFocus) {
-                  if (!EmailInput.emailRegex.hasMatch(value!)) {
-                    return 'Invalid email!';
-                  }
-                  SignInController.inst.email(value);
+                if (!isOnFocus && !EmailInput.emailRegex.hasMatch(value!)) {
+                  return 'Invalid email!';
                 }
                 return null;
               },
+              onChanged: SignInController.inst.email,
               decoration: const InputDecoration(border: OutlineInputBorder(), prefixIcon: Icon(Icons.email), labelText: 'Email'),
               keyboardType: TextInputType.emailAddress,
               autofillHints: const [AutofillHints.email],

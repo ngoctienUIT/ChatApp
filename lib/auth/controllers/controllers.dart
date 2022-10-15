@@ -9,7 +9,8 @@ class SignInController extends GetxController {
   var usingEmail = true.obs;
   var phoneNumber = ''.obs;
   var email = ''.obs;
-  validate(){
-    
+  var password = ''.obs;
+  validateAndSignIn() {
+
   }
 }

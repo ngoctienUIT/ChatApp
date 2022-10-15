@@ -39,7 +39,6 @@ dependencies:
   firebase_core: ^1.24.0
   firebase_auth: ^3.11.2
   font_awesome_flutter: ^10.2.1
-  email_validator: ^2.1.17
   get: ^4.6.5
   # firebase_storage: ^10.3.9
   # cloud_firestore: ^3.4.9

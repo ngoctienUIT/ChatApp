@@ -15,26 +15,27 @@ class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        onVerticalDragEnd: (DragEndDetails details) => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: Column(children: [
-              const _UserIdInput(),
-              const PasswordTextField(),
-              Container(alignment: Alignment.centerRight, child: TextButton(onPressed: () {}, child: const Text('Forgot password?'))),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Don\'t have an account?'),
-                  TextButton(onPressed: () {}, child: const Text('Sign up')),
-                ],
-              ),
-              const Text('Or'),
-              const _SignInButton(),
-              const _SwitchSignInMethodButton(),
-              const GoogleButton()
-            ])));
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            onVerticalDragEnd: (DragEndDetails details) => FocusManager.instance.primaryFocus?.unfocus(),
+            child: Scaffold(
+              appBar: AppBar(title: const Text('Sign In')),
+                resizeToAvoidBottomInset: false,
+                body: Column(children: [
+                  const _UserIdInput(),
+                  const PasswordInput(),
+                  Container(alignment: Alignment.centerRight, child: TextButton(onPressed: () {}, child: const Text('Forgot password?'))),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Don\'t have an account?'),
+                      TextButton(onPressed: () {}, child: const Text('Sign up')),
+                    ],
+                  ),
+                  const Text('Or'),
+                  const _SignInButton(),
+                  const _SwitchSignInMethodButton(),
+                  const GoogleButton()
+                ])));
   }
 }
 
@@ -82,6 +83,11 @@ class _UserIdInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: 100, child: Center(child: Obx(() => SignInController.inst.usingEmail.value ? const EmailInput() : const PhoneNumberInput())));
+    return SizedBox(
+        height: 100,
+        child: Container(
+            padding: const EdgeInsets.only(top: 10),
+            alignment: Alignment.topCenter,
+            child: Obx(() => SignInController.inst.usingEmail.value ? const EmailInput() : const PhoneNumberInput())));
   }
 }

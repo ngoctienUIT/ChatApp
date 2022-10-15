@@ -12,29 +12,38 @@ class PhoneNumberInput extends StatefulWidget {
 }
 
 class _PhoneNumberInputState extends State<PhoneNumberInput> {
+  // Not focus for default, if widget is settled to be auto focused, this init will make no sense
   bool isOnFocus = false;
   @override
   Widget build(BuildContext context) {
     return FocusScope(
         onFocusChange: (value) {
-          setState(() {
-            isOnFocus = !isOnFocus;
-          });
+          // focus: true
+          // not focus on any widget: true
+          // focus on other widget: false
+          if (value) {
+            setState(() {
+              isOnFocus = !isOnFocus;
+            });
+          } else {
+            setState(() {
+              isOnFocus = false;
+            });
+          }
         },
         child: Form(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: TextFormField(
               // On end editing: which happen when user un focus the field
               // On end editing: set state if value is valid
+              // Cant put setState right here
               validator: (value) {
-                if (!isOnFocus) {
-                  if (value!.length < 10) {
-                    return 'Phone number must be 10 digits';
-                  }
-                  SignInController.inst.phoneNumber(value);
+                if (!isOnFocus && value!.length < 10) {
+                  return 'Phone number must be 10 digits';
                 }
                 return null;
               },
+              onChanged: SignInController.inst.phoneNumber,
               decoration: const InputDecoration(
                   //hintText: 'Phone number',
                   border: OutlineInputBorder(),

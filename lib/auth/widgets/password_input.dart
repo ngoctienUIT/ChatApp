@@ -1,33 +1,29 @@
 import 'package:flutter/material.dart';
 
+import '../controllers/controllers.dart';
+
 // TODO:
 // styling widget
 // format input
 // validate
-class PasswordTextField extends StatefulWidget {
-  const PasswordTextField({Key? key}) : super(key: key);
+class PasswordInput extends StatefulWidget {
+  const PasswordInput({Key? key}) : super(key: key);
 
   @override
-  State<PasswordTextField> createState() => _PasswordTextFieldState();
+  State<PasswordInput> createState() => _PasswordInputState();
 }
 
-class _PasswordTextFieldState extends State<PasswordTextField> {
-  final TextEditingController controller = TextEditingController();
+class _PasswordInputState extends State<PasswordInput> {
   bool _passwordObscure = true;
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller,
+      onChanged: SignInController.inst.password,
       decoration: InputDecoration(
-          hintText: 'Password',
+          labelText: 'Password',
           border: const OutlineInputBorder(),
+          prefixIcon: const Icon(Icons.lock),
           suffixIcon: IconButton(
               onPressed: () => setState(() {
                     _passwordObscure = !_passwordObscure;
