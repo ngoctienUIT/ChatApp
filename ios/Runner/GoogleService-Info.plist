@@ -6,6 +6,8 @@
 	<string>172697834788-6i9falan48rg10lp2ef2trugsnf8mnlu.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
 	<string>com.googleusercontent.apps.172697834788-6i9falan48rg10lp2ef2trugsnf8mnlu</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>172697834788-g1ipja3sq16uobhsqhnr3hs0287vb115.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyD6ZRsiH3d2t-wLhJHE4gEzuWD8GFC9sI0</string>
 	<key>GCM_SENDER_ID</key>
@@ -30,5 +32,7 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:172697834788:ios:83863478fc4096db214fb1</string>
+	<key>DATABASE_URL</key>
+	<string>https://chatapp-d4407-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>
