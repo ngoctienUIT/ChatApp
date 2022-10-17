@@ -2,14 +2,17 @@ import 'package:chat_app/auth/screens/your_are_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
+import '../widgets/faded_overlay.dart';
+
 // TODO
 // overrider: navigate back to prompt user to log out
 // shallow authentication
+// remember password
 class SignInController extends GetxController {
   static final SignInController _inst = Get.put(SignInController());
   static SignInController get inst => _inst;
 
-  var usingEmail = true.obs;
+  //var usingEmail = true.obs;
 
   //#region EMAIL
   var email = ''.obs;
@@ -58,52 +61,99 @@ class SignInController extends GetxController {
   /// ```dart
   /// check empty, and then check with regex
   /// ```
-  void validateAndSignIn() {
+  // void validateAndSignIn() {
+  //   var validationSuccess = true;
+  //   var fullInput = true;
+
+  //   // validate user id
+  //   if (usingEmail.value) {
+  //     // validate password
+  //     if (password.value.isEmpty) {
+  //       passwordErrorText.value = 'Please enter your password!';
+  //       fullInput = false;
+  //       validationSuccess = false;
+  //     } else if (passwordValidator() != null) {
+  //       validationSuccess = false;
+  //     }
+
+  //     // validate email
+  //     if (email.isEmpty) {
+  //       emailErrorText.value = 'Please enter your email!';
+  //       fullInput = false;
+  //       validationSuccess = false;
+  //     } else if (emailValidator() != null) {
+  //       validationSuccess = false;
+  //     }
+  //   } else {
+  //     // validate phone number
+  //     if (phoneNumber.isEmpty) {
+  //       phoneNumberErrorText.value = 'Please enter your phone number!';
+  //       fullInput = false;
+  //       validationSuccess = false;
+  //     } else if (phoneNumberValidator() != null) {
+  //       validationSuccess = false;
+  //     }
+  //   }
+
+  //   if (validationSuccess) {
+  //     // call api
+  //     if (usingEmail.value) {
+  //       FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value).then((value) {
+  //         print(value);
+  //         Get.to(const YouAreIn());
+  //       }).catchError((e) {
+  //         print(e);
+  //       });
+  //     } else {
+  //       // sign in with phone number
+  //       FirebaseAuth.instance.signInWithPhoneNumber(phoneNumber.value).then((value) {
+  //         print(value);
+  //       }).catchError((e) {
+  //         print(e);
+  //       });
+  //     }
+  //   } else {
+  //     if (fullInput) {
+  //       // shallow authentication
+  //       print(' wrong id or password');
+  //     }
+  //   }
+  // }
+
+  void validateEmailAndSignIn() {
     var validationSuccess = true;
     var fullInput = true;
+
     // validate password
     if (password.value.isEmpty) {
       passwordErrorText.value = 'Please enter your password!';
       fullInput = false;
       validationSuccess = false;
-    } else
-     if (passwordValidator() != null) {
+    } else if (passwordValidator() != null) {
       validationSuccess = false;
     }
 
-    // validate user id
-    if (usingEmail.value) {
-      // validate email
-      if (email.isEmpty) {
-        emailErrorText.value = 'Please enter your email!';
-        fullInput = false;
-        validationSuccess = false;
-      } else if (emailValidator() != null) {
-        validationSuccess = false;
-      }
-    } else {
-      // validate phone number
-      if (phoneNumber.isEmpty) {
-        phoneNumberErrorText.value = 'Please enter your phone number!';
-        fullInput = false;
-        validationSuccess = false;
-      } else if (phoneNumberValidator() != null) {
-        validationSuccess = false;
-      }
+    // validate email
+    if (email.isEmpty) {
+      emailErrorText.value = 'Please enter your email!';
+      fullInput = false;
+      validationSuccess = false;
+    } else if (emailValidator() != null) {
+      validationSuccess = false;
     }
 
-    if (validationSuccess){
-      // call api
-      FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value).then((value){
+    if (validationSuccess) {
+      FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value).then((value) {
+        FadedOverlay.remove();
         print(value);
         Get.to(const YouAreIn());
-      }).catchError((e){
+      }).catchError((e) {
         print(e);
       });
     } else {
-      if (fullInput){
-        // shallow authentication
-        print(' wrong id or password');
+      if (fullInput) {
+        print('wrong user id or password');
+        FadedOverlay.remove();
       }
     }
   }

@@ -1,5 +1,6 @@
 import 'package:chat_app/auth/screens/forgot_password.dart';
 import 'package:chat_app/auth/screens/sign_up.dart';
+import 'package:chat_app/auth/widgets/faded_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,8 @@ class SignIn extends StatelessWidget {
             appBar: AppBar(title: const Text('Sign In')),
             resizeToAvoidBottomInset: false,
             body: Column(children: [
-              const _UserIdInput(),
+              const EmailInput(),
+              //const _UserIdInput(),
               const PasswordInput(),
               Container(
                   alignment: Alignment.centerRight,
@@ -45,7 +47,7 @@ class SignIn extends StatelessWidget {
               ),
               const Text('Or'),
               const _SignInButton(),
-              const _SwitchSignInMethodButton(),
+              //const _SwitchSignInMethodButton(),
               const GoogleButton()
             ])));
   }
@@ -59,49 +61,52 @@ class _SignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        onPressed: SignInController.inst.validateAndSignIn,
+        onPressed: () {
+          FadedOverlay.showLoading(context);
+          SignInController.inst.validateEmailAndSignIn();
+        },
         child: const Text('Sign In'));
   }
 }
 
 // TODO
 // styling widget
-class _SwitchSignInMethodButton extends StatelessWidget {
-  const _SwitchSignInMethodButton({Key? key}) : super(key: key);
+// class _SwitchSignInMethodButton extends StatelessWidget {
+//   const _SwitchSignInMethodButton({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 240,
-      child: ElevatedButton(
-          onPressed: SignInController.inst.usingEmail.toggle,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Obx((() => FaIcon(SignInController.inst.usingEmail.value ? FontAwesomeIcons.mobileScreen : FontAwesomeIcons.envelope, size: 18))),
-              Container(
-                  height: 25,
-                  width: 1,
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                  )),
-              Obx(() => Text('Login with ${SignInController.inst.usingEmail.value ? 'phone number' : 'email'}'))
-            ],
-          )),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//       width: 240,
+//       child: ElevatedButton(
+//           onPressed: SignInController.inst.usingEmail.toggle,
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceAround,
+//             children: [
+//               Obx((() => FaIcon(SignInController.inst.usingEmail.value ? FontAwesomeIcons.mobileScreen : FontAwesomeIcons.envelope, size: 18))),
+//               Container(
+//                   height: 25,
+//                   width: 1,
+//                   decoration: const BoxDecoration(
+//                     color: Colors.black,
+//                   )),
+//               Obx(() => Text('Login with ${SignInController.inst.usingEmail.value ? 'phone number' : 'email'}'))
+//             ],
+//           )),
+//     );
+//   }
+// }
 
-class _UserIdInput extends StatelessWidget {
-  const _UserIdInput({Key? key}) : super(key: key);
+// class _UserIdInput extends StatelessWidget {
+//   const _UserIdInput({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-        height: 100,
-        child: Container(
-            padding: const EdgeInsets.only(top: 10),
-            alignment: Alignment.topCenter,
-            child: Obx(() => SignInController.inst.usingEmail.value ? const EmailInput() : const PhoneNumberInput())));
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//         height: 100,
+//         child: Container(
+//             padding: const EdgeInsets.only(top: 10),
+//             alignment: Alignment.topCenter,
+//             child: Obx(() => SignInController.inst.usingEmail.value ? const EmailInput() : const PhoneNumberInput())));
+//   }
+// }

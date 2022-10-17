@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../widgets/faded_overlay.dart';
+
 // this widget is just for testing for signing in successfully
 class YouAreIn extends StatelessWidget {
   const YouAreIn({Key? key}) : super(key: key);
@@ -16,7 +18,9 @@ class YouAreIn extends StatelessWidget {
         Text(FirebaseAuth.instance.currentUser.toString()),
         ElevatedButton(
             onPressed: () {
+              FadedOverlay.showLoading(context);
               FirebaseAuth.instance.signOut().then((_) {
+                FadedOverlay.remove();
                 Get.offAll(const SignIn());
               }).catchError((e) {
                 announce(context, 'Sign out error', e.toString());
