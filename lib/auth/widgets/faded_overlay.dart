@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
+// TODO
+// rewrite by getX dialog
 class FadedOverlay {
   static OverlayEntry? _overlayEntry;
   static double opacacity = 0.5;

@@ -2,12 +2,14 @@ import 'package:chat_app/auth/screens/your_are_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
+import '../screens/sign_in.dart';
 import '../widgets/faded_overlay.dart';
 
 // TODO
 // overrider: navigate back to prompt user to log out
 // shallow authentication
 // remember password
+// start loading should be placed here
 class SignInController extends GetxController {
   static final SignInController _inst = Get.put(SignInController());
   static SignInController get inst => _inst;
@@ -120,7 +122,7 @@ class SignInController extends GetxController {
   //   }
   // }
 
-  void validateEmailAndSignIn() {
+  void validateEmailAndSignIn() async {
     var validationSuccess = true;
     var fullInput = true;
 
@@ -143,8 +145,7 @@ class SignInController extends GetxController {
     }
 
     if (validationSuccess) {
-      FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value).then((value) {
-        FadedOverlay.remove();
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value).then((value) {
         print(value);
         Get.to(const YouAreIn());
       }).catchError((e) {
@@ -153,8 +154,24 @@ class SignInController extends GetxController {
     } else {
       if (fullInput) {
         print('wrong user id or password');
-        FadedOverlay.remove();
       }
     }
+
+    FadedOverlay.remove();
+  }
+
+  void signOut() async {
+    // reset email and password
+    email('');
+    password('');
+
+    // sign out
+    await FirebaseAuth.instance.signOut().then((_) {
+      Get.offAll(const SignIn());
+    }).catchError((e) {
+      print(e);
+    });
+
+    FadedOverlay.remove();
   }
 }

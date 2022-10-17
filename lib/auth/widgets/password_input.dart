@@ -6,7 +6,6 @@ import '../controllers/controllers.dart';
 
 // TODO:
 // styling widget
-// validate
 class PasswordInput extends StatefulWidget {
   const PasswordInput({Key? key}) : super(key: key);
 
