@@ -28,6 +28,16 @@ class SignInController extends GetxController {
     return null;
   }
 
+  var name = ''.obs;
+  var nameErrorText = Rx<String?>(null);
+
+  String? nameValidator() {
+    if (name.value.isEmpty) {
+      return 'Please enter a valid full name!';
+    }
+    return null;
+  }
+
   var emailErrorText = Rx<String?>(null);
   //#endregion
 
@@ -145,7 +155,10 @@ class SignInController extends GetxController {
     }
 
     if (validationSuccess) {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value).then((value) {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: email.value, password: password.value)
+          .then((value) {
         print(value);
         Get.to(const YouAreIn());
       }).catchError((e) {

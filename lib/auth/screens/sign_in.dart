@@ -1,5 +1,6 @@
 import 'package:chat_app/auth/screens/forgot_password.dart';
 import 'package:chat_app/auth/screens/sign_up.dart';
+import 'package:chat_app/auth/widgets/custom_button.dart';
 import 'package:chat_app/auth/widgets/faded_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -52,7 +53,13 @@ class SignIn extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 30),
-                const _SignInButton(),
+                CustomButton(
+                  onPress: () {
+                    FadedOverlay.showLoading(context);
+                    SignInController.inst.validateEmailAndSignIn();
+                  },
+                  text: "Sign In",
+                ),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -88,48 +95,6 @@ class SignIn extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// TODO
-// styling widget
-class _SignInButton extends StatelessWidget {
-  const _SignInButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      width: double.infinity,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          gradient: const LinearGradient(colors: [
-            Color.fromRGBO(27, 150, 200, 1),
-            Color.fromRGBO(15, 202, 177, 1)
-          ]),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 3,
-              blurRadius: 7,
-              offset: const Offset(0, 5),
-            ),
-          ]),
-      child: ElevatedButton(
-        onPressed: () {
-          FadedOverlay.showLoading(context);
-          SignInController.inst.validateEmailAndSignIn();
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-        ),
-        child: const Text(
-          "Sign In",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
     );
