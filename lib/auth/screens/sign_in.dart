@@ -2,13 +2,11 @@ import 'package:chat_app/auth/screens/forgot_password.dart';
 import 'package:chat_app/auth/screens/sign_up.dart';
 import 'package:chat_app/auth/widgets/faded_overlay.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import '../controllers/controllers.dart';
 import '../widgets/email_input.dart';
 import '../widgets/google_button.dart';
 import '../widgets/password_input.dart';
-import '../widgets/phone_number_input.dart';
 
 // TODO
 // styling widget
@@ -18,38 +16,81 @@ class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        onVerticalDragEnd: (DragEndDetails details) => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Scaffold(
-            appBar: AppBar(title: const Text('Sign In')),
-            resizeToAvoidBottomInset: false,
-            body: Column(children: [
-              const EmailInput(),
-              //const _UserIdInput(),
-              const PasswordInput(),
-              Container(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onVerticalDragEnd: (DragEndDetails details) =>
+          FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const Text(
+                  "Sign in",
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 30),
+                Image.asset("assets/images/chat.png", width: 60),
+                const SizedBox(height: 30),
+                const EmailInput(),
+                //const _UserIdInput(),
+                const SizedBox(height: 20),
+                const PasswordInput(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
                       onPressed: () {
                         Get.to(const ForgotPassword());
                       },
-                      child: const Text('Forgot password?'))),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Don\'t have an account?'),
-                  TextButton(
+                      child: const Text(
+                        "Forgot password?",
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                const _SignInButton(),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Don't have an account?",
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    ),
+                    TextButton(
                       onPressed: () {
                         Get.to(const SignUp());
                       },
-                      child: const Text('Sign up')),
-                ],
-              ),
-              const Text('Or'),
-              const _SignInButton(),
-              //const _SwitchSignInMethodButton(),
-              const GoogleButton()
-            ])));
+                      child: const Text(
+                        "Sign up",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Or",
+                  style: TextStyle(color: Colors.grey, fontSize: 16),
+                ),
+
+                const SizedBox(height: 10),
+                //const _SwitchSignInMethodButton(),
+                const GoogleButton()
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -60,12 +101,38 @@ class _SignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return Container(
+      height: 50,
+      width: double.infinity,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          gradient: const LinearGradient(colors: [
+            Color.fromRGBO(27, 150, 200, 1),
+            Color.fromRGBO(15, 202, 177, 1)
+          ]),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 3,
+              blurRadius: 7,
+              offset: const Offset(0, 5),
+            ),
+          ]),
+      child: ElevatedButton(
         onPressed: () {
           FadedOverlay.showLoading(context);
           SignInController.inst.validateEmailAndSignIn();
         },
-        child: const Text('Sign In'));
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+        ),
+        child: const Text(
+          "Sign In",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
   }
 }
 

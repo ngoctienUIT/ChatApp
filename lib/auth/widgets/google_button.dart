@@ -10,23 +10,33 @@ class GoogleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 240,
+      height: 50,
+      width: double.infinity,
       child: ElevatedButton(
-          style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red.shade400)),
-          onPressed: () {},
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const FaIcon(FontAwesomeIcons.google, size: 18),
-              Container(
-                  height: 25,
-                  width: 1,
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                  )),
-              const Text('Sign in with Google')
-            ],
-          )),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.all(0),
+          backgroundColor: Colors.red[400],
+        ),
+        onPressed: () {},
+        child: Row(
+          children: const [
+            SizedBox(
+                width: 60, child: Center(child: Icon(FontAwesomeIcons.google))),
+            VerticalDivider(
+              color: Colors.white,
+              width: 1,
+              endIndent: 7,
+              indent: 7,
+            ),
+            Spacer(),
+            Text(
+              "Sign In with Google",
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            Spacer(),
+          ],
+        ),
+      ),
     );
   }
 }

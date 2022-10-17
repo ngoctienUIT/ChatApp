@@ -21,41 +21,57 @@ class _PasswordInputState extends State<PasswordInput> {
   @override
   Widget build(BuildContext context) {
     return FocusScope(
-        onFocusChange: (value) {
-          // focus: true
-          // not focus on any widget: true
-          // focus on other widget: false
-          if (value) {
-            // reset error text
-            SignInController.inst.passwordErrorText.value = null;
+      onFocusChange: (value) {
+        // focus: true
+        // not focus on any widget: true
+        // focus on other widget: false
+        if (value) {
+          // reset error text
+          SignInController.inst.passwordErrorText.value = null;
 
-            setState(() {
-              isOnFocus = !isOnFocus;
-            });
-          } else {
-            setState(() {
-              isOnFocus = false;
-            });
-          }
-        },
-        child: Form(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Obx(() => TextFormField(
-                  onChanged: SignInController.inst.password,
-                  decoration: InputDecoration(
-                      errorText: SignInController.inst.passwordErrorText.value,
-                      labelText: 'Password',
-                      border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                          onPressed: () => setState(() {
-                                _passwordObscure = !_passwordObscure;
-                              }),
-                          icon: Icon(_passwordObscure ? Icons.visibility : Icons.visibility_off))),
-                  obscureText: _passwordObscure,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-                ))));
+          setState(() {
+            isOnFocus = !isOnFocus;
+          });
+        } else {
+          setState(() {
+            isOnFocus = false;
+          });
+        }
+      },
+      child: Form(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Obx(
+          () => TextFormField(
+            onChanged: SignInController.inst.password,
+            decoration: InputDecoration(
+              errorText: SignInController.inst.passwordErrorText.value,
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey, width: 0.6),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey, width: 0.6),
+              ),
+              border: const UnderlineInputBorder(),
+              label: const Text(
+                "Password",
+                style: TextStyle(fontSize: 16),
+              ),
+              suffixIcon: IconButton(
+                onPressed: () => setState(() {
+                  _passwordObscure = !_passwordObscure;
+                }),
+                icon: Icon(
+                  _passwordObscure ? Icons.visibility_off : Icons.visibility,
+                ),
+              ),
+            ),
+            obscureText: _passwordObscure,
+            enableSuggestions: false,
+            autocorrect: false,
+            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+          ),
+        ),
+      ),
+    );
   }
 }
