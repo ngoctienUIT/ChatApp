@@ -1,4 +1,5 @@
 import 'package:chat_app/auth/screens/forgot_password.dart';
+import 'package:chat_app/auth/screens/home.dart';
 import 'package:chat_app/auth/screens/sign_up.dart';
 import 'package:chat_app/auth/widgets/custom_button.dart';
 import 'package:chat_app/auth/widgets/faded_overlay.dart';
@@ -23,76 +24,78 @@ class SignIn extends StatelessWidget {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                const Text(
-                  "Sign in",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
-                ),
-                const SizedBox(height: 30),
-                Image.asset("assets/images/chat.png", width: 60),
-                const SizedBox(height: 30),
-                const EmailInput(),
-                //const _UserIdInput(),
-                const SizedBox(height: 20),
-                const PasswordInput(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Get.to(const ForgotPassword());
-                      },
-                      child: const Text(
-                        "Forgot password?",
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                CustomButton(
-                  onPress: () {
-                    FadedOverlay.showLoading(context);
-                    SignInController.inst.validateEmailAndSignIn();
-                  },
-                  text: "Sign In",
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Don't have an account?",
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Get.off(const SignUp());
-                      },
-                      child: const Text(
-                        "Sign up",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  const Text(
+                    "Sign in",
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 30),
+                  Image.asset("assets/images/chat.png", width: 60),
+                  const SizedBox(height: 30),
+                  const EmailInput(),
+                  //const _UserIdInput(),
+                  const SizedBox(height: 20),
+                  const PasswordInput(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Get.to(const ForgotPassword());
+                        },
+                        child: const Text(
+                          "Forgot password?",
+                          style: TextStyle(color: Colors.grey, fontSize: 16),
                         ),
                       ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  "Or",
-                  style: TextStyle(color: Colors.grey, fontSize: 16),
-                ),
-
-                const SizedBox(height: 10),
-                //const _SwitchSignInMethodButton(),
-                const GoogleButton()
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  CustomButton(
+                    onPress: () {
+                      // Get.off(const Home());
+                      FadedOverlay.showLoading(context);
+                      SignInController.inst.validateEmailAndSignIn();
+                    },
+                    text: "Sign In",
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Don't have an account?",
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Get.off(const SignUp());
+                        },
+                        child: const Text(
+                          "Sign up",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Or",
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                  const SizedBox(height: 10),
+                  //const _SwitchSignInMethodButton(),
+                  const GoogleButton()
+                ],
+              ),
             ),
           ),
         ),
