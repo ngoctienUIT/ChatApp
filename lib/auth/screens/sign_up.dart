@@ -49,7 +49,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Get.to(const SignIn());
+                        Get.off(const SignIn());
                       },
                       child: const Text(
                         "Sign in",
