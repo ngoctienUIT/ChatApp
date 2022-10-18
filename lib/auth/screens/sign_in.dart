@@ -4,7 +4,7 @@ import 'package:chat_app/auth/widgets/faded_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import '../controllers/controllers.dart';
+import '../controllers/sign_in.dart';
 import '../widgets/email_input.dart';
 import '../widgets/google_button.dart';
 import '../widgets/password_input.dart';

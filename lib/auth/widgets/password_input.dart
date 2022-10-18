@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import '../controllers/controllers.dart';
+import '../controllers/sign_in.dart';
 
 // TODO:
 // styling widget

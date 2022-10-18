@@ -32,17 +32,17 @@ class SignInController extends GetxController {
   //#endregion
 
   //#region PHONE NUMBER
-  var phoneNumber = ''.obs;
-  RegExp phoneRegex = RegExp(r'^[0-9]{10}');
-  String? phoneNumberValidator() {
-    if (!phoneRegex.hasMatch(phoneNumber.value)) {
-      return 'Please enter a 10 digits phone number!';
-    }
+  // var phoneNumber = ''.obs;
+  // RegExp phoneRegex = RegExp(r'^[0-9]{10}');
+  // String? phoneNumberValidator() {
+  //   if (!phoneRegex.hasMatch(phoneNumber.value)) {
+  //     return 'Please enter a 10 digits phone number!';
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
-  var phoneNumberErrorText = Rx<String?>(null);
+  // var phoneNumberErrorText = Rx<String?>(null);
   //#endregion
 
   //#region PASSWORD
