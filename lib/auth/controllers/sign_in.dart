@@ -1,5 +1,6 @@
 import 'package:chat_app/auth/screens/your_are_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../utils.dart';
@@ -146,27 +147,20 @@ class SignInController extends GetxController {
 
     if (validationSuccess) {
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value).then((value) {
+        FadedOverlay.remove();
         if (!value.user!.emailVerified) {
-          FirebaseAuth.instance.signOut().then((value) {
-            Get.defaultDialog(
-              title: 'Error',
-              middleText: 'This account has not been verified, please check your mail box for verifying link.',
-              textConfirm: 'OK',
-              onConfirm: () {
-                Get.back();
-              },
-            );
-          });
-
+          _notVerifiedUserHandler(value);
           return;
         }
 
         print(value);
         Get.to(const YouAreIn());
       }).catchError((e) {
+        FadedOverlay.remove();
         showError(e);
       });
     } else {
+      FadedOverlay.remove();
       if (fullInput) {
         Get.defaultDialog(
           title: 'Error',
@@ -178,8 +172,6 @@ class SignInController extends GetxController {
         );
       }
     }
-
-    FadedOverlay.remove();
   }
 
   void signOut() async {
@@ -195,5 +187,76 @@ class SignInController extends GetxController {
     });
 
     FadedOverlay.remove();
+  }
+}
+
+/// sign out on closing dialog
+void _notVerifiedUserHandler(UserCredential credential) {
+  Get.defaultDialog(
+      barrierDismissible: false,
+      title: 'Error',
+      content: Column(children: [
+        const Text('This account has not been verified, please check your mail box for verifying link.'),
+        Container(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              child: const Text('Need help?'),
+              onPressed: () {
+                // quit this dialog
+                Get.back();
+                /// show need_help dialog, sign out on pop out
+                Get.defaultDialog(
+                    barrierDismissible: false,
+                    title: 'Support',
+                    content: Column(children: const [
+                      Text('You don\'t see the mail? Please check other places such as spam box'),
+                      Text('Or'),
+                      _SendVerificationLinkButton()
+                    ]),
+                    onWillPop: () async {
+                      // sign out
+                      await FirebaseAuth.instance.signOut();
+                      return true;
+                    });
+              },
+            ))
+      ]),
+      textConfirm: 'OK',
+      onConfirm: () async {
+        // sign out
+        await FirebaseAuth.instance.signOut();
+        Get.back();
+      },
+      onWillPop: () async {
+        // sign out
+        await FirebaseAuth.instance.signOut();
+        return true;
+      });
+}
+
+class _SendVerificationLinkButton extends StatefulWidget {
+  const _SendVerificationLinkButton({Key? key}) : super(key: key);
+
+  @override
+  State<_SendVerificationLinkButton> createState() => __SendVerificationLinkButtonState();
+}
+
+class __SendVerificationLinkButtonState extends State<_SendVerificationLinkButton> {
+  bool isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      child: isLoading ? const CircularProgressIndicator() : const Text('Resend verification link'),
+      onPressed: () {
+        setState(() {
+          isLoading = true;
+        });
+        FirebaseAuth.instance.currentUser!.sendEmailVerification().then((value) {
+          setState(() {
+            isLoading = false;
+          });
+        });
+      },
+    );
   }
 }
