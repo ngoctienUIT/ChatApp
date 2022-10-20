@@ -92,19 +92,10 @@ class SignUpController extends GetxController {
     }
 
     if (validationSuccess) {
-      await onSuccessValidation();
+      await _onSuccessValidation();
       return;
     } else {
       FadedOverlay.remove();
-      if (fullInput) {
-        Get.defaultDialog(
-            title: 'Error',
-            middleText: 'Please enter your info correctly',
-            textConfirm: 'OK',
-            onConfirm: () {
-              Get.back();
-            });
-      }
     }
   }
 
@@ -119,7 +110,7 @@ class SignUpController extends GetxController {
     passwordErrorText.value = null;
   }
 
-  Future<void> onSuccessValidation() async {
+  Future<void> _onSuccessValidation() async {
     try {
       var credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.value, password: password.value);
       await credentials.user!.sendEmailVerification();

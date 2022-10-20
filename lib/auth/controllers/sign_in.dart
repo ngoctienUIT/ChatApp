@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:chat_app/auth/screens/your_are_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:progress_state_button/iconed_button.dart';
+import 'package:progress_state_button/progress_button.dart';
 
 import '../../utils.dart';
 import '../screens/sign_in.dart';
+import '../screens/sign_up.dart';
 import '../widgets/faded_overlay.dart';
 
 // TODO
@@ -83,19 +88,8 @@ class SignInController extends GetxController {
     }
 
     if (validationSuccess) {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value).then((value) {
-        FadedOverlay.remove();
-        if (!value.user!.emailVerified) {
-          _notVerifiedUserHandler(value);
-          return;
-        }
-
-        print(value);
-        Get.to(const YouAreIn());
-      }).catchError((e) {
-        FadedOverlay.remove();
-        showError(e);
-      });
+      await _onSuccessValidation();
+      return;
     } else {
       FadedOverlay.remove();
       if (fullInput) {
@@ -125,6 +119,54 @@ class SignInController extends GetxController {
 
     FadedOverlay.remove();
   }
+
+  Future<void> _onSuccessValidation() async {
+    try {
+      var credentials = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value);
+      FadedOverlay.remove();
+      if (!credentials.user!.emailVerified) {
+        _notVerifiedUserHandler(credentials);
+        return;
+      }
+
+      Get.to(const YouAreIn());
+    } on FirebaseAuthException catch (e) {
+      FadedOverlay.remove();
+
+      switch (e.code) {
+        case 'invalid-email':
+          emailErrorText.value = 'Invalid email, please try again';
+          break;
+        case 'user-disabled':
+          showError('Your account is disabled, please contract admin for support.');
+          break;
+        case 'user-not-found':
+          Get.defaultDialog(
+              title: 'We could not find your account',
+              middleText: 'Looks like you are new to us, try signing up to our system',
+              textConfirm: 'Sign up',
+              onConfirm: () {
+                Get.offAll(const SignUp());
+              });
+          break;
+        case 'wrong-password':
+          Get.defaultDialog(
+            title: 'Error',
+            middleText: 'wrong user id or password',
+            textConfirm: 'OK',
+            onConfirm: () {
+              Get.back();
+            },
+          );
+          break;
+      }
+    } catch (e) {
+      FadedOverlay.remove();
+      showError(e);
+    }
+
+    return;
+  }
 }
 
 /// sign out on closing dialog
@@ -141,6 +183,7 @@ void _notVerifiedUserHandler(UserCredential credential) {
               onPressed: () {
                 // quit this dialog
                 Get.back();
+
                 /// show need_help dialog, sign out on pop out
                 Get.defaultDialog(
                     barrierDismissible: false,
@@ -171,6 +214,7 @@ void _notVerifiedUserHandler(UserCredential credential) {
       });
 }
 
+// TODO: improve UX
 class _SendVerificationLinkButton extends StatefulWidget {
   const _SendVerificationLinkButton({Key? key}) : super(key: key);
 
@@ -180,20 +224,47 @@ class _SendVerificationLinkButton extends StatefulWidget {
 
 class __SendVerificationLinkButtonState extends State<_SendVerificationLinkButton> {
   bool isLoading = false;
+  bool enabled = true;
+  final int timer = 60;
+  int counter = 0;
+
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      child: isLoading ? const CircularProgressIndicator() : const Text('Resend verification link'),
-      onPressed: () {
-        setState(() {
-          isLoading = true;
-        });
-        FirebaseAuth.instance.currentUser!.sendEmailVerification().then((value) {
-          setState(() {
-            isLoading = false;
-          });
-        });
-      },
+      onPressed: enabled
+          ? () {
+              if (isLoading) return;
+
+              setState(() {
+                isLoading = true;
+              });
+              FirebaseAuth.instance.currentUser!.sendEmailVerification().then((value) {
+                setState(() {
+                  isLoading = false;
+                  enabled = false;
+                  counter = timer;
+                });
+
+                Timer.periodic(const Duration(seconds: 1), (timer) {
+                  setState(() {
+                    counter--;
+                  });
+
+                  if (counter == 0) {
+                    setState(() {
+                      enabled = true;
+                    });
+                  }
+                });
+              }).catchError((e) {
+                showError(e);
+                Get.back();
+              });
+            }
+          : null,
+      child: enabled
+          ? (isLoading ? const CircularProgressIndicator() : const Text('Resend verification link'))
+          : Text('Please wait ${counter}s to try again'),
     );
   }
 }

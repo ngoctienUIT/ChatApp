@@ -24,6 +24,7 @@ class SignIn extends StatelessWidget {
               //const _UserIdInput(),
               const _PasswordInput(),
               const _ForgotPassword(),
+              const _SignInButton(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -36,7 +37,6 @@ class SignIn extends StatelessWidget {
                 ],
               ),
               const Text('Or'),
-              const _SignInButton(),
               //const _SwitchSignInMethodButton(),
               const GoogleButton()
             ])));
@@ -87,7 +87,7 @@ class _ForgotPassword extends StatelessWidget {
 
 class _PasswordInput extends PasswordInput {
   const _PasswordInput({Key? key}) : super(key: key);
-  
+
   @override
   Rx<String?> get errorText => SignInController.inst.passwordErrorText;
 
@@ -98,7 +98,7 @@ class _PasswordInput extends PasswordInput {
   String? Function() get validator => SignInController.inst.passwordValidator;
 
   @override
-  String? get hintText =>null;
+  String? get hintText => null;
 }
 // TODO
 // styling widget
