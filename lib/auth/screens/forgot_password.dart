@@ -6,6 +6,6 @@ class ForgotPassword extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text('Forgot password')),);
+    return Scaffold(appBar: AppBar(title: const Text('Forgot password')),);
   }
 }

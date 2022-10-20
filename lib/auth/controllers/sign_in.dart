@@ -2,12 +2,12 @@ import 'package:chat_app/auth/screens/your_are_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
+import '../../utils.dart';
 import '../screens/sign_in.dart';
 import '../widgets/faded_overlay.dart';
 
 // TODO
 // overrider: navigate back to prompt user to log out
-// shallow authentication
 // remember password
 // start loading should be placed here
 class SignInController extends GetxController {
@@ -17,7 +17,7 @@ class SignInController extends GetxController {
   //var usingEmail = true.obs;
 
   //#region EMAIL
-  final  email = ''.obs;
+  final email = ''.obs;
 
   RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   String? emailValidator() {
@@ -146,10 +146,25 @@ class SignInController extends GetxController {
 
     if (validationSuccess) {
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value).then((value) {
+        if (!value.user!.emailVerified) {
+          FirebaseAuth.instance.signOut().then((value) {
+            Get.defaultDialog(
+              title: 'Error',
+              middleText: 'This account has not been verified, please check your mail box for verifying link.',
+              textConfirm: 'OK',
+              onConfirm: () {
+                Get.back();
+              },
+            );
+          });
+
+          return;
+        }
+
         print(value);
         Get.to(const YouAreIn());
       }).catchError((e) {
-        print(e);
+        showError(e);
       });
     } else {
       if (fullInput) {
@@ -157,8 +172,9 @@ class SignInController extends GetxController {
           title: 'Error',
           middleText: 'wrong user id or password',
           textConfirm: 'OK',
-          onConfirm: (){Get.back();},
-
+          onConfirm: () {
+            Get.back();
+          },
         );
       }
     }
@@ -175,7 +191,7 @@ class SignInController extends GetxController {
     await FirebaseAuth.instance.signOut().then((_) {
       Get.offAll(const SignIn());
     }).catchError((e) {
-      print(e);
+      showError(e);
     });
 
     FadedOverlay.remove();

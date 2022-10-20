@@ -93,16 +93,19 @@ class SignUpController extends GetxController {
     if (validationSuccess) {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.value, password: password.value).then((value) {
         FadedOverlay.remove();
-        print(value);
+        value.user!.sendEmailVerification();
         // show dialog for success registration, press btn to confirm and then navigate to sign in screen
         Get.defaultDialog(
             title: 'Successful registration',
-            middleText: 'Press OK to sign in :>',
+            middleText: 'Please check you mail box to verify your email',
             textConfirm: 'OK',
             onConfirm: () {
               // reset sign up data
               // password
               passwordErrorText.value = null;
+
+              // verify email
+
 
               Get.offAll(const SignIn());
             });
@@ -113,8 +116,11 @@ class SignUpController extends GetxController {
           title: 'Error',
           middleText: e.toString(),
           textConfirm: 'OK',
+          onConfirm: (){Get.back();}
         );
       });
+
+      return;
     } else {
       if (fullInput) {
         Get.defaultDialog(
