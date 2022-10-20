@@ -17,7 +17,7 @@ class SignInController extends GetxController {
   //var usingEmail = true.obs;
 
   //#region EMAIL
-  var email = ''.obs;
+  final  email = ''.obs;
 
   RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   String? emailValidator() {
@@ -153,7 +153,13 @@ class SignInController extends GetxController {
       });
     } else {
       if (fullInput) {
-        print('wrong user id or password');
+        Get.defaultDialog(
+          title: 'Error',
+          middleText: 'wrong user id or password',
+          textConfirm: 'OK',
+          onConfirm: (){Get.back();},
+
+        );
       }
     }
 

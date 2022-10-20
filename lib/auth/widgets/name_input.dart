@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../controllers/sign_up.dart';
 
 // TODO
 // styling widget
-abstract class EmailInput extends StatefulWidget {
-  RxString get email;
-  Rx<String?> get errorText;
-  String? Function() get validator;
-
-  const EmailInput({super.key});
+class NameInput extends StatefulWidget {
+  const NameInput({Key? key}) : super(key: key);
 
   @override
-  State<EmailInput> createState() => _EmailInputState();
+  State<NameInput> createState() => _NameInputState();
 }
 
-class _EmailInputState extends State<EmailInput> {
+class _NameInputState extends State<NameInput> {
   // Not focus for default, if widget is settled to be auto focused, this init will make no sense
   bool isOnFocus = false;
   @override
@@ -27,7 +24,7 @@ class _EmailInputState extends State<EmailInput> {
           // focus on other widget: false
           if (value) {
             // reset error text
-            widget.errorText.value = null;
+            SignUpController.inst.nameErrorText.value = null;
 
             setState(() {
               isOnFocus = !isOnFocus;
@@ -44,19 +41,16 @@ class _EmailInputState extends State<EmailInput> {
                   // Cant put setState right here
                   // when user not input: no error
                   // when user input and then leave the field empty: no error
-                  // when user input and then leave the field with invalid email: error
+                  // when user input and then leave the field with invalid data: error
                   validator: (value) {
                     if (!isOnFocus && value!.isNotEmpty) {
-                      return widget.validator();
+                      return SignUpController.inst.nameValidator();
                     }
                     return null;
                   },
-                  onChanged: widget.email,
-                  decoration: InputDecoration(
-                      errorText: widget.errorText.value, border: const OutlineInputBorder(), prefixIcon: const Icon(Icons.email), labelText: 'Email'),
-                  keyboardType: TextInputType.emailAddress,
-                  autofillHints: const [AutofillHints.email],
-                  inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                  onChanged: SignUpController.inst.name,
+                  decoration:
+                      InputDecoration(errorText: SignUpController.inst.nameErrorText.value, border: const OutlineInputBorder(), labelText: 'Name'),
                 ))));
   }
 }

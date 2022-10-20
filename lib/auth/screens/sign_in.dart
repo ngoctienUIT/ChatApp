@@ -2,6 +2,8 @@ import 'package:chat_app/auth/screens/forgot_password.dart';
 import 'package:chat_app/auth/screens/sign_up.dart';
 import 'package:chat_app/auth/widgets/faded_overlay.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import '../controllers/sign_in.dart';
@@ -24,16 +26,10 @@ class SignIn extends StatelessWidget {
             appBar: AppBar(title: const Text('Sign In')),
             resizeToAvoidBottomInset: false,
             body: Column(children: [
-              const EmailInput(),
+              const _EmailInput(),
               //const _UserIdInput(),
-              const PasswordInput(),
-              Container(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                      onPressed: () {
-                        Get.to(const ForgotPassword());
-                      },
-                      child: const Text('Forgot password?'))),
+              const _PasswordInput(),
+              const _ForgotPassword(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -53,8 +49,6 @@ class SignIn extends StatelessWidget {
   }
 }
 
-// TODO
-// styling widget
 class _SignInButton extends StatelessWidget {
   const _SignInButton({Key? key}) : super(key: key);
 
@@ -69,6 +63,49 @@ class _SignInButton extends StatelessWidget {
   }
 }
 
+class _EmailInput extends EmailInput {
+  const _EmailInput({Key? key}) : super(key: key);
+
+  @override
+  RxString get email => SignInController.inst.email;
+
+  @override
+  Rx<String?> get errorText => SignInController.inst.emailErrorText;
+
+  @override
+  String? Function() get validator => SignInController.inst.emailValidator;
+}
+
+class _ForgotPassword extends StatelessWidget {
+  const _ForgotPassword({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        alignment: Alignment.centerRight,
+        child: TextButton(
+            onPressed: () {
+              Get.to(const ForgotPassword());
+            },
+            child: const Text('Forgot password?')));
+  }
+}
+
+class _PasswordInput extends PasswordInput {
+  const _PasswordInput({Key? key}) : super(key: key);
+  
+  @override
+  Rx<String?> get errorText => SignInController.inst.passwordErrorText;
+
+  @override
+  RxString get password => SignInController.inst.password;
+
+  @override
+  String? Function() get validator => SignInController.inst.passwordValidator;
+
+  @override
+  String? get hintText =>null;
+}
 // TODO
 // styling widget
 // class _SwitchSignInMethodButton extends StatelessWidget {

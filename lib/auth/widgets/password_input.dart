@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import '../controllers/sign_in.dart';
 
-// TODO:
-// styling widget
-class PasswordInput extends StatefulWidget {
-  const PasswordInput({Key? key}) : super(key: key);
+abstract class PasswordInput extends StatefulWidget {
+  const PasswordInput({super.key});
+
+  RxString get password;
+  Rx<String?> get errorText;
+  String? Function() get validator;
+  String? get hintText;
 
   @override
   State<PasswordInput> createState() => _PasswordInputState();
@@ -27,7 +29,7 @@ class _PasswordInputState extends State<PasswordInput> {
           // focus on other widget: false
           if (value) {
             // reset error text
-            SignInController.inst.passwordErrorText.value = null;
+             widget.errorText.value = null;
 
             setState(() {
               isOnFocus = !isOnFocus;
@@ -41,9 +43,10 @@ class _PasswordInputState extends State<PasswordInput> {
         child: Form(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Obx(() => TextFormField(
-                  onChanged: SignInController.inst.password,
+                  onChanged: widget.password,
                   decoration: InputDecoration(
-                      errorText: SignInController.inst.passwordErrorText.value,
+                    hintText: widget.hintText,
+                      errorText: widget.errorText.value,
                       labelText: 'Password',
                       border: const OutlineInputBorder(),
                       prefixIcon: const Icon(Icons.lock),
