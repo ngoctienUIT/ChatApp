@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
+import '../../utils.dart';
 import '../screens/sign_in.dart';
 import '../widgets/faded_overlay.dart';
 import 'sign_in.dart';
@@ -11,7 +12,7 @@ class SignUpController extends GetxController {
 
   //#region NAME
   var name = ''.obs;
-  RegExp nameRegex = RegExp(r'(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})');
+  final RegExp nameRegex = RegExp(r'(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})');
   String? nameValidator() {
     if (!nameRegex.hasMatch(name.value)) {
       return 'Please enter a valid name';
@@ -47,7 +48,7 @@ class SignUpController extends GetxController {
   }
 
   var passwordErrorText = Rx<String?>(null);
-  String passwordHint = 'Password must be minimum 8 characters, at least one letter and one number';
+  final String passwordHint = 'Password must be minimum 8 characters, at least one letter and one number';
   //#endregion
 
   void validateAndSignUp() async {
@@ -91,62 +92,65 @@ class SignUpController extends GetxController {
     }
 
     if (validationSuccess) {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.value, password: password.value).then((value) {
-        FadedOverlay.remove();
-        value.user!.sendEmailVerification();
-        // show dialog for success registration, press btn to confirm and then navigate to sign in screen
-        Get.defaultDialog(
-            title: 'Successful registration',
-            middleText: 'Please check you mail box to verify your email',
-            textConfirm: 'OK',
-            onConfirm: () {
-              // reset sign up data
-              // password
-              passwordErrorText.value = null;
-
-              // verify email
-
-
-              Get.offAll(const SignIn());
-            });
-      }).catchError((e) {
-        print(e);
-        // show dialog for error
-        Get.defaultDialog(
-          title: 'Error',
-          middleText: e.toString(),
-          textConfirm: 'OK',
-          onConfirm: (){Get.back();}
-        );
-      });
-
+      await onSuccessValidation();
       return;
     } else {
+      FadedOverlay.remove();
       if (fullInput) {
         Get.defaultDialog(
-          title: 'Error',
-          middleText: 'wrong user id or password',
-          textConfirm: 'OK',
-          onConfirm: (){Get.back();}
-        );
+            title: 'Error',
+            middleText: 'Please enter your info correctly',
+            textConfirm: 'OK',
+            onConfirm: () {
+              Get.back();
+            });
       }
     }
-
-    FadedOverlay.remove();
   }
 
-  // void signOut() async {
-  //   // reset email and password
-  //   email('');
-  //   password('');
+  void resetData() {
+    name.value = '';
+    nameErrorText.value = null;
 
-  //   // sign out
-  //   await FirebaseAuth.instance.signOut().then((_) {
-  //     Get.offAll(const SignIn());
-  //   }).catchError((e) {
-  //     print(e);
-  //   });
+    email.value = '';
+    emailErrorText.value = null;
 
-  //   FadedOverlay.remove();
-  // }
+    password.value = '';
+    passwordErrorText.value = null;
+  }
+
+  Future<void> onSuccessValidation() async {
+    try {
+      var credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.value, password: password.value);
+      await credentials.user!.sendEmailVerification();
+      await FirebaseAuth.instance.signOut();
+      FadedOverlay.remove();
+      // show dialog for success registration, press btn to confirm and then navigate to sign in screen
+      await Get.defaultDialog(
+          title: 'Successful registration',
+          middleText: 'Please check your mail box to verify your email',
+          onWillPop: () async {
+            Get.offAll(const SignIn());
+            return true;
+          });
+    } on FirebaseAuthException catch (e) {
+      FadedOverlay.remove();
+      switch (e.code) {
+        case 'email-already-in-use':
+          emailErrorText.value = 'This email is already used, try another one.';
+          break;
+        case 'invalid-email':
+          emailErrorText.value = 'Invalid email, try another one';
+          break;
+        case 'weak-password':
+          passwordErrorText.value = 'Weak password, try another one';
+          break;
+      }
+    } catch (e) {
+      FadedOverlay.remove();
+      showError(e);
+    }
+
+    return;
+  }
 }

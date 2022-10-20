@@ -60,69 +60,6 @@ class SignInController extends GetxController {
   var passwordErrorText = Rx<String?>(null);
   //#endregion
 
-  /// Validate user ID and password before sign user in.
-  /// ```dart
-  /// check empty, and then check with regex
-  /// ```
-  // void validateAndSignIn() {
-  //   var validationSuccess = true;
-  //   var fullInput = true;
-
-  //   // validate user id
-  //   if (usingEmail.value) {
-  //     // validate password
-  //     if (password.value.isEmpty) {
-  //       passwordErrorText.value = 'Please enter your password!';
-  //       fullInput = false;
-  //       validationSuccess = false;
-  //     } else if (passwordValidator() != null) {
-  //       validationSuccess = false;
-  //     }
-
-  //     // validate email
-  //     if (email.isEmpty) {
-  //       emailErrorText.value = 'Please enter your email!';
-  //       fullInput = false;
-  //       validationSuccess = false;
-  //     } else if (emailValidator() != null) {
-  //       validationSuccess = false;
-  //     }
-  //   } else {
-  //     // validate phone number
-  //     if (phoneNumber.isEmpty) {
-  //       phoneNumberErrorText.value = 'Please enter your phone number!';
-  //       fullInput = false;
-  //       validationSuccess = false;
-  //     } else if (phoneNumberValidator() != null) {
-  //       validationSuccess = false;
-  //     }
-  //   }
-
-  //   if (validationSuccess) {
-  //     // call api
-  //     if (usingEmail.value) {
-  //       FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value).then((value) {
-  //         print(value);
-  //         Get.to(const YouAreIn());
-  //       }).catchError((e) {
-  //         print(e);
-  //       });
-  //     } else {
-  //       // sign in with phone number
-  //       FirebaseAuth.instance.signInWithPhoneNumber(phoneNumber.value).then((value) {
-  //         print(value);
-  //       }).catchError((e) {
-  //         print(e);
-  //       });
-  //     }
-  //   } else {
-  //     if (fullInput) {
-  //       // shallow authentication
-  //       print(' wrong id or password');
-  //     }
-  //   }
-  // }
-
   void validateEmailAndSignIn() async {
     var validationSuccess = true;
     var fullInput = true;
