@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/sign_up.dart';
 
-// TODO
-// styling widget
 class NameInput extends StatefulWidget {
   const NameInput({Key? key}) : super(key: key);
 

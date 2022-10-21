@@ -4,16 +4,13 @@ import 'package:chat_app/auth/screens/your_are_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
-
 import '../../utils.dart';
 import '../screens/sign_in.dart';
 import '../screens/sign_up.dart';
 import '../widgets/faded_overlay.dart';
 
 // TODO
-// overrider: navigate back to prompt user to log out
+// overrider: navigate back to prompt user to log out: sign in chua verified va sign up
 // remember password
 // start loading should be placed here
 class SignInController extends GetxController {
@@ -238,6 +235,7 @@ class __SendVerificationLinkButtonState extends State<_SendVerificationLinkButto
               setState(() {
                 isLoading = true;
               });
+              // TODO: bring user to app after click url
               FirebaseAuth.instance.currentUser!.sendEmailVerification().then((value) {
                 setState(() {
                   isLoading = false;

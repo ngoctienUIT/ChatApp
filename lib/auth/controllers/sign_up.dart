@@ -53,12 +53,10 @@ class SignUpController extends GetxController {
 
   void validateAndSignUp() async {
     var validationSuccess = true;
-    var fullInput = true;
 
     // validate password
     if (password.value.isEmpty) {
       passwordErrorText.value = 'Please enter your password!';
-      fullInput = false;
       validationSuccess = false;
     } else {
       passwordErrorText.value = passwordValidator();
@@ -70,7 +68,6 @@ class SignUpController extends GetxController {
     // validate email
     if (email.isEmpty) {
       emailErrorText.value = 'Please enter your email!';
-      fullInput = false;
       validationSuccess = false;
     } else {
       emailErrorText.value = emailValidator();
@@ -82,7 +79,6 @@ class SignUpController extends GetxController {
     // validate name
     if (name.isEmpty) {
       nameErrorText.value = 'Please enter your name';
-      fullInput = false;
       validationSuccess = false;
     } else {
       nameErrorText.value = nameValidator();

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-// TODO
-// styling widget
 abstract class EmailInput extends StatefulWidget {
   RxString get email;
   Rx<String?> get errorText;

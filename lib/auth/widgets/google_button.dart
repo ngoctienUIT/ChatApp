@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // TODO
-// styling widget
 // call firebase auth API
 class GoogleButton extends StatelessWidget {
   const GoogleButton({Key? key}) : super(key: key);
