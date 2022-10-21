@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../utils.dart';
 import '../screens/sign_in.dart';
 import '../screens/sign_up.dart';
+import '../services/services.dart';
 import '../widgets/faded_overlay.dart';
 
 // TODO
@@ -107,6 +108,7 @@ class SignInController extends GetxController {
     email('');
     password('');
 
+    await GoogleAuth.inst.signOut();
     // sign out
     await FirebaseAuth.instance.signOut().then((_) {
       Get.offAll(const SignIn());
