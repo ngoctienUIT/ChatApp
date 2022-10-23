@@ -6,6 +6,7 @@ import '../../utils.dart';
 import '../screens/sign_in.dart';
 import 'sign_in.dart';
 
+// TODO: IMPLEMENT SET NEW PASSWORD FORM TO ENSURE NEW PASSWORD FOLLOWING SIGN_IN_PASSWORD_REGEX
 class ForgetPasswordController extends GetxController {
   static final ForgetPasswordController _inst = Get.put(ForgetPasswordController());
   static ForgetPasswordController get inst => _inst;

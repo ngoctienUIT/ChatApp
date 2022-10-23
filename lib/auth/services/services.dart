@@ -13,7 +13,12 @@ class GoogleAuth {
   OAuthCredential? _credential;
 
   Future<UserCredential> signIn() async {
-    _googleSignIn ??= GoogleSignIn();
+    _googleSignIn ??= GoogleSignIn(
+      scopes:[
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile'
+      ]
+    );
 
     // Trigger the authentication flow
     _googleUser = await _googleSignIn!.signIn();
@@ -39,6 +44,6 @@ class GoogleAuth {
   Future<void> signOut() async {
     // duoc thi duoc khong duoc thi thoi, instead of throwing error
     await _googleSignIn?.signOut();
-   // _googleSignIn?.disconnect();
+   //await _googleSignIn?.disconnect();
   }
 }

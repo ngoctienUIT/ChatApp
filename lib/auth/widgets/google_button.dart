@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
+import '../screens/create_password.dart';
 import '../services/services.dart';
 
-// TODO
-// call firebase auth API
 class GoogleButton extends StatelessWidget {
   const GoogleButton({Key? key}) : super(key: key);
 
@@ -16,9 +15,17 @@ class GoogleButton extends StatelessWidget {
       width: 240,
       child: ElevatedButton(
           style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red.shade400)),
-          onPressed: () async {
-            await GoogleAuth.inst.signIn();
-            Get.offAll(const YouAreIn());
+          onPressed: () {
+            GoogleAuth.inst.signIn().then((credentials) {
+              if (credentials.user!.metadata.lastSignInTime!.difference(credentials.user!.metadata.creationTime!).inMilliseconds <1000) {
+                // suggest create a password for primary sign in method
+                Get.offAll(const CreatePassword());
+              } else {
+                Get.offAll(const YouAreIn());
+              }
+            }).catchError((e) {
+              Get.snackbar('Google Sign In Error', e.toString());
+            });
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
