@@ -5,7 +5,6 @@ import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import '../controllers/forget_password.dart';
 import '../widgets/email_input.dart';
 
-// TODO: you know what to do
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword({Key? key}) : super(key: key);
 

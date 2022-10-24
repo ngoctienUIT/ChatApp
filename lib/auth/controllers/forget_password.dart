@@ -8,8 +8,11 @@ import 'sign_in.dart';
 
 // TODO: IMPLEMENT SET NEW PASSWORD FORM TO ENSURE NEW PASSWORD FOLLOWING SIGN_IN_PASSWORD_REGEX
 class ForgetPasswordController extends GetxController {
-  static final ForgetPasswordController _inst = Get.put(ForgetPasswordController());
-  static ForgetPasswordController get inst => _inst;
+  static ForgetPasswordController? _inst;
+  static ForgetPasswordController get inst {
+    _inst ??= Get.put(ForgetPasswordController());
+    return _inst!;
+  }
 
   final email = ''.obs;
 
@@ -85,5 +88,26 @@ class ForgetPasswordController extends GetxController {
       FadedOverlay.remove();
       showError(e);
     }
+
+    // try {
+    //   await FirebaseAuth.instance.sendSignInLinkToEmail(
+    //       email: email.value,
+    //       actionCodeSettings: ActionCodeSettings(
+    //         // URL you want to redirect back to. The domain (www.example.com) for this
+    //         // URL must be whitelisted in the Firebase Console.
+    //         url: 'https://www.example.com/finishSignUp?cartId=1234',
+    //         // This must be true
+    //         handleCodeInApp: true,
+    //       ));
+    //   FadedOverlay.remove();
+    // } on FirebaseAuthException catch (e) {
+    //   FadedOverlay.remove();
+    //   print('FirebaseError');
+    //   print(e);
+    // } catch (e) {
+    //   FadedOverlay.remove();
+    //   print('Other error;');
+    //   print(e);
+    // }
   }
 }

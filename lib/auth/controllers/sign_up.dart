@@ -7,8 +7,11 @@ import '../widgets/faded_overlay.dart';
 import 'sign_in.dart';
 
 class SignUpController extends GetxController {
-  static final SignUpController _inst = Get.put(SignUpController());
-  static SignUpController get inst => _inst;
+  static SignUpController? _inst;
+  static SignUpController get inst {
+    _inst ??= Get.put(SignUpController());
+    return _inst!;
+  }
 
   //#region NAME
   var name = ''.obs;

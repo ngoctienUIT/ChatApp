@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import '../../utils.dart';
 import '../screens/sign_in.dart';
 import '../screens/sign_up.dart';
-import '../services/services.dart';
+import '../services/google_auth.dart';
 import '../widgets/faded_overlay.dart';
 
 // TODO
@@ -15,8 +15,11 @@ import '../widgets/faded_overlay.dart';
 // remember password
 // start loading should be placed here
 class SignInController extends GetxController {
-  static final SignInController _inst = Get.put(SignInController());
-  static SignInController get inst => _inst;
+  static SignInController? _inst;
+  static SignInController get inst {
+    _inst ??= Get.put(SignInController());
+    return _inst!;
+  } 
 
   //var usingEmail = true.obs;
 

@@ -2,9 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleAuth {
-  static final GoogleAuth _inst = GoogleAuth._internal();
+  static GoogleAuth? _inst;
   GoogleAuth._internal();
-  static GoogleAuth get inst => _inst;
+  static GoogleAuth get inst {
+    _inst ??= GoogleAuth._internal();
+    return _inst!;
+  }
 
   GoogleSignIn? _googleSignIn;
 
@@ -13,24 +16,13 @@ class GoogleAuth {
   OAuthCredential? _credential;
 
   Future<UserCredential> signIn() async {
-    _googleSignIn ??= GoogleSignIn(
-      scopes:[
-        'https://www.googleapis.com/auth/userinfo.email',
-        'https://www.googleapis.com/auth/userinfo.profile'
-      ]
-    );
+    _googleSignIn ??= GoogleSignIn(scopes: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']);
 
     // Trigger the authentication flow
     _googleUser = await _googleSignIn!.signIn();
 
     // Obtain the auth details from the request
     _googleAuth = await _googleUser?.authentication;
-    print('googleUser:');
-
-    print(_googleUser);
-
-    print('googleAuth:');
-    print(_googleAuth);
     // Create a new credential
     _credential = GoogleAuthProvider.credential(
       accessToken: _googleAuth?.accessToken,
@@ -44,6 +36,6 @@ class GoogleAuth {
   Future<void> signOut() async {
     // duoc thi duoc khong duoc thi thoi, instead of throwing error
     await _googleSignIn?.signOut();
-   //await _googleSignIn?.disconnect();
+    //await _googleSignIn?.disconnect();
   }
 }

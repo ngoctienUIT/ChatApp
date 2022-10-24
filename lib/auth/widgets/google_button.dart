@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 import '../screens/create_password.dart';
-import '../services/services.dart';
+import '../services/google_auth.dart';
 
 class GoogleButton extends StatelessWidget {
   const GoogleButton({Key? key}) : super(key: key);

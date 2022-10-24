@@ -8,16 +8,21 @@ import 'package:get/get.dart';
 
 import 'auth/screens/splash.dart';
 import 'auth/screens/your_are_in.dart';
+//import 'auth/services/dynamic_links.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Get any initial links
+  //await DynamicLinks.inst.initialLink;
+
   // Transparent status bar, dont need to use SafeArea
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-  // print('currentUser:');
-  // print(FirebaseAuth.instance.currentUser );
+  print('currentUser:');
+  print(FirebaseAuth.instance.currentUser);
   runApp(const GetMaterialApp(debugShowCheckedModeBanner: false, home: Home()));
 }
 
