@@ -1,3 +1,4 @@
+import 'package:chat_app/auth/screens/friends.dart';
 import 'package:chat_app/auth/screens/list_chat.dart';
 import 'package:chat_app/auth/screens/profile.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class _HomeState extends State<Home> {
   int currentTab = 0;
   List<Widget> screens = [
     const ListChat(),
+    const Friends(),
     const Profile(),
   ];
 
@@ -56,9 +58,22 @@ class _HomeState extends State<Home> {
                 },
                 child: Icon(
                   currentTab == 1
+                      ? FontAwesomeIcons.users
+                      : FontAwesomeIcons.users,
+                  color: currentTab == 1 ? Colors.green : Colors.grey,
+                  size: 25,
+                ),
+              ),
+              MaterialButton(
+                minWidth: 40,
+                onPressed: () {
+                  setState(() => currentTab = 2);
+                },
+                child: Icon(
+                  currentTab == 2
                       ? FontAwesomeIcons.solidUser
                       : FontAwesomeIcons.user,
-                  color: currentTab == 1 ? Colors.green : Colors.grey,
+                  color: currentTab == 2 ? Colors.green : Colors.grey,
                   size: 25,
                 ),
               )

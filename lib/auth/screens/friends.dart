@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-class ListChat extends StatelessWidget {
-  const ListChat({Key? key}) : super(key: key);
+class Friends extends StatelessWidget {
+  const Friends({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class ListChat extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Chat",
+                    "Friends",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -49,7 +49,7 @@ class ListChat extends StatelessWidget {
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                itemCount: 10,
+                itemCount: 15,
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
@@ -88,33 +88,28 @@ class ListChat extends StatelessWidget {
                           ),
                           const SizedBox(width: 20),
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Name $index",
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      "10:00 PM",
-                                      style: TextStyle(
-                                        color: Colors.black38,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  "Messenger $index",
-                                  style: const TextStyle(fontSize: 16),
-                                )
-                              ],
+                            child: Text(
+                              "Name $index",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              FontAwesomeIcons.phone,
+                              color: Color.fromRGBO(77, 189, 204, 1),
+                              size: 20,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              FontAwesomeIcons.comment,
+                              color: Color.fromRGBO(77, 189, 204, 1),
+                              size: 20,
                             ),
                           )
                         ],
@@ -125,6 +120,23 @@ class ListChat extends StatelessWidget {
               ),
             )
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Container(
+          width: 60,
+          height: 60,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [
+                Color.fromRGBO(26, 157, 196, 1),
+                Color.fromRGBO(21, 201, 179, 1)
+              ],
+            ),
+          ),
+          child: const Icon(Icons.add, size: 30),
         ),
       ),
     );

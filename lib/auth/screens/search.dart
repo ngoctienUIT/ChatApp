@@ -1,11 +1,17 @@
 import 'package:chat_app/auth/screens/chat.dart';
-import 'package:chat_app/auth/screens/search.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-class ListChat extends StatelessWidget {
-  const ListChat({Key? key}) : super(key: key);
+class Search extends StatefulWidget {
+  const Search({Key? key}) : super(key: key);
+
+  @override
+  State<Search> createState() => _SearchState();
+}
+
+class _SearchState extends State<Search> {
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +25,7 @@ class ListChat extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Chat",
+                    "Search",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -34,10 +40,10 @@ class ListChat extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        Get.to(const Search());
+                        Navigator.pop(context);
                       },
                       child: const Icon(
-                        FontAwesomeIcons.magnifyingGlass,
+                        FontAwesomeIcons.xmark,
                         color: Colors.black,
                         size: 20,
                       ),
@@ -46,10 +52,31 @@ class ListChat extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: TextField(
+                controller: _searchController,
+                style: const TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide:
+                        const BorderSide(width: 0, style: BorderStyle.none),
+                  ),
+                  hintStyle: const TextStyle(fontSize: 16),
+                  filled: true,
+                  fillColor: const Color.fromRGBO(234, 235, 237, 1),
+                  hintText: "Tìm kiếm",
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                ),
+              ),
+            ),
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                itemCount: 10,
+                itemCount: 15,
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
@@ -88,33 +115,12 @@ class ListChat extends StatelessWidget {
                           ),
                           const SizedBox(width: 20),
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Name $index",
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      "10:00 PM",
-                                      style: TextStyle(
-                                        color: Colors.black38,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  "Messenger $index",
-                                  style: const TextStyle(fontSize: 16),
-                                )
-                              ],
+                            child: Text(
+                              "Name $index",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           )
                         ],
