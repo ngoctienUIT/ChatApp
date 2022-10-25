@@ -1,5 +1,7 @@
+import 'package:chat_app/auth/screens/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 class ListChat extends StatelessWidget {
   const ListChat({Key? key}) : super(key: key);
@@ -48,7 +50,7 @@ class ListChat extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
-                      //Todo
+                      Get.to(const Chat());
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(

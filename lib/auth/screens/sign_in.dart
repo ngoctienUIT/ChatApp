@@ -57,9 +57,9 @@ class SignIn extends StatelessWidget {
                   const SizedBox(height: 30),
                   CustomButton(
                     onPress: () {
-                      // Get.off(const Home());
-                      FadedOverlay.showLoading(context);
-                      SignInController.inst.validateEmailAndSignIn();
+                      Get.off(const Home());
+                      // FadedOverlay.showLoading(context);
+                      // SignInController.inst.validateEmailAndSignIn();
                     },
                     text: "Sign In",
                   ),
