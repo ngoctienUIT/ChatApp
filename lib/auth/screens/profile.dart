@@ -1,7 +1,9 @@
+import 'package:chat_app/auth/screens/edit_profile.dart';
 import 'package:chat_app/auth/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:get/get.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -40,7 +42,9 @@ class _ProfileState extends State<Profile> {
                   width: 150,
                   height: 45,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.to(const EditProfile());
+                    },
                     style: ButtonStyle(
                       elevation: MaterialStateProperty.all(0),
                       shape: MaterialStateProperty.resolveWith<OutlinedBorder>(
