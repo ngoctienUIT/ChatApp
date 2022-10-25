@@ -1,5 +1,6 @@
 import 'package:chat_app/auth/screens/forgot_password.dart';
 import 'package:chat_app/auth/screens/sign_up.dart';
+import 'package:chat_app/auth/widgets/facebook_button.dart';
 import 'package:chat_app/auth/widgets/faded_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -38,7 +39,8 @@ class SignIn extends StatelessWidget {
               ),
               const Text('Or'),
               //const _SwitchSignInMethodButton(),
-              const GoogleButton()
+              const GoogleButton(),
+              const FacebookButton()
             ])));
   }
 }
