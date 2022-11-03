@@ -39,9 +39,12 @@ class FacebookButton extends StatelessWidget {
               } else {
                 if (credentials.additionalUserInfo!.isNewUser) {
                   await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-                Get.offAll(const EmailVerification(isNewUser: true,));
+                  Get.offAll(const EmailVerification(
+                    isNewUser: true,
+                  ));
                 } else {
-                Get.offAll(const EmailVerification());}
+                  Get.offAll(const EmailVerification());
+                }
               }
             }).catchError((e) {
               //Get.snackbar('Facabook Sign In Error', e.toString());

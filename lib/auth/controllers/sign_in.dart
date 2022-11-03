@@ -132,6 +132,8 @@ class SignInController extends GetxController {
         return;
       }
 
+      await FbAuth.originalInst?.linkCredentials();
+
       Get.to(const YouAreIn());
     } on FirebaseAuthException catch (e) {
       FadedOverlay.remove();
