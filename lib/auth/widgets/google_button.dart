@@ -16,6 +16,7 @@ class GoogleButton extends StatelessWidget {
       child: ElevatedButton(
           style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red.shade400)),
           onPressed: () {
+            // with this sign in method, user email will be verified along the way
             GoogleAuth.inst.signIn().then((credentials) {
               if (credentials.user!.metadata.lastSignInTime!.difference(credentials.user!.metadata.creationTime!).inMilliseconds <1000) {
                 // suggest create a password for primary sign in method

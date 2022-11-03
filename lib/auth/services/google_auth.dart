@@ -8,6 +8,7 @@ class GoogleAuth {
     _inst ??= GoogleAuth._internal();
     return _inst!;
   }
+  static GoogleAuth? get originalInst =>_inst;
 
   GoogleSignIn? _googleSignIn;
 

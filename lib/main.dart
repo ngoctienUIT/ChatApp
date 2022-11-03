@@ -1,3 +1,4 @@
+import 'package:chat_app/auth/screens/not_verified.dart';
 import 'package:chat_app/auth/screens/sign_in.dart';
 import 'package:chat_app/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import 'auth/screens/error.dart';
 import 'auth/screens/splash.dart';
 import 'auth/screens/your_are_in.dart';
+import 'auth/services/auth.dart';
 //import 'auth/services/dynamic_links.dart';
 
 void main() async {
@@ -23,31 +26,20 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   print('currentUser:');
   print(FirebaseAuth.instance.currentUser);
-  runApp(const GetMaterialApp(debugShowCheckedModeBanner: false, home: Home()));
+  runApp(const GetMaterialApp(debugShowCheckedModeBanner: false, home: _Home()));
 }
 
-class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+class _Home extends StatelessWidget {
+  const _Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.active) {
-            return const Splash();
-          }
-          final user = snapshot.data;
-          if (user != null) {
-            if (FirebaseAuth.instance.currentUser!.emailVerified) {
-              return const YouAreIn();
-            } else {
-              FirebaseAuth.instance.signOut();
-              return const SignIn();
-            }
-          } else {
-            return const SignIn();
-          }
-        });
+    var user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return const SignIn();
+
+    if (!user.emailVerified) return const NotVerified();
+
+    return const YouAreIn();
   }
 }
