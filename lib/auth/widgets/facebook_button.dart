@@ -32,6 +32,7 @@ class FacebookButton extends StatelessWidget {
           onPressed: () {
             // with this sign in method, user email may not verifed, especially the first time sign up to the system
             FbAuth.inst.signIn().then((credentials) async {
+              if (credentials == null) return;
               if (credentials.user!.emailVerified) {
                 Get.offAll(const YouAreIn());
               } else {
@@ -44,7 +45,8 @@ class FacebookButton extends StatelessWidget {
                   Get.offAll(const EmailVerification());
                 }
               }
-            }).catchError((e) {
+            })
+            .catchError((e) {
               Get.snackbar('Facabook Sign In Error', e.toString());
             });
           },

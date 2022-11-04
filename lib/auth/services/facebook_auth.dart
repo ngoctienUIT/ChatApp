@@ -15,7 +15,7 @@ class FbAuth {
 
   OAuthCredential? _facebookAuthCredential;
 
-  Future<UserCredential> signIn() async {
+  Future<UserCredential?> signIn() async {
     // Get Login Result from Facebook
     final LoginResult loginResult = await FacebookAuth.instance.login(permissions: ['public_profile', 'email']);
 
@@ -48,7 +48,7 @@ class FbAuth {
       }
     }
 
-    return credentials!;
+    return credentials;
   }
 
   Future<void> signInAfterVerification() async {}

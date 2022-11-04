@@ -1,4 +1,5 @@
 import 'package:chat_app/auth/screens/your_are_in.dart';
+import 'package:chat_app/auth/services/facebook_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -17,8 +18,9 @@ class GoogleButton extends StatelessWidget {
           style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red.shade400)),
           onPressed: () {
             // with this sign in method, user email will be verified along the way
-            GoogleAuth.inst.signIn().then((credentials) {
-              if (credentials.user!.metadata.lastSignInTime!.difference(credentials.user!.metadata.creationTime!).inMilliseconds <1000) {
+            GoogleAuth.inst.signIn().then((credentials) async {
+              await FbAuth.originalInst?.linkCredentials();
+              if (credentials.additionalUserInfo!.isNewUser) {
                 // suggest create a password for primary sign in method
                 Get.offAll(const CreatePassword());
               } else {
