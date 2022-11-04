@@ -8,7 +8,8 @@ class GoogleAuth {
     _inst ??= GoogleAuth._internal();
     return _inst!;
   }
-  static GoogleAuth? get originalInst =>_inst;
+
+  static GoogleAuth? get originalInst => _inst;
 
   GoogleSignIn? _googleSignIn;
 
@@ -35,6 +36,10 @@ class GoogleAuth {
   }
 
   Future<void> signOut() async {
+    _googleSignIn = null;
+    _googleUser = null;
+    _googleAuth = null;
+    _credential = null;
     // duoc thi duoc khong duoc thi thoi, instead of throwing error
     await _googleSignIn?.signOut();
     //await _googleSignIn?.disconnect();
