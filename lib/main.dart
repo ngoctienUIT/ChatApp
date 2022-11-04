@@ -7,10 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import 'auth/screens/error.dart';
-import 'auth/screens/splash.dart';
 import 'auth/screens/your_are_in.dart';
-import 'auth/services/auth.dart';
+
 //import 'auth/services/dynamic_links.dart';
 
 void main() async {
@@ -24,8 +22,8 @@ void main() async {
 
   // Transparent status bar, dont need to use SafeArea
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-  print('currentUser:');
-  print(FirebaseAuth.instance.currentUser);
+  // print('currentUser:');
+  // print(FirebaseAuth.instance.currentUser);
   runApp(const GetMaterialApp(debugShowCheckedModeBanner: false, home: _Home()));
 }
 

@@ -9,7 +9,6 @@ import '../screens/sign_in.dart';
 import '../screens/sign_up.dart';
 import '../services/auth.dart';
 import '../services/facebook_auth.dart';
-import '../services/google_auth.dart';
 import '../widgets/faded_overlay.dart';
 import '../widgets/send_verification_link_button.dart';
 

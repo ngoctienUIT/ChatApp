@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-import '../screens/create_password.dart';
 import '../screens/your_are_in.dart';
 import '../services/facebook_auth.dart';
-import 'send_verification_link_button.dart';
 
 // email verified?
 // yes: (of course this is not the first time signing in)
@@ -47,8 +45,7 @@ class FacebookButton extends StatelessWidget {
                 }
               }
             }).catchError((e) {
-              //Get.snackbar('Facabook Sign In Error', e.toString());
-              print(e);
+              Get.snackbar('Facabook Sign In Error', e.toString());
             });
           },
           child: Row(

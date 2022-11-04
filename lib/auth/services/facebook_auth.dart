@@ -1,10 +1,7 @@
-import 'package:chat_app/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
-
-import '../screens/sign_in.dart';
 
 class FbAuth {
   static FbAuth? _inst;
@@ -50,9 +47,6 @@ class FbAuth {
           throw Exception(e);
       }
     }
-
-    print('credentials:');
-    print(credentials);
 
     return credentials!;
   }

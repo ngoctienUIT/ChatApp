@@ -11,13 +11,8 @@
 
 // use Getx dialog instead !!
 
-import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import 'auth/widgets/send_verification_link_button.dart';
 
 void showError(e) {
   Get.defaultDialog(
