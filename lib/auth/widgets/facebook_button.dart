@@ -34,15 +34,15 @@ class FacebookButton extends StatelessWidget {
             FbAuth.inst.signIn().then((credentials) async {
               if (credentials == null) return;
               if (credentials.user!.emailVerified) {
-                Get.offAll(const YouAreIn());
+                Get.offAll(()=>const YouAreIn());
               } else {
                 if (credentials.additionalUserInfo!.isNewUser) {
                   await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-                  Get.offAll(const EmailVerification(
+                  Get.offAll(()=>const EmailVerification(
                     isNewUser: true,
                   ));
                 } else {
-                  Get.offAll(const EmailVerification());
+                  Get.offAll(()=>const EmailVerification());
                 }
               }
             })

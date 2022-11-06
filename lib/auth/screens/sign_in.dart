@@ -32,7 +32,7 @@ class SignIn extends StatelessWidget {
                   const Text('Don\'t have an account?'),
                   TextButton(
                       onPressed: () {
-                        Get.to(const SignUp());
+                        Get.to(()=>const SignUp());
                       },
                       child: const Text('Sign up')),
                 ],
@@ -81,7 +81,7 @@ class _ForgotPassword extends StatelessWidget {
         alignment: Alignment.centerRight,
         child: TextButton(
             onPressed: () {
-              Get.to(const ForgotPassword());
+              Get.to(()=>const ForgotPassword());
             },
             child: const Text('Forgot password?')));
   }

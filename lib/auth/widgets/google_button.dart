@@ -19,15 +19,15 @@ class GoogleButton extends StatelessWidget {
           onPressed: () {
             // with this sign in method, user email will be verified along the way
             GoogleAuth.inst.signIn().then((credentials) async {
-              await FbAuth.originalInst?.linkCredentials();
+              await FbAuth.originalInst?.linkCredentials(credentials.user!.email!);
               if (credentials.additionalUserInfo!.isNewUser) {
                 // suggest create a password for primary sign in method
-                Get.offAll(const CreatePassword());
+                Get.offAll(()=>const CreatePassword());
               } else {
-                Get.offAll(const YouAreIn());
+                Get.offAll(()=>const YouAreIn());
               }
             }).catchError((e) {
-              Get.snackbar('Google Sign In Error', e.toString());
+              //Get.snackbar('Google Sign In Error', e.toString());
             });
           },
           child: Row(

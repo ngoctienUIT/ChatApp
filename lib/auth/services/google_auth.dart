@@ -36,12 +36,12 @@ class GoogleAuth {
   }
 
   Future<void> signOut() async {
+    await _googleSignIn?.signOut();
+    //await _googleSignIn?.disconnect();
+
     _googleSignIn = null;
     _googleUser = null;
     _googleAuth = null;
     _credential = null;
-    // duoc thi duoc khong duoc thi thoi, instead of throwing error
-    await _googleSignIn?.signOut();
-    //await _googleSignIn?.disconnect();
   }
 }

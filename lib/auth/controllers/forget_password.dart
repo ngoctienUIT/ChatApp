@@ -48,7 +48,7 @@ class ForgetPasswordController extends GetxController {
           title: 'Successful sending email',
           middleText: 'Please check your mail box to change to your password',
           onWillPop: () async {
-            Get.offAll(const SignIn());
+            Get.offAll(()=>const SignIn());
             return true;
           });
     } on FirebaseAuthException catch (e) {

@@ -32,9 +32,9 @@ class EmailVerification extends StatelessWidget {
                       await FirebaseAuth.instance.currentUser!.reload();
                       if (FirebaseAuth.instance.currentUser!.emailVerified) {
                         if (isNewUser) {
-                          Get.offAll(const CreatePassword());
+                          Get.offAll(()=>const CreatePassword());
                         } else {
-                          Get.offAll(const YouAreIn());
+                          Get.offAll(()=>const YouAreIn());
                         }
                       } else {
                         Get.snackbar('Verification Error', 'Please try again');
@@ -48,7 +48,7 @@ class EmailVerification extends StatelessWidget {
 
 Future<bool> _onWillPop() async {
   await Auth.signOut();
-  Get.offAll(const SignIn());
+  Get.offAll(()=>const SignIn());
   return true;
 }
 

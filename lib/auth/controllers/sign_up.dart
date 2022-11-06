@@ -120,7 +120,7 @@ class SignUpController extends GetxController {
           title: 'Successful registration',
           middleText: 'Please check your mail box to verify your email',
           onWillPop: () async {
-            Get.offAll(const SignIn());
+            Get.offAll(()=>const SignIn());
             return true;
           });
     } on FirebaseAuthException catch (e) {

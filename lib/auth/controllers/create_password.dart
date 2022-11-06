@@ -39,7 +39,7 @@ class CreatePasswordController extends GetxController {
     // update password
     FirebaseAuth.instance.currentUser!.updatePassword(password.value).then((_) {
       FadedOverlay.remove();
-      Get.offAll(const YouAreIn());
+      Get.offAll(()=>const YouAreIn());
     }).catchError((e) {
       FadedOverlay.remove();
       Get.snackbar('Error', e.toString());

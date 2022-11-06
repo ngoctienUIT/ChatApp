@@ -28,7 +28,7 @@ class NotVerified extends StatelessWidget {
 
 Future<bool> _onWillPop() async {
   await Auth.signOut();
-  Get.offAll(const SignIn());
+  Get.offAll(()=>const SignIn());
   return true;
 }
 

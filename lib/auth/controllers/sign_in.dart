@@ -13,7 +13,6 @@ import '../widgets/faded_overlay.dart';
 import '../widgets/send_verification_link_button.dart';
 
 // TODO
-// overrider: navigate back to prompt user to log out: sign in chua verified va sign up
 // remember password
 // start loading should be placed here
 class SignInController extends GetxController {
@@ -114,7 +113,7 @@ class SignInController extends GetxController {
     password('');
 
     await Auth.signOut().then((_) {
-      Get.offAll(const SignIn());
+      Get.offAll(()=>const SignIn());
     }).catchError((e) {
       showError(e);
     });
@@ -131,9 +130,9 @@ class SignInController extends GetxController {
         return;
       }
 
-      await FbAuth.originalInst?.linkCredentials();
+      await FbAuth.originalInst?.linkCredentials(email.value);
 
-      Get.to(const YouAreIn());
+      Get.to(() => const YouAreIn());
     } on FirebaseAuthException catch (e) {
       FadedOverlay.remove();
 
@@ -150,7 +149,7 @@ class SignInController extends GetxController {
               middleText: 'Looks like you are new to us, try signing up to our system',
               textConfirm: 'Sign up',
               onConfirm: () {
-                Get.offAll(const SignUp());
+                Get.offAll(()=>const SignUp());
               });
           break;
         case 'wrong-password':

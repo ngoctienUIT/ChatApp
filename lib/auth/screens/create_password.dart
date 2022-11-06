@@ -60,7 +60,7 @@ class _SkipButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
         onPressed: () {
-          Get.offAll(const YouAreIn());
+          Get.offAll(()=>const YouAreIn());
         },
         child: const Text('Skip'));
   }

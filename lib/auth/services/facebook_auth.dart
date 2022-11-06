@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 
+// Not yet for supporting to switch account
 class FbAuth {
   static FbAuth? _inst;
   FbAuth._internal();
@@ -36,8 +37,11 @@ class FbAuth {
           // var methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail((await FacebookAuth.instance.getUserData())['email'].toString());
           // print(methods);
           await Get.defaultDialog(
-              title: 'First time Facebook signing in',
-              content: const Text('Please sign in with different method to link your Facebook credentials'),
+              title: 'First time sign in with Facebook',
+              content: Column(children: const [
+                Text('This Facebook account have the same email with an existing account'),
+                Text('Please sign in with different method to link your Facebook credentials'),
+              ]),
               onConfirm: () async {
                 Get.back();
               });
@@ -54,12 +58,12 @@ class FbAuth {
   Future<void> signInAfterVerification() async {}
 
   Future<void> signOut() async {
-    _facebookAuthCredential = null;
     await FacebookAuth.instance.logOut();
+    _facebookAuthCredential = null;
   }
 
-  Future<void> linkCredentials() async{
-    if (_facebookAuthCredential != null) {
+  Future<void> linkCredentials(String email) async {
+    if (_facebookAuthCredential != null && (await FacebookAuth.instance.getUserData())['email'].toString() == email) {
       await FirebaseAuth.instance.currentUser!.linkWithCredential(_facebookAuthCredential!);
     }
   }
