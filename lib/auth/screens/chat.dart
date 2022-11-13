@@ -1,7 +1,13 @@
 import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Chat extends StatefulWidget {
   const Chat({Key? key}) : super(key: key);
@@ -15,10 +21,27 @@ class _ChatState extends State<Chat> {
   FocusNode focusNode = FocusNode();
   bool show = false;
   bool sendButton = false;
+  late FlutterSoundRecorder recorder = FlutterSoundRecorder();
 
   @override
   void initState() {
+    initRecorder();
     super.initState();
+  }
+
+  Future initRecorder() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw 'error';
+    }
+    await recorder.openRecorder();
+    recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
+  }
+
+  @override
+  void dispose() {
+    recorder.closeRecorder();
+    super.dispose();
   }
 
   @override
@@ -242,10 +265,21 @@ class _ChatState extends State<Chat> {
                             backgroundColor: const Color(0xFF128C7E),
                             child: IconButton(
                               icon: Icon(
-                                sendButton ? Icons.send : Icons.mic,
+                                sendButton
+                                    ? Icons.send
+                                    : (recorder.isRecording
+                                        ? Icons.stop
+                                        : Icons.mic),
                                 color: Colors.white,
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                if (sendButton) {
+                                } else if (recorder.isRecording) {
+                                  stop();
+                                } else {
+                                  record();
+                                }
+                              },
                             ),
                           ),
                         ),
@@ -263,6 +297,17 @@ class _ChatState extends State<Chat> {
         ),
       ),
     );
+  }
+
+  Future stop() async {
+    final path = await recorder.stopRecorder();
+    final audio = File(path!);
+    setState(() {});
+  }
+
+  Future record() async {
+    await recorder.startRecorder(toFile: 'audio');
+    setState(() {});
   }
 
   PopupMenuItem<int> itemPopup({
@@ -298,22 +343,86 @@ class _ChatState extends State<Chat> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   iconCreation(
-                      Icons.insert_drive_file, Colors.indigo, "Document"),
+                    Icons.insert_drive_file,
+                    Colors.indigo,
+                    "Document",
+                    () async {
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(allowMultiple: true);
+
+                      if (result != null) {
+                        List<File> files =
+                            result.paths.map((path) => File(path!)).toList();
+                      } else {
+                        // User canceled the picker
+                      }
+                    },
+                  ),
                   const SizedBox(width: 40),
-                  iconCreation(Icons.camera_alt, Colors.pink, "Camera"),
+                  iconCreation(
+                    Icons.camera_alt,
+                    Colors.pink,
+                    "Camera",
+                    () async {
+                      try {
+                        final image = await ImagePicker()
+                            .pickImage(source: ImageSource.camera);
+                        if (image != null) {}
+                      } on PlatformException catch (_) {}
+                    },
+                  ),
                   const SizedBox(width: 40),
-                  iconCreation(Icons.insert_photo, Colors.purple, "Gallery"),
+                  iconCreation(
+                    Icons.insert_photo,
+                    Colors.purple,
+                    "Gallery",
+                    () async {
+                      try {
+                        List<XFile>? images =
+                            await ImagePicker().pickMultiImage();
+                      } catch (_) {}
+                    },
+                  ),
                 ],
               ),
               const SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  iconCreation(Icons.headset, Colors.orange, "Audio"),
+                  iconCreation(
+                    Icons.headset,
+                    Colors.orange,
+                    "Audio",
+                    () async {
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        allowMultiple: true,
+                        type: FileType.custom,
+                        allowedExtensions: ['mp3', 'wav', 'aac'],
+                      );
+
+                      if (result != null) {
+                        List<File> files =
+                            result.paths.map((path) => File(path!)).toList();
+                      } else {
+                        // User canceled the picker
+                      }
+                    },
+                  ),
                   const SizedBox(width: 40),
-                  iconCreation(Icons.location_pin, Colors.teal, "Location"),
+                  iconCreation(
+                    Icons.location_pin,
+                    Colors.teal,
+                    "Location",
+                    () {},
+                  ),
                   const SizedBox(width: 40),
-                  iconCreation(Icons.person, Colors.blue, "Contact"),
+                  iconCreation(
+                    Icons.person,
+                    Colors.blue,
+                    "Contact",
+                    () {},
+                  ),
                 ],
               ),
             ],
@@ -323,9 +432,10 @@ class _ChatState extends State<Chat> {
     );
   }
 
-  Widget iconCreation(IconData icons, Color color, String text) {
+  Widget iconCreation(
+      IconData icons, Color color, String text, Function onPress) {
     return InkWell(
-      onTap: () {},
+      onTap: () => onPress(),
       child: Column(
         children: [
           CircleAvatar(
