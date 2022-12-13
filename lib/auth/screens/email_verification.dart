@@ -1,6 +1,6 @@
 import 'package:chat_app/auth/screens/create_password.dart';
 import 'package:chat_app/auth/screens/sign_in.dart';
-import 'package:chat_app/auth/screens/your_are_in.dart';
+import 'package:chat_app/chat/your_are_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

@@ -1,4 +1,4 @@
-import 'package:chat_app/auth/screens/your_are_in.dart';
+import 'package:chat_app/chat/your_are_in.dart';
 import 'package:chat_app/auth/services/facebook_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
