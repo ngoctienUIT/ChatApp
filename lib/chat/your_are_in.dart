@@ -1,5 +1,11 @@
+import 'package:chat_app/chat/screens/create_story.dart';
+import 'package:chat_app/chat/screens/friends_list.dart';
+import 'package:chat_app/chat/screens/messages.dart';
+import 'package:chat_app/chat/screens/my_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'screens/home.dart';
 
 class YouAreIn extends StatefulWidget {
   const YouAreIn({Key? key}) : super(key: key);
@@ -10,30 +16,8 @@ class YouAreIn extends StatefulWidget {
 
 class _YouAreInState extends State<YouAreIn> {
   int _selectedIndex = 0;
-
-  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Message',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: Create story',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 3: People',
-      style: optionStyle,
-    ),    
-    Text(
-      'Index 4: Profile',
-      style: optionStyle,
-    ),
-  ];
+  
+  static const List<Widget> _widgetOptions = <Widget>[Home(), Messages(), CreateStory(), FriendsList(), MyProfile()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -47,7 +31,7 @@ class _YouAreInState extends State<YouAreIn> {
       body: Center(child: _widgetOptions[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
         showSelectedLabels: false,
-       showUnselectedLabels: false,
+        showUnselectedLabels: false,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'message'),
