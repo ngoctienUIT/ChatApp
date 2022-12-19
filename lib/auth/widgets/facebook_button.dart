@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-import '../../chat/your_are_in.dart';
+import '../../chat/you_are_in.dart';
 import '../services/facebook_auth.dart';
 
 // email verified?

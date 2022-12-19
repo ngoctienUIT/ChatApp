@@ -1,9 +1,9 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 
 class CreateStory extends StatelessWidget {
   const CreateStory({Key? key}) : super(key: key);
@@ -15,11 +15,12 @@ class CreateStory extends StatelessWidget {
 }
 
 void _pickFile()async{
-  FilePickerResult? result = await FilePicker.platform.pickFiles();
+  FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.video,);
   if (result != null){
     File file = File(result.files.single.path!);
     final storageRef = FirebaseStorage.instance.ref();
-    final mountainsRef = storageRef.child("${FirebaseAuth.instance.currentUser!.uid}/${DateTime.now()}.mp4");
-    await mountainsRef.putFile(file);
+    final fileRef = storageRef.child("${FirebaseAuth.instance.currentUser!.uid}/${DateTime.now()}${p.extension(file.path)}");
+    
+    await fileRef.putFile(file);
   }
 }

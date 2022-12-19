@@ -1,4 +1,4 @@
-import 'package:chat_app/chat/your_are_in.dart';
+import 'package:chat_app/chat/you_are_in.dart';
 import 'package:chat_app/auth/widgets/faded_overlay.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';

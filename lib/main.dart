@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import 'chat/your_are_in.dart';
+import 'chat/you_are_in.dart';
 
 //import 'auth/services/dynamic_links.dart';
 
