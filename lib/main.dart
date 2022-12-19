@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'chat/you_are_in.dart';
+import 'languages/localization.dart';
 
 //import 'auth/services/dynamic_links.dart';
 
@@ -24,7 +25,12 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   // print('currentUser:');
   // print(FirebaseAuth.instance.currentUser);
-  runApp(const GetMaterialApp(debugShowCheckedModeBanner: false, home: _Home()));
+  runApp(GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      locale: Get.deviceLocale,
+      fallbackLocale: const Locale('en', 'US'),
+      translations: Localization(),
+      home: const _Home()));
 }
 
 class _Home extends StatelessWidget {

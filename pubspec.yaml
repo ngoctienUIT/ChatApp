@@ -42,13 +42,15 @@ dependencies:
   get: ^4.6.5
   loading_indicator: ^3.1.0
   google_sign_in: ^5.4.2
-  firebase_dynamic_links: ^4.3.11
   flutter_facebook_auth: ^4.4.1+1
   firebase_storage: ^10.3.11
   file_picker: ^5.2.4
   path: ^1.8.2
   cloud_firestore: ^3.5.1
   cached_network_image: ^3.2.3
+  emoji_picker_flutter: ^1.5.1
+  image_picker: ^0.8.6
+  permission_handler: ^10.2.0
   #progress_state_button: ^1.0.4
 
 dev_dependencies:
