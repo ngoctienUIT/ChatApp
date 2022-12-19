@@ -3,69 +3,91 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import '../controllers/friends_list.dart';
 
-import '../services/get_user_data.dart';
+class FriendsListPage extends StatefulWidget {
+  const FriendsListPage({Key? key}) : super(key: key);
 
-class FriendsList extends StatelessWidget {
-  const FriendsList({Key? key}) : super(key: key);
+  @override
+  State<FriendsListPage> createState() => _FriendsListPageState();
+}
 
-  Future<List<dynamic>> getFriendList() async {
-    final userData = await getUserData();
-    return userData['friends'];
+class _FriendsListPageState extends State<FriendsListPage> with AutomaticKeepAliveClientMixin<FriendsListPage> {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    print('init parent');
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getFriendList(),
-      builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if (snapshot.hasData) {
-          return Column(children: [
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Friends",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 45,
-                    width: 45,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(0),
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(90),
-                        ),
-                      ),
-                      onPressed: () {
-                        // Get.to(const Search());
-                      },
-                      child: const Icon(
-                        FontAwesomeIcons.magnifyingGlass,
-                        color: Colors.black,
-                        size: 20,
-                      ),
-                    ),
-                  )
-                ],
-              ),
+    super.build(context);
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Friends",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            ...(snapshot.data!.map((item) => _FriendItem(item)).toList()),
-          ]);
-        } else if (snapshot.hasError) {
-          Get.snackbar('Get friend list error', snapshot.error.toString());
-        }
-        return Container();
-      },
-    );
+            SizedBox(
+              height: 45,
+              width: 45,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(0),
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(90),
+                  ),
+                ),
+                onPressed: () {
+                  // Get.to(const Search());
+                },
+                child: const Icon(
+                  FontAwesomeIcons.magnifyingGlass,
+                  color: Colors.black,
+                  size: 20,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+      const _FriendsList()
+    ]);
   }
 }
 
-// TODO: load avatar
+class _FriendsList extends StatefulWidget {
+  const _FriendsList({Key? key}) : super(key: key);
+
+  @override
+  State<_FriendsList> createState() => __FriendsListState();
+}
+
+class __FriendsListState extends State<_FriendsList> {
+  @override
+  void initState() {
+    super.initState();
+    print('init list');
+    var c = FriendsListController.inst;
+    c.cachedFriendsList.then(
+      (value) => c.newFriendsList,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => Column(children: FriendsListController.inst.friendsList.map((item) => _FriendItem(item)).toList()));
+  }
+}
+
 class _FriendItem extends StatelessWidget {
   const _FriendItem(this.uid, {Key? key}) : super(key: key);
   final String uid;
@@ -96,7 +118,7 @@ class _FriendItem extends StatelessWidget {
                               width: 14,
                               height: 14,
                               decoration: BoxDecoration(
-                                color: snapshot.data['isActive'] ? Colors.green : Colors.grey,
+                                color: snapshot.data['is_active'] ? Colors.green : Colors.grey,
                                 borderRadius: BorderRadius.circular(90),
                                 border: Border.all(
                                   color: Colors.white,
@@ -147,18 +169,18 @@ class _ProfilePicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(30.0),
-      child: CachedNetworkImage(
-      imageUrl: url,
-      fit: BoxFit.cover,
-      width: 50,
-      height: 50,
-      placeholder: (context, url) => Image.asset(
-        "assets/images/avatar.jpg",
-        width: 50,
-      ),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
-    ));
+        borderRadius: BorderRadius.circular(30.0),
+        child: CachedNetworkImage(
+          imageUrl: url,
+          fit: BoxFit.cover,
+          width: 50,
+          height: 50,
+          placeholder: (context, url) => Image.asset(
+            "assets/images/avatar.jpg",
+            width: 50,
+          ),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ));
   }
 }
 

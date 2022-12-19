@@ -9,56 +9,131 @@ import 'package:loading_indicator/loading_indicator.dart';
 import 'screens/home/home.dart';
 
 class YouAreIn extends StatefulWidget {
-  const YouAreIn({Key? key}) : super(key: key);
+  const YouAreIn({super.key});
 
   @override
-  State<YouAreIn> createState() => _YouAreInState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _YouAreInState extends State<YouAreIn> {
-  int _selectedIndex = 0;
-  bool _loadSuccess = false;
+class _HomePageState extends State<YouAreIn> with SingleTickerProviderStateMixin {
+  static const List<Widget> _pages = <Widget>[Home(), Messages(), CreateStory(), FriendsListPage(), MyProfile()];
+  static const List<BottomNavigationBarItem> _tabs = [
+    BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'),
+    BottomNavigationBarItem(icon: Icon(Icons.message), label: 'message'),
+    BottomNavigationBarItem(icon: Icon(Icons.photo_camera), label: 'create-story'),
+    BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'people'),
+    BottomNavigationBarItem(icon: Icon(Icons.person), label: 'profile'),
+  ];
 
-  static const List<Widget> _widgetOptions = <Widget>[Home(), Messages(), CreateStory(), FriendsList(), MyProfile()];
+  int _currentIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+  }
 
-  void _onItemTapped(int index) {
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
+  final pageController = PageController();
+  void onPageChanged(int index) {
     setState(() {
-      _selectedIndex = index;
+      _currentIndex = index;
     });
   }
 
   @override
-  void initState() {
-    super.initState();
-    loadUserData((){setState(() {
-      _loadSuccess = true;
-    });});
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (!_loadSuccess) {
-      return const Center(
-        child: SizedBox(height: 100, child: LoadingIndicator(indicatorType: Indicator.ballPulseSync))
-      );
-    }
     return Scaffold(
-      body: Center(child: _widgetOptions[_selectedIndex]),
+      body: PageView(
+        controller: pageController,
+        onPageChanged: onPageChanged,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        items: _tabs,
+        onTap: (int index) {
+          pageController.jumpToPage(index);
+        },
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'message'),
-          BottomNavigationBarItem(icon: Icon(Icons.photo_camera), label: 'create-story'),
-          BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'people'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'profile'),
-        ],
-        currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
         unselectedItemColor: Colors.black45,
-        onTap: _onItemTapped,
       ),
     );
   }
 }
+
+// class YouAreIn extends StatefulWidget {
+//   const YouAreIn({Key? key}) : super(key: key);
+
+//   @override
+//   State<YouAreIn> createState() => _YouAreInState();
+// }
+
+// class _YouAreInState extends State<YouAreIn> with SingleTickerProviderStateMixin {
+//   static const List<BottomNavigationBarItem> _tabs = [
+//     BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'),
+//     BottomNavigationBarItem(icon: Icon(Icons.message), label: 'message'),
+//     BottomNavigationBarItem(icon: Icon(Icons.photo_camera), label: 'create-story'),
+//     BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'people'),
+//     BottomNavigationBarItem(icon: Icon(Icons.person), label: 'profile'),
+//   ];
+//   static const List<Widget> _pages = <Widget>[Home(), Messages(), CreateStory(), FriendsListPage(), MyProfile()];
+
+//   late TabController controller;
+//   int _selectedIndex = 0;
+//   bool _isLoading = true;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     controller = TabController(length: _pages.length, vsync: this);
+//     loadUserData(() {
+//       setState(() {
+//         _isLoading = false;
+//       });
+//     });
+//   }
+
+//   void _onItemTapped(int index) {
+//     setState(() {
+//       _selectedIndex = index;
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     if (_isLoading) {
+//       return const Center(child: SizedBox(height: 100, child: LoadingIndicator(indicatorType: Indicator.ballPulseSync)));
+//     }
+//     return DefaultTabController(
+//       initialIndex: _selectedIndex,
+//       length: _pages.length,
+//       child: Scaffold(
+//         bottomNavigationBar: BottomNavigationBar(
+//           currentIndex: _selectedIndex,
+//           onTap: _onItemTapped,
+//           items: _tabs,
+//           showSelectedLabels: false,
+//           showUnselectedLabels: false,
+//           selectedItemColor: Colors.amber[800],
+//           unselectedItemColor: Colors.black45,
+//         ),
+//         body: TabBarView(
+//           controller: controller,
+//           children: _pages,
+//         ),
+//       ),
+//     );
+//   }
+
+//   @override
+//   void dispose() {
+//     controller.dispose();
+//     super.dispose();
+//   }
+// }

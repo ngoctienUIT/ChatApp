@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// TODO: get friends list in cache and auto update, no need to show loading indicator
+// TODO: set user active
 void loadUserData(Function onGetSuccess) async {
   // create user data if null
   final users = FirebaseFirestore.instance.collection('users');
