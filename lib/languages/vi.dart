@@ -10,5 +10,9 @@ const Map<String, String> vi = {
   'hours': 'giờ',
   'minutes': 'phút',
   'seconds': 'giây',
-  'ago': 'trước'
+  'ago': 'trước',
+  'notifications':'Thông báo',
+  'chat_color': 'Màu sắc',
+  'delete_chat_history': 'Xóa cuộc trò chuyện',
+  'block': 'Chặn'
 };

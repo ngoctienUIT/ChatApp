@@ -10,5 +10,9 @@ const Map<String, String> en = {
   'hours': 'hours',
   'minutes': 'minutes',
   'seconds': 'seconds',
-  'ago': 'ago'
+  'ago': 'ago',
+  'notifications':'Notifications',
+  'chat_color': 'Chat color',
+  'delete_chat_history': 'Delete chat history',
+  'block': 'Block'
 };

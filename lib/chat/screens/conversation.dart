@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../utils.dart';
+import '../../languages/utils.dart';
 import '../widgets/active_color.dart';
 
 class Conversation extends StatefulWidget {
@@ -27,7 +27,7 @@ class Conversation extends StatefulWidget {
 
 class _ConversationState extends State<Conversation> {
   final TextEditingController _controller = TextEditingController();
-  FocusNode focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
   bool show = false;
   bool sendButton = false;
   // late FlutterSoundRecorder recorder = FlutterSoundRecorder();
@@ -50,128 +50,69 @@ class _ConversationState extends State<Conversation> {
   @override
   void dispose() {
     //recorder.closeRecorder();
+    _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     var userData = FriendItemControllers.inst.get(widget.friendId).userData;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         leadingWidth: 25,
-        // titleSpacing: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
             color: Color.fromRGBO(150, 150, 150, 1),
           ),
           onPressed: () {
-            Navigator.pop(context);
+            Get.back();
           },
         ),
-        title: Row(
-          children: [
-            ProfilePicture(userData['profile_picture']),
-            const SizedBox(width: 10),
-            Expanded(
+        title: Row(mainAxisSize: MainAxisSize.max, children: [
+          ProfilePicture(userData['profile_picture']),
+          const SizedBox(width: 10),
+          Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    userData['name'],
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: activeColor(userData['is_active']),
-                          borderRadius: BorderRadius.circular(90),
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(
+                  userData['name'],
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: activeColor(userData['is_active']),
+                        borderRadius: BorderRadius.circular(90),
+                        border: Border.all(color: Colors.white, width: 2),
                       ),
-                      const SizedBox(width: 5),
-                      AutoSizeText(
-                        fromLastSeen(userData['last_seen']),
-                        style: const TextStyle(color: Colors.grey),
-                        presetFontSizes: const [12,10,8,6,4],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              FontAwesomeIcons.phone,
-              size: 20,
-              color: Color.fromRGBO(34, 184, 190, 1),
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              FontAwesomeIcons.video,
-              size: 20,
-              color: Color.fromRGBO(34, 184, 190, 1),
-            ),
-          ),
-          PopupMenuButton<int>(
-            padding: const EdgeInsets.all(0),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
-            onSelected: (value) {
-              print(value);
-            },
-            icon: const Icon(
-              FontAwesomeIcons.ellipsisVertical,
-              size: 20,
-              color: Color.fromRGBO(34, 184, 190, 1),
-            ),
-            itemBuilder: (context) {
-              return [
-                itemPopup(
-                  text: 'Thông báo',
-                  icon: FontAwesomeIcons.solidBell,
-                  color: const Color.fromRGBO(59, 190, 253, 1),
-                  index: 0,
-                ),
-                itemPopup(
-                  text: 'Màu sắc',
-                  icon: FontAwesomeIcons.palette,
-                  color: const Color.fromRGBO(26, 191, 185, 1),
-                  index: 1,
-                ),
-                itemPopup(
-                  text: 'Xóa đoạn chat',
-                  icon: FontAwesomeIcons.trash,
-                  color: const Color.fromRGBO(255, 113, 150, 1),
-                  index: 2,
-                ),
-                itemPopup(
-                  text: 'Chặn',
-                  icon: FontAwesomeIcons.ban,
-                  color: const Color.fromRGBO(252, 177, 188, 1),
-                  index: 3,
-                ),
-              ];
-            },
-          ),
-        ],
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: AutoSizeText(userData['is_active'] ? 'active'.tr : fromLastSeen(userData['last_seen']),
+                                style: const TextStyle(color: Colors.grey),
+                                presetFontSizes: const [12, 10, 8, 6, 4],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center)))
+                  ],
+                )
+              ]))
+        ]),
+        actions: [const _CallButton(), const _VideoCallButton(), _FriendOptionButton(userData['name'])],
       ),
       body: WillPopScope(
         onWillPop: () {
@@ -203,7 +144,7 @@ class _ConversationState extends State<Conversation> {
                             ),
                             child: TextFormField(
                               controller: _controller,
-                              focusNode: focusNode,
+                              focusNode: _focusNode,
                               textAlignVertical: TextAlignVertical.center,
                               keyboardType: TextInputType.multiline,
                               minLines: 1,
@@ -229,10 +170,10 @@ class _ConversationState extends State<Conversation> {
                                   ),
                                   onPressed: () {
                                     if (!show) {
-                                      focusNode.unfocus();
-                                      focusNode.canRequestFocus = false;
+                                      _focusNode.unfocus();
+                                      _focusNode.canRequestFocus = false;
                                     } else {
-                                      focusNode.requestFocus();
+                                      _focusNode.requestFocus();
                                     }
                                     setState(() => show = !show);
                                   },
@@ -317,20 +258,6 @@ class _ConversationState extends State<Conversation> {
   //   await recorder.startRecorder(toFile: 'audio');
   //   setState(() {});
   // }
-
-  PopupMenuItem<int> itemPopup({
-    required String text,
-    required int index,
-    required IconData icon,
-    required Color color,
-  }) {
-    return PopupMenuItem<int>(
-      value: index,
-      child: Row(
-        children: [Icon(icon, color: color), const SizedBox(width: 7), Text(text)],
-      ),
-    );
-  }
 
   Widget bottomSheet() {
     return SizedBox(
@@ -477,6 +404,107 @@ class _ConversationState extends State<Conversation> {
         categoryIcons: const CategoryIcons(),
         buttonMode: ButtonMode.MATERIAL,
       ),
+    );
+  }
+}
+
+class _CallButton extends StatelessWidget {
+  const _CallButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        // TODO: CALL FEATURE
+      },
+      icon: const Icon(
+        FontAwesomeIcons.phone,
+        size: 20,
+        color: Color.fromRGBO(34, 184, 190, 1),
+      ),
+    );
+  }
+}
+
+class _VideoCallButton extends StatelessWidget {
+  const _VideoCallButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        // TODO: VIDEO CALL FEATURE
+      },
+      icon: const Icon(
+        FontAwesomeIcons.video,
+        size: 20,
+        color: Color.fromRGBO(34, 184, 190, 1),
+      ),
+    );
+  }
+}
+
+class _FriendOptionButton extends StatelessWidget {
+  const _FriendOptionButton(this.friendName, {Key? key}) : super(key: key);
+  final String friendName;
+
+  PopupMenuItem<int> itemPopup({
+    required String text,
+    required int index,
+    required IconData icon,
+    required Color color,
+  }) {
+    return PopupMenuItem<int>(
+      value: index,
+      child: Row(
+        children: [Icon(icon, color: color), const SizedBox(width: 7), Text(text)],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<int>(
+      padding: const EdgeInsets.all(0),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      onSelected: (value) {
+        print(value);
+      },
+      icon: const Icon(
+        FontAwesomeIcons.ellipsisVertical,
+        size: 20,
+        color: Color.fromRGBO(34, 184, 190, 1),
+      ),
+      itemBuilder: (context) {
+        return [
+          itemPopup(
+            text: 'notifications'.tr,
+            icon: FontAwesomeIcons.solidBell,
+            color: const Color.fromRGBO(59, 190, 253, 1),
+            index: 0,
+          ),
+          itemPopup(
+            text: 'chat_color'.tr,
+            icon: FontAwesomeIcons.palette,
+            color: const Color.fromRGBO(26, 191, 185, 1),
+            index: 1,
+          ),
+          itemPopup(
+            text: 'delete_chat_history'.tr,
+            icon: FontAwesomeIcons.trash,
+            color: const Color.fromRGBO(255, 113, 150, 1),
+            index: 2,
+          ),
+          itemPopup(
+            text: '${'block'.tr} $friendName',
+            icon: FontAwesomeIcons.ban,
+            color: const Color.fromRGBO(252, 177, 188, 1),
+            index: 3,
+          ),
+        ];
+      },
     );
   }
 }
