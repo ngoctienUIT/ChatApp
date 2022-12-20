@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import '../../controllers/friends_list.dart';
+import '../../widgets/active_color.dart';
 import '../../widgets/profile_picture.dart';
 import '../conversation.dart';
 
@@ -111,7 +112,7 @@ class __FriendItemState extends State<_FriendItem> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: InkWell(
           onTap: () {
-            Get.to(Conversation.withFriend(controller.uid));
+            Get.to(()=>Conversation.withFriend(controller.uid));
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -126,7 +127,7 @@ class __FriendItemState extends State<_FriendItem> {
                         width: 14,
                         height: 14,
                         decoration: BoxDecoration(
-                          color: controller.userData['is_active'] ? Colors.green : Colors.grey,
+                          color: activeColor(controller.userData['is_active']),
                           borderRadius: BorderRadius.circular(90),
                           border: Border.all(
                             color: Colors.white,
@@ -157,7 +158,7 @@ class __FriendItemState extends State<_FriendItem> {
                 ),
                 IconButton(
                   onPressed: () {
-                    Get.to(Conversation.withFriend(controller.uid));
+                    Get.to(()=>Conversation.withFriend(controller.uid));
                   },
                   icon: const Icon(
                     FontAwesomeIcons.comment,

@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:chat_app/chat/controllers/friend_item.dart';
 import 'package:chat_app/chat/widgets/profile_picture.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,8 +14,11 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../utils.dart';
+import '../widgets/active_color.dart';
+
 class Conversation extends StatefulWidget {
-  const Conversation.withFriend(this.friendId, {Key? key}): super(key: key);
+  const Conversation.withFriend(this.friendId, {Key? key}) : super(key: key);
 
   final String friendId;
   @override
@@ -25,11 +30,11 @@ class _ConversationState extends State<Conversation> {
   FocusNode focusNode = FocusNode();
   bool show = false;
   bool sendButton = false;
- // late FlutterSoundRecorder recorder = FlutterSoundRecorder();
+  // late FlutterSoundRecorder recorder = FlutterSoundRecorder();
 
   @override
   void initState() {
-   // initRecorder();
+    // initRecorder();
     super.initState();
   }
 
@@ -44,12 +49,13 @@ class _ConversationState extends State<Conversation> {
 
   @override
   void dispose() {
-   //recorder.closeRecorder();
+    //recorder.closeRecorder();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    var userData = FriendItemControllers.inst.get(widget.friendId).userData;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -66,14 +72,14 @@ class _ConversationState extends State<Conversation> {
         ),
         title: Row(
           children: [
-            ProfilePicture(FriendItemControllers.inst.get(widget.friendId).userData['profile_picture']),
+            ProfilePicture(userData['profile_picture']),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                   FriendItemControllers.inst.get(widget.friendId).userData['name'],
+                    userData['name'],
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Colors.black,
@@ -86,16 +92,18 @@ class _ConversationState extends State<Conversation> {
                         width: 12,
                         height: 12,
                         decoration: BoxDecoration(
-                          color: Colors.red,
+                          color: activeColor(userData['is_active']),
                           borderRadius: BorderRadius.circular(90),
                           border: Border.all(color: Colors.white, width: 2),
                         ),
                       ),
                       const SizedBox(width: 5),
-                      Text(
-                        'active'.tr,
+                      AutoSizeText(
+                        fromLastSeen(userData['last_seen']),
+                        style: const TextStyle(color: Colors.grey),
+                        presetFontSizes: const [12,10,8,6,4],
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.grey, fontSize: 12),
                       )
                     ],
                   )
@@ -189,8 +197,7 @@ class _ConversationState extends State<Conversation> {
                         SizedBox(
                           width: MediaQuery.of(context).size.width - 60,
                           child: Card(
-                            margin: const EdgeInsets.only(
-                                left: 2, right: 2, bottom: 8),
+                            margin: const EdgeInsets.only(left: 2, right: 2, bottom: 8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
@@ -218,9 +225,7 @@ class _ConversationState extends State<Conversation> {
                                 hintStyle: const TextStyle(color: Colors.grey),
                                 prefixIcon: IconButton(
                                   icon: Icon(
-                                    show
-                                        ? Icons.keyboard
-                                        : Icons.emoji_emotions_outlined,
+                                    show ? Icons.keyboard : Icons.emoji_emotions_outlined,
                                   ),
                                   onPressed: () {
                                     if (!show) {
@@ -266,7 +271,8 @@ class _ConversationState extends State<Conversation> {
                             radius: 25,
                             backgroundColor: const Color(0xFF128C7E),
                             child: IconButton(
-                              icon:const  Icon( Icons.send,
+                              icon: const Icon(
+                                Icons.send,
                                 // sendButton
                                 //     ? Icons.send
                                 //     : (recorder.isRecording
@@ -321,11 +327,7 @@ class _ConversationState extends State<Conversation> {
     return PopupMenuItem<int>(
       value: index,
       child: Row(
-        children: [
-          Icon(icon, color: color),
-          const SizedBox(width: 7),
-          Text(text)
-        ],
+        children: [Icon(icon, color: color), const SizedBox(width: 7), Text(text)],
       ),
     );
   }
@@ -349,12 +351,10 @@ class _ConversationState extends State<Conversation> {
                     Colors.indigo,
                     "Document",
                     () async {
-                      FilePickerResult? result = await FilePicker.platform
-                          .pickFiles(allowMultiple: true);
+                      FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: true);
 
                       if (result != null) {
-                        List<File> files =
-                            result.paths.map((path) => File(path!)).toList();
+                        List<File> files = result.paths.map((path) => File(path!)).toList();
                       } else {
                         // User canceled the picker
                       }
@@ -367,8 +367,7 @@ class _ConversationState extends State<Conversation> {
                     "Camera",
                     () async {
                       try {
-                        final image = await ImagePicker()
-                            .pickImage(source: ImageSource.camera);
+                        final image = await ImagePicker().pickImage(source: ImageSource.camera);
                         if (image != null) {}
                       } on PlatformException catch (_) {}
                     },
@@ -380,8 +379,7 @@ class _ConversationState extends State<Conversation> {
                     "Gallery",
                     () async {
                       try {
-                        List<XFile>? images =
-                            await ImagePicker().pickMultiImage();
+                        List<XFile>? images = await ImagePicker().pickMultiImage();
                       } catch (_) {}
                     },
                   ),
@@ -396,16 +394,14 @@ class _ConversationState extends State<Conversation> {
                     Colors.orange,
                     "Audio",
                     () async {
-                      FilePickerResult? result =
-                          await FilePicker.platform.pickFiles(
+                      FilePickerResult? result = await FilePicker.platform.pickFiles(
                         allowMultiple: true,
                         type: FileType.custom,
                         allowedExtensions: ['mp3', 'wav', 'aac'],
                       );
 
                       if (result != null) {
-                        List<File> files =
-                            result.paths.map((path) => File(path!)).toList();
+                        List<File> files = result.paths.map((path) => File(path!)).toList();
                       } else {
                         // User canceled the picker
                       }
@@ -434,8 +430,7 @@ class _ConversationState extends State<Conversation> {
     );
   }
 
-  Widget iconCreation(
-      IconData icons, Color color, String text, Function onPress) {
+  Widget iconCreation(IconData icons, Color color, String text, Function onPress) {
     return InkWell(
       onTap: () => onPress(),
       child: Column(

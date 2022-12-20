@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 
 class ProfilePicture extends StatelessWidget {
   const ProfilePicture(this.url, {Key? key}) : super(key: key);
-  final String url;
+  final String? url;
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
         borderRadius: BorderRadius.circular(30.0),
-        child: url.isNotEmpty
+        child: (url == null || url!.isNotEmpty)
             ? CachedNetworkImage(
-                imageUrl: url,
+                imageUrl: url!,
                 fit: BoxFit.cover,
                 width: 50,
                 height: 50,

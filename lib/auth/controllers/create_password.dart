@@ -8,7 +8,7 @@ import 'sign_in.dart';
 class CreatePasswordController extends GetxController {
   static CreatePasswordController? _inst;
   static CreatePasswordController get inst {
-    _inst ??= Get.put(CreatePasswordController());
+    _inst ??= CreatePasswordController();
     return _inst!;
   }
 

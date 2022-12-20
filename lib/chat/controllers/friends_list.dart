@@ -5,18 +5,17 @@ import 'package:get/get.dart';
 class FriendsListController extends GetxController {
   static FriendsListController? _inst;
   static FriendsListController get inst {
-    print('init c');
-    _inst ??= Get.put(FriendsListController._internal());
+    _inst ??= FriendsListController._internal();
     return _inst!;
   }
 
-  FriendsListController._internal();
+  FriendsListController._internal(): super();
 
   RxList<dynamic> friendsList = [].obs;
 
   Future<List<dynamic>> get cachedFriendsList async {
     final users = FirebaseFirestore.instance.collection('users');
-    final userId = FirebaseAuth.instance.currentUser!.uid.toString();
+    final userId = FirebaseAuth.instance.currentUser!.uid;
 
     friendsList((await users.doc(userId).get(const GetOptions(source: Source.cache)))['friends']);
     return friendsList;
@@ -24,7 +23,7 @@ class FriendsListController extends GetxController {
 
   Future<List<dynamic>> get newFriendsList async {
     final users = FirebaseFirestore.instance.collection('users');
-    final userId = FirebaseAuth.instance.currentUser!.uid.toString();
+    final userId = FirebaseAuth.instance.currentUser!.uid;
 
     friendsList((await users.doc(userId).get(const GetOptions(source: Source.serverAndCache)))['friends']);
     return friendsList;

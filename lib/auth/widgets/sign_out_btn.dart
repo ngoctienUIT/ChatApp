@@ -1,3 +1,4 @@
+import 'package:chat_app/chat/services/user.dart';
 import 'package:flutter/material.dart';
 
 import '../controllers/sign_in.dart';
@@ -12,6 +13,7 @@ class SignOutButton extends StatelessWidget {
         onPressed: () {
           FadedOverlay.showLoading(context);
           SignInController.inst.signOut();
+          setUserOffline();
         },
         child: const Text('Sign out'));
   }

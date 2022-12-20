@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import '../services/user_data.dart' as dt;
+import '../services/user.dart' as dt;
 
 class FriendItemController extends GetxController {
-  FriendItemController(this.uid){
-    userData = dt.newUserData().obs;
+  FriendItemController(this.uid):super(){
+    userData = dt.emptyUserData().obs;
   }
   late String uid;
   late RxMap<String, dynamic> userData;
@@ -37,7 +37,7 @@ class FriendItemControllers {
   var controllers = <String, FriendItemController>{};
 
   FriendItemController add(String uid) {
-    FriendItemController c = Get.put(FriendItemController(uid));
+    FriendItemController c = FriendItemController(uid);
     controllers[uid] = c;
     return c;
   }

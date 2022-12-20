@@ -9,7 +9,7 @@ import 'sign_in.dart';
 class SignUpController extends GetxController {
   static SignUpController? _inst;
   static SignUpController get inst {
-    _inst ??= Get.put(SignUpController());
+    _inst ??= SignUpController();
     return _inst!;
   }
 

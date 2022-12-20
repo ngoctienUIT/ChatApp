@@ -27,9 +27,9 @@ void main() async {
   // print(FirebaseAuth.instance.currentUser);
   runApp(GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      locale: Get.deviceLocale,
-      fallbackLocale: const Locale('en', 'US'),
-      translations: Localization(),
+      locale: Localization.inst.defaultLocale,
+      fallbackLocale: Localization.inst.defaultLocale,
+      translations: Localization.inst,
       home: const _Home()));
 }
 

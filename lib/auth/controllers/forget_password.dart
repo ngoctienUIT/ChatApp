@@ -10,7 +10,7 @@ import 'sign_in.dart';
 class ForgetPasswordController extends GetxController {
   static ForgetPasswordController? _inst;
   static ForgetPasswordController get inst {
-    _inst ??= Get.put(ForgetPasswordController());
+    _inst ??= ForgetPasswordController();
     return _inst!;
   }
 

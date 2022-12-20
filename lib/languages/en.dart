@@ -1,5 +1,14 @@
- const Map<String, String> en = {
+const Map<String, String> en = {
   'hello': 'Hello',
-  'multipleLanguage' : 'Multiple language',
-  'active': 'Active'
+  'active': 'Active',
+  'offline': 'Offline',
+  'day':'day',
+  'hour': 'hour',
+  'minute': 'minute',
+  'second': 'second',
+  'days':'days',
+  'hours': 'hours',
+  'minutes': 'minutes',
+  'seconds': 'seconds',
+  'ago': 'ago'
 };

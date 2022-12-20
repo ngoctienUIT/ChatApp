@@ -18,7 +18,7 @@ import '../widgets/send_verification_link_button.dart';
 class SignInController extends GetxController {
   static SignInController? _inst;
   static SignInController get inst {
-    _inst ??= Get.put(SignInController());
+    _inst ??= SignInController();
     return _inst!;
   }
 

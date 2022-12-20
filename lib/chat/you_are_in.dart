@@ -2,7 +2,7 @@ import 'package:chat_app/chat/screens/create_story.dart';
 import 'package:chat_app/chat/screens/friends_list/friends_list.dart';
 import 'package:chat_app/chat/screens/messages.dart';
 import 'package:chat_app/chat/screens/my_profile.dart';
-import 'package:chat_app/chat/services/user_data.dart';
+import 'package:chat_app/chat/services/user.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -30,9 +30,12 @@ class _YouAreInState extends State<YouAreIn> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    loadUserData(() => setState(
-          () => _isLoading = false,
-        ));
+    loadUserData(() {
+      setState(
+        () => _isLoading = false,
+      );
+      setUserActive();
+    });
   }
 
   @override
