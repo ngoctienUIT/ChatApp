@@ -29,7 +29,7 @@ class _ConversationState extends State<Conversation> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool show = false;
-  bool sendButton = false;
+  bool isSendButton = false;
   // late FlutterSoundRecorder recorder = FlutterSoundRecorder();
 
   @override
@@ -155,9 +155,9 @@ class _ConversationState extends State<Conversation> {
                               },
                               onChanged: (value) {
                                 if (value.isNotEmpty) {
-                                  setState(() => sendButton = true);
+                                  setState(() => isSendButton = true);
                                 } else {
-                                  setState(() => sendButton = false);
+                                  setState(() => isSendButton = false);
                                 }
                               },
                               decoration: InputDecoration(
@@ -214,7 +214,7 @@ class _ConversationState extends State<Conversation> {
                             child: IconButton(
                               icon: const Icon(
                                 Icons.send,
-                                // sendButton
+                                // isSendButton
                                 //     ? Icons.send
                                 //     : (recorder.isRecording
                                 //         ? Icons.stop
@@ -222,8 +222,8 @@ class _ConversationState extends State<Conversation> {
                                 color: Colors.white,
                               ),
                               onPressed: () {
-                                // if (sendButton) {
-                                // } else if (recorder.isRecording) {
+                                
+                                // else if (recorder.isRecording) {
                                 //   stop();
                                 // } else {
                                 //   record();
