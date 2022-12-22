@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -9,25 +11,47 @@ class FriendsListController extends GetxController {
     return _inst!;
   }
 
-  FriendsListController._internal(): super();
-
-  var friendsList = <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
-
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> get cachedFriendsList async {
-   // final users = FirebaseFirestore.instance.collection('users');
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-
-    var friendsSnapshot = await FirebaseFirestore.instance.collection('users/$userId/friends').get(const GetOptions(source: Source.cache));
-    friendsList(friendsSnapshot.docs);
-    return friendsList;
+  FriendsListController._internal(){
+        getCachedFriendsMap().then((_) {
+      listenForChanges();
+    });
   }
 
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> get newFriendsList async {
-   // final users = FirebaseFirestore.instance.collection('users');
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+  Rx<HashMap<String, dynamic>> friendsMap = HashMap<String, dynamic>().obs;
 
- var friendsSnapshot = await FirebaseFirestore.instance.collection('users/$userId/friends').get();
-    friendsList(friendsSnapshot.docs);
-    return friendsList;
+  CollectionReference<Map<String, dynamic>> get friendsCollectionRef {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    return FirebaseFirestore.instance.collection('users/$userId/friends');
+  }
+
+  Future<void> getCachedFriendsMap() async {
+    var friendsSnapshot = await friendsCollectionRef.get(const GetOptions(source: Source.cache));
+    for (var doc in friendsSnapshot.docs) {
+      friendsMap.value[doc.id] = doc.data();
+    }
+    friendsMap.refresh();
+  }
+
+  // purpose: notify app about adding friend, removing friend
+  void listenForChanges() {
+    friendsCollectionRef.snapshots().listen((event) {
+      for (var docChange in event.docChanges) {
+        var doc = docChange.doc;
+        switch (docChange.type) {
+          case DocumentChangeType.added:
+            friendsMap.value[doc.id] = doc.data() ?? {};
+            friendsMap(friendsMap.value);
+            break;
+          case DocumentChangeType.removed:
+            friendsMap.value.remove(doc.id);
+            friendsMap(friendsMap.value);
+            break;
+          case DocumentChangeType.modified:
+            // TODO: new features
+            break;
+        }
+      }
+      friendsMap.refresh();
+    });
   }
 }

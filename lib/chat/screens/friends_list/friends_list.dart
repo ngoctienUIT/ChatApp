@@ -27,7 +27,8 @@ class _FriendsListPageState extends State<FriendsListPage> with AutomaticKeepAli
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return SafeArea(child:Column(children: [
+    return SafeArea(
+        child: Column(children: [
       Padding(
         padding: const EdgeInsets.all(10),
         child: Row(
@@ -62,94 +63,67 @@ class _FriendsListPageState extends State<FriendsListPage> with AutomaticKeepAli
         ),
       ),
       const _FriendsList(),
-      ElevatedButton(onPressed: (){FriendsListController.inst.newFriendsList;}, child: const Text('Refesh'))
-      
     ]));
   }
 }
 
-class _FriendsList extends StatefulWidget {
+class _FriendsList extends StatelessWidget {
   const _FriendsList({Key? key}) : super(key: key);
 
   @override
-  State<_FriendsList> createState() => __FriendsListState();
-}
-
-class __FriendsListState extends State<_FriendsList> {
-  @override
-  void initState() {
-    super.initState();
-    var c = FriendsListController.inst;
-    c.cachedFriendsList.then(
-      (value) => c.newFriendsList,
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Obx(() => Column(children: FriendsListController.inst.friendsList.map((item) => _FriendItem(item)).toList()));
+    return Obx(() => Column(
+        children:
+            FriendsListController.inst.friendsMap.value.entries.map((entry) => _FriendItem(controller: FriendItemController(entry.key))).toList()));
   }
-}
- 
-class _FriendItem extends StatefulWidget {
-  const _FriendItem(this.friendData, {Key? key}) : super(key: key);
-  final QueryDocumentSnapshot<Map<String, dynamic>> friendData;
-  @override
-  State<_FriendItem> createState() => __FriendItemState();
 }
 
-class __FriendItemState extends State<_FriendItem> {
-  late FriendItemController controller;
-  @override
-  void initState() {
-    super.initState();
-    controller = FriendItemControllers.inst.add(widget.friendData.id);
-    controller.cachedUserData.then(
-      (value) => controller.newUserData,
-    );
-  }
+class _FriendItem extends StatelessWidget {
+  const _FriendItem({required this.controller, Key? key}) : super(key: key);
+
+  final FriendItemController controller;
+
+  void navToChatScreen() {}
 
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: InkWell(
-          onTap: () {
-            Get.to(()=>Conversation.withFriend(widget.friendData));
-          },
+          onTap: navToChatScreen,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             child: Row(
               children: [
                 Stack(
                   children: [
-                    ProfilePicture(controller.userData['profile_picture']),
+                    Obx(() => ProfilePicture(controller.userData['profile_picture'])),
                     Positioned(
                       right: 0,
-                      child: Container(
-                        width: 14,
-                        height: 14,
-                        decoration: BoxDecoration(
-                          color: activeColor(controller.userData['is_active']),
-                          borderRadius: BorderRadius.circular(90),
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 2,
-                          ),
-                        ),
-                      ),
+                      child: Obx(() => Container(
+                            width: 14,
+                            height: 14,
+                            decoration: BoxDecoration(
+                              color: activeColor(controller.userData['is_active']),
+                              borderRadius: BorderRadius.circular(90),
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                            ),
+                          )),
                     )
                   ],
                 ),
                 const SizedBox(width: 20),
                 Expanded(
-                  child: Text(
-                    controller.userData['name'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: Obx(() => Text(
+                        controller.userData['name'],
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
                 ),
                 IconButton(
                   onPressed: () {},
@@ -160,9 +134,7 @@ class __FriendItemState extends State<_FriendItem> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {
-                    Get.to(()=>Conversation.withFriend(widget.friendData));
-                  },
+                  onPressed: navToChatScreen,
                   icon: const Icon(
                     FontAwesomeIcons.comment,
                     color: Color.fromRGBO(77, 189, 204, 1),

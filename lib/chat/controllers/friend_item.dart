@@ -3,47 +3,48 @@ import 'package:get/get.dart';
 import '../services/user.dart' as dt;
 
 class FriendItemController extends GetxController {
-  FriendItemController(this.uid):super(){
-    userData = dt.emptyUserData().obs;
+  FriendItemController(this.uid) {
+    getCachedUserData().then((_) => listenForChanges());
   }
-  late String uid;
-  late RxMap<String, dynamic> userData;
-  //late QueryDocumentSnapshot<Map<String, dynamic>> metadata;
+  final String uid;
 
-  Future<Map<String, dynamic>> get cachedUserData async {
-    final users = FirebaseFirestore.instance.collection('users');
-    var doc = await users.doc(uid).get(const GetOptions(source: Source.cache));
-    if (!doc.exists) throw Exception('User not found');
-    userData(doc.data());
-    return userData;
+  RxMap<String, dynamic> userData = dt.emptyUserData().obs;
+
+  DocumentReference<Map<String, dynamic>> get userDocRef => FirebaseFirestore.instance.collection('users').doc(uid);
+
+  Future<void> getCachedUserData() async {
+    return userDocRef.get(const GetOptions(source: Source.cache)).then((doc){userData(doc.data());}).catchError((e){}, test: (e)=>true);
   }
 
-  Future<Map<String, dynamic>> get newUserData async {
-    final users = FirebaseFirestore.instance.collection('users');
-    var doc = await users.doc(uid).get(const GetOptions(source: Source.serverAndCache));
-    if (!doc.exists) throw Exception('User not found');
-    userData(doc.data());
-    return userData;
-  }
-}
-
-class FriendItemControllers {
-  static FriendItemControllers? _inst;
-  FriendItemControllers._internal();
-  static FriendItemControllers get inst {
-    _inst ??= FriendItemControllers._internal();
-    return _inst!;
-  }
-
-  var controllers = <String, FriendItemController>{};
-
-  FriendItemController add(String uid) {
-    FriendItemController c = FriendItemController(uid);
-    controllers[uid] = c;
-    return c;
-  }
-
-  FriendItemController get(String uid) {
-    return controllers[uid]!;
+  void listenForChanges() {
+    userDocRef.snapshots().listen((event) {
+      if (event.exists) {
+        print('modified');
+        userData(event.data());
+      } else {
+        userData(dt.emptyUserData());
+      }
+    });
   }
 }
+
+// class FriendItemControllers {
+//   static FriendItemControllers? _inst;
+//   FriendItemControllers._internal();
+//   static FriendItemControllers get inst {
+//     _inst ??= FriendItemControllers._internal();
+//     return _inst!;
+//   }
+
+//   HashMap<String, FriendItemController> controllers = HashMap();
+
+//   FriendItemController add(String uid) {
+//     FriendItemController c = FriendItemController(uid);
+//     controllers[uid] = c;
+//     return c;
+//   }
+
+//   FriendItemController get(String uid) {
+//     return controllers[uid]!;
+//   }
+// }

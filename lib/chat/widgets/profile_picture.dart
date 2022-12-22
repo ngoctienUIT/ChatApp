@@ -8,8 +8,8 @@ class ProfilePicture extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
         borderRadius: BorderRadius.circular(30.0),
-        child: (url == null || url!.isNotEmpty)
-            ? CachedNetworkImage(
+        child: (url == null || url!.isEmpty) ? _DefaultProfilePicture():
+             CachedNetworkImage(
                 imageUrl: url!,
                 fit: BoxFit.cover,
                 width: 50,
@@ -17,7 +17,7 @@ class ProfilePicture extends StatelessWidget {
                 placeholder: (context, url) => _DefaultProfilePicture(),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               )
-            : _DefaultProfilePicture());
+             );
   }
 }
 
