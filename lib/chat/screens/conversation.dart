@@ -18,9 +18,9 @@ import '../../languages/utils.dart';
 import '../widgets/active_color.dart';
 
 class Conversation extends StatefulWidget {
-  const Conversation.withFriend(this.friendId, {Key? key}) : super(key: key);
+  const Conversation.withFriend(this.friendData, {Key? key}) : super(key: key);
 
-  final String friendId;
+  final QueryDocumentSnapshot<Map<String, dynamic>> friendData;
   @override
   State<Conversation> createState() => _ConversationState();
 }
@@ -57,7 +57,7 @@ class _ConversationState extends State<Conversation> {
 
   @override
   Widget build(BuildContext context) {
-    var userData = FriendItemControllers.inst.get(widget.friendId).userData;
+    var userData = FriendItemControllers.inst.get(widget.friendData.id).userData;
 
     return Scaffold(
       appBar: AppBar(

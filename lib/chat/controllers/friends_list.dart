@@ -11,21 +11,23 @@ class FriendsListController extends GetxController {
 
   FriendsListController._internal(): super();
 
-  RxList<dynamic> friendsList = [].obs;
+  var friendsList = <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
 
-  Future<List<dynamic>> get cachedFriendsList async {
-    final users = FirebaseFirestore.instance.collection('users');
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> get cachedFriendsList async {
+   // final users = FirebaseFirestore.instance.collection('users');
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
-    friendsList((await users.doc(userId).get(const GetOptions(source: Source.cache)))['friends']);
+    var friendsSnapshot = await FirebaseFirestore.instance.collection('users/$userId/friends').get(const GetOptions(source: Source.cache));
+    friendsList(friendsSnapshot.docs);
     return friendsList;
   }
 
-  Future<List<dynamic>> get newFriendsList async {
-    final users = FirebaseFirestore.instance.collection('users');
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> get newFriendsList async {
+   // final users = FirebaseFirestore.instance.collection('users');
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
-    friendsList((await users.doc(userId).get(const GetOptions(source: Source.serverAndCache)))['friends']);
+ var friendsSnapshot = await FirebaseFirestore.instance.collection('users/$userId/friends').get();
+    friendsList(friendsSnapshot.docs);
     return friendsList;
   }
 }

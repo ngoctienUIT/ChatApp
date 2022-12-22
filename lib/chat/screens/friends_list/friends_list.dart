@@ -1,4 +1,5 @@
 import 'package:chat_app/chat/controllers/friend_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -60,7 +61,9 @@ class _FriendsListPageState extends State<FriendsListPage> with AutomaticKeepAli
           ],
         ),
       ),
-      const _FriendsList()
+      const _FriendsList(),
+      ElevatedButton(onPressed: (){FriendsListController.inst.newFriendsList;}, child: const Text('Refesh'))
+      
     ]));
   }
 }
@@ -87,10 +90,10 @@ class __FriendsListState extends State<_FriendsList> {
     return Obx(() => Column(children: FriendsListController.inst.friendsList.map((item) => _FriendItem(item)).toList()));
   }
 }
-
+ 
 class _FriendItem extends StatefulWidget {
-  const _FriendItem(this.uid, {Key? key}) : super(key: key);
-  final String uid;
+  const _FriendItem(this.friendData, {Key? key}) : super(key: key);
+  final QueryDocumentSnapshot<Map<String, dynamic>> friendData;
   @override
   State<_FriendItem> createState() => __FriendItemState();
 }
@@ -100,7 +103,7 @@ class __FriendItemState extends State<_FriendItem> {
   @override
   void initState() {
     super.initState();
-    controller = FriendItemControllers.inst.add(widget.uid);
+    controller = FriendItemControllers.inst.add(widget.friendData.id);
     controller.cachedUserData.then(
       (value) => controller.newUserData,
     );
@@ -112,7 +115,7 @@ class __FriendItemState extends State<_FriendItem> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: InkWell(
           onTap: () {
-            Get.to(()=>Conversation.withFriend(controller.uid));
+            Get.to(()=>Conversation.withFriend(widget.friendData));
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -158,7 +161,7 @@ class __FriendItemState extends State<_FriendItem> {
                 ),
                 IconButton(
                   onPressed: () {
-                    Get.to(()=>Conversation.withFriend(controller.uid));
+                    Get.to(()=>Conversation.withFriend(widget.friendData));
                   },
                   icon: const Icon(
                     FontAwesomeIcons.comment,

@@ -8,6 +8,7 @@ class FriendItemController extends GetxController {
   }
   late String uid;
   late RxMap<String, dynamic> userData;
+  //late QueryDocumentSnapshot<Map<String, dynamic>> metadata;
 
   Future<Map<String, dynamic>> get cachedUserData async {
     final users = FirebaseFirestore.instance.collection('users');
