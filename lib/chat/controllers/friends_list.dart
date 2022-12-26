@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
+// auto enable realtime when init
 class FriendsListController extends GetxController {
   static FriendsListController? _inst;
   static FriendsListController get inst {
@@ -22,9 +23,10 @@ class FriendsListController extends GetxController {
 
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? listener;
 
+  String get currentUserId =>FirebaseAuth.instance.currentUser!.uid;
+
   CollectionReference<Map<String, dynamic>> get friendsCollectionRef {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-    return FirebaseFirestore.instance.collection('users/$userId/friends');
+    return FirebaseFirestore.instance.collection('users/$currentUserId/friends');
   }
 
   Future<void> getCachedFriendsMap() async {
@@ -33,6 +35,15 @@ class FriendsListController extends GetxController {
       friendsMap.value[doc.id] = doc.data();
     }
     friendsMap.refresh();
+  }
+
+  void resumeRealTime(){
+    listener?.resume();
+  }
+
+  void pauseRealTime(){
+    listener?.pause();
+    
   }
 
   // purpose: notify app about adding friend, removing friend

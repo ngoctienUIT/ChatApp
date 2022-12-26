@@ -15,6 +15,19 @@ class FriendsListPage extends StatefulWidget {
 
 class _FriendsListPageState extends State<FriendsListPage> with AutomaticKeepAliveClientMixin<FriendsListPage> {
   @override
+  void activate() {
+    FriendsListController.inst.friendsMap.refresh();
+    super.activate();
+  }
+
+  @override
+  void deactivate() {
+    FriendsListController.inst.pauseRealTime();
+    FriendsListController.inst.friendsMap.value.entries.map((entry) => UserItemControllers.inst.pauseRealtime(entry.key));
+    super.deactivate();
+  }
+
+  @override
   bool get wantKeepAlive => true;
 
   @override
@@ -71,8 +84,9 @@ class _FriendsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() => Column(
-        children:
-            FriendsListController.inst.friendsMap.value.entries.map((entry) => _FriendItem(controller: UserItemControllers.inst.getOrCreate(entry.key))).toList()));
+        children: FriendsListController.inst.friendsMap.value.entries
+            .map((entry) => _FriendItem(controller: UserItemControllers.inst.getOrCreate(entry.key)))
+            .toList()));
   }
 }
 

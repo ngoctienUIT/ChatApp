@@ -2,29 +2,51 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import '../services/user.dart' as dt;
+import 'friends_list.dart';
 
+// auto enable realtime when init
 class UserItemController extends GetxController {
   UserItemController(this.uid) {
     getCachedUserData().then((_) => listenForChanges());
+    getCachedFriendStatus().then((_) => listenFriendStatus());
   }
 
   final String uid;
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? listener;
 
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? userDatalistener;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? friendStatusListener;
+
+  final isFriend = false.obs;
   RxMap<String, dynamic> userData = dt.emptyUserData().obs;
 
   DocumentReference<Map<String, dynamic>> get userDocRef => FirebaseFirestore.instance.collection('users').doc(uid);
+  DocumentReference<Map<String, dynamic>> get friendDocRef => FirebaseFirestore.instance.collection('users/$currentUserId/friends').doc(uid);
+  String get currentUserId => FirebaseAuth.instance.currentUser!.uid;
 
   Future<void> getCachedUserData() async {
-    return userDocRef.get(const GetOptions(source: Source.cache)).then((doc){userData(doc.data());}).catchError((e){}, test: (e)=>true);
+    return userDocRef.get(const GetOptions(source: Source.cache)).then((doc) {
+      userData(doc.data());
+    }).catchError((e) {}, test: (e) => true);
+  }
+
+  Future<void> getCachedFriendStatus() async {
+    return friendDocRef.get(const GetOptions(source: Source.cache)).then((doc) {
+      isFriend(doc.exists);
+    }).catchError((e) {}, test: (e) => true);
+  }
+
+  void listenFriendStatus() {
+    friendStatusListener = friendDocRef.snapshots().listen((event) {
+      isFriend(event.exists);
+    });
   }
 
   void listenForChanges() {
-    listener = userDocRef.snapshots().listen((event) {
+    userDatalistener = userDocRef.snapshots().listen((event) {
       if (event.exists) {
-        print('modified');
         userData(event.data());
       } else {
         userData(dt.emptyUserData());
@@ -32,9 +54,20 @@ class UserItemController extends GetxController {
     });
   }
 
+  void resumeRealtime() {
+    userDatalistener?.resume();
+    friendStatusListener?.resume();
+  }
+
+  void pauseRealtime() {
+    userDatalistener?.pause();
+    friendStatusListener?.pause();
+  }
+
   @override
   void dispose() {
-    listener?.cancel();
+    userDatalistener?.cancel();
+    friendStatusListener?.cancel();
     super.dispose();
   }
 }
@@ -49,33 +82,24 @@ class UserItemControllers {
 
   HashMap<String, UserItemController> controllers = HashMap();
 
-  UserItemController getOrCreate(String uid){
+  // enable realtime and return controller
+  UserItemController getOrCreate(String uid) {
     var foundController = controllers[uid];
-    
-    if (foundController != null) return foundController;
+
+    if (foundController != null) {
+      foundController.resumeRealtime();
+      return foundController;
+    }
 
     controllers[uid] = UserItemController(uid);
     return controllers[uid]!;
   }
+
+  void pauseRealtime(String uid) {
+    controllers[uid]?.pauseRealtime();
+  }
+
+  void resumeRealtime(String uid) {
+    controllers[uid]?.resumeRealtime();
+  }
 }
-
-// class FriendItemControllers {
-//   static FriendItemControllers? _inst;
-//   FriendItemControllers._internal();
-//   static FriendItemControllers get inst {
-//     _inst ??= FriendItemControllers._internal();
-//     return _inst!;
-//   }
-
-//   HashMap<String, FriendItemController> controllers = HashMap();
-
-//   FriendItemController add(String uid) {
-//     FriendItemController c = FriendItemController(uid);
-//     controllers[uid] = c;
-//     return c;
-//   }
-
-//   FriendItemController get(String uid) {
-//     return controllers[uid]!;
-//   }
-// }
