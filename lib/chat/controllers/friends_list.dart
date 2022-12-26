@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,6 +20,8 @@ class FriendsListController extends GetxController {
 
   Rx<HashMap<String, dynamic>> friendsMap = HashMap<String, dynamic>().obs;
 
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? listener;
+
   CollectionReference<Map<String, dynamic>> get friendsCollectionRef {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     return FirebaseFirestore.instance.collection('users/$userId/friends');
@@ -34,7 +37,7 @@ class FriendsListController extends GetxController {
 
   // purpose: notify app about adding friend, removing friend
   void listenForChanges() {
-    friendsCollectionRef.snapshots().listen((event) {
+    listener = friendsCollectionRef.snapshots().listen((event) {
       for (var docChange in event.docChanges) {
         var doc = docChange.doc;
         switch (docChange.type) {
@@ -53,5 +56,11 @@ class FriendsListController extends GetxController {
       }
       friendsMap.refresh();
     });
+  }
+
+  @override
+  void dispose() {
+    listener?.cancel();
+    super.dispose();
   }
 }

@@ -1,12 +1,10 @@
-import 'package:chat_app/chat/controllers/friend_item.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_app/chat/controllers/user_item.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import '../../controllers/friends_list.dart';
 import '../../widgets/active_color.dart';
 import '../../widgets/profile_picture.dart';
-import '../conversation.dart';
 
 class FriendsListPage extends StatefulWidget {
   const FriendsListPage({Key? key}) : super(key: key);
@@ -74,16 +72,18 @@ class _FriendsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() => Column(
         children:
-            FriendsListController.inst.friendsMap.value.entries.map((entry) => _FriendItem(controller: FriendItemController(entry.key))).toList()));
+            FriendsListController.inst.friendsMap.value.entries.map((entry) => _FriendItem(controller: UserItemControllers.inst.getOrCreate(entry.key))).toList()));
   }
 }
 
 class _FriendItem extends StatelessWidget {
   const _FriendItem({required this.controller, Key? key}) : super(key: key);
 
-  final FriendItemController controller;
+  final UserItemController controller;
 
-  void navToChatScreen() {}
+  void navToChatScreen() {
+    // Get.to(Conversation)
+  }
 
   @override
   Widget build(BuildContext context) {

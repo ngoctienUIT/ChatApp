@@ -1,12 +1,17 @@
+import 'dart:async';
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import '../services/user.dart' as dt;
 
-class FriendItemController extends GetxController {
-  FriendItemController(this.uid) {
+class UserItemController extends GetxController {
+  UserItemController(this.uid) {
     getCachedUserData().then((_) => listenForChanges());
   }
+
   final String uid;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? listener;
 
   RxMap<String, dynamic> userData = dt.emptyUserData().obs;
 
@@ -17,7 +22,7 @@ class FriendItemController extends GetxController {
   }
 
   void listenForChanges() {
-    userDocRef.snapshots().listen((event) {
+    listener = userDocRef.snapshots().listen((event) {
       if (event.exists) {
         print('modified');
         userData(event.data());
@@ -25,6 +30,32 @@ class FriendItemController extends GetxController {
         userData(dt.emptyUserData());
       }
     });
+  }
+
+  @override
+  void dispose() {
+    listener?.cancel();
+    super.dispose();
+  }
+}
+
+class UserItemControllers {
+  static UserItemControllers? _inst;
+  UserItemControllers._internal();
+  static UserItemControllers get inst {
+    _inst ??= UserItemControllers._internal();
+    return _inst!;
+  }
+
+  HashMap<String, UserItemController> controllers = HashMap();
+
+  UserItemController getOrCreate(String uid){
+    var foundController = controllers[uid];
+    
+    if (foundController != null) return foundController;
+
+    controllers[uid] = UserItemController(uid);
+    return controllers[uid]!;
   }
 }
 
