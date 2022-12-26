@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:chat_app/chat/controllers/user_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -38,10 +39,12 @@ class FriendsListController extends GetxController {
   }
 
   void resumeRealTime(){
+    print('friendslist controller listening');
     listener?.resume();
   }
 
   void pauseRealTime(){
+    print('friendslist controller pause listening');
     listener?.pause();
     
   }
@@ -57,6 +60,7 @@ class FriendsListController extends GetxController {
             friendsMap(friendsMap.value);
             break;
           case DocumentChangeType.removed:
+            UserItemControllers.inst.pauseRealtime(doc.id);
             friendsMap.value.remove(doc.id);
             friendsMap(friendsMap.value);
             break;
@@ -71,7 +75,9 @@ class FriendsListController extends GetxController {
 
   @override
   void dispose() {
+    print('dispose friend list controller');
     listener?.cancel();
+    _inst = null;
     super.dispose();
   }
 }

@@ -13,31 +13,27 @@ class FriendsListPage extends StatefulWidget {
   State<FriendsListPage> createState() => _FriendsListPageState();
 }
 
-class _FriendsListPageState extends State<FriendsListPage> with AutomaticKeepAliveClientMixin<FriendsListPage> {
-  @override
-  void activate() {
-    FriendsListController.inst.friendsMap.refresh();
-    super.activate();
-  }
-
-  @override
-  void deactivate() {
-    FriendsListController.inst.pauseRealTime();
-    FriendsListController.inst.friendsMap.value.entries.map((entry) => UserItemControllers.inst.pauseRealtime(entry.key));
-    super.deactivate();
-  }
-
-  @override
-  bool get wantKeepAlive => true;
-
+class _FriendsListPageState extends State<FriendsListPage> {
   @override
   void initState() {
     super.initState();
+    lazyResumeRealtime();
+  }
+
+  Future<void> lazyResumeRealtime() async {
+    FriendsListController.inst.resumeRealTime();
+    FriendsListController.inst.friendsMap.value.forEach((key, value) => UserItemControllers.inst.resumeRealtime(key));
+  }
+
+  @override
+  void dispose() {
+    FriendsListController.inst.pauseRealTime();
+    FriendsListController.inst.friendsMap.value.forEach((key, value) => UserItemControllers.inst.pauseRealtime(key));
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return SafeArea(
         child: Column(children: [
       Padding(

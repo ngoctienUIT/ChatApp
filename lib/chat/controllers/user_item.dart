@@ -12,6 +12,7 @@ class UserItemController extends GetxController {
   UserItemController(this.uid) {
     getCachedUserData().then((_) => listenForChanges());
     getCachedFriendStatus().then((_) => listenFriendStatus());
+    print('user item $uid listening');
   }
 
   final String uid;
@@ -87,7 +88,6 @@ class UserItemControllers {
     var foundController = controllers[uid];
 
     if (foundController != null) {
-      foundController.resumeRealtime();
       return foundController;
     }
 
@@ -96,10 +96,16 @@ class UserItemControllers {
   }
 
   void pauseRealtime(String uid) {
+    print('user item $uid pause realtime');
     controllers[uid]?.pauseRealtime();
   }
 
   void resumeRealtime(String uid) {
+    print('user item $uid listening');
     controllers[uid]?.resumeRealtime();
+  }
+
+  void dispose(){
+    controllers.entries.map((item)=>item.value.dispose());
   }
 }

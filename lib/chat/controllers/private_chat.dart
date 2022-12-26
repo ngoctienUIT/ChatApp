@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -90,5 +91,35 @@ class PrivateChatController extends GetxController {
   void pauseRealtime() {
     userController.pauseRealtime();
     listener?.pause();
+  }
+}
+
+class PrivateChatControllers {
+  static PrivateChatControllers? _inst;
+  PrivateChatControllers._internal();
+  static PrivateChatControllers get inst {
+    _inst ??= PrivateChatControllers._internal();
+    return _inst!;
+  }
+
+  HashMap<String, PrivateChatController> controllers = HashMap();
+   PrivateChatController getOrCreate(String uid){
+    var foundController = controllers[uid];
+
+    if (foundController != null){
+      foundController.resumeRealtime();
+      return foundController;
+    } 
+
+    controllers[uid] = PrivateChatController(uid);
+    return controllers[uid]!;
+  }
+
+  void pauseRealtime(String uid){
+    controllers[uid]?.pauseRealtime();
+  }
+
+  void resumeRealtime(String uid){
+    controllers[uid]?.resumeRealtime();
   }
 }
