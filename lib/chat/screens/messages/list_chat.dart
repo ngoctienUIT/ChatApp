@@ -1,5 +1,8 @@
+import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/screens/messages/chat.dart';
 import 'package:chat_app/chat/screens/search/search.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -46,87 +49,132 @@ class ListChat extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      Get.to(const Chat());
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 10),
-                      child: Row(
-                        children: [
-                          Stack(
-                            children: [
-                              ClipOval(
-                                child: Image.asset(
-                                  "assets/images/avatar.jpg",
-                                  width: 50,
-                                ),
-                              ),
-                              if (index % 3 != 0)
-                                Positioned(
-                                  right: 0,
-                                  child: Container(
-                                    width: 14,
-                                    height: 14,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(90),
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                            ],
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Name $index",
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      "10:00 PM",
-                                      style: TextStyle(
-                                        color: Colors.black38,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  "Messenger $index",
-                                  style: const TextStyle(fontSize: 16),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
+            listChat(),
           ],
         ),
       ),
     );
+  }
+
+  Widget listChat() {
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("private_chats")
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List<String> chats = [];
+            for (var doc in snapshot.requireData.docs) {
+              chats.add(doc["chat_id"]);
+            }
+            return Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                itemCount: chats.length,
+                itemBuilder: (context, index) {
+                  return FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection("private_chats")
+                          .doc(chats[index])
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          ChatRoom chatRoom =
+                              ChatRoom.fromFirebase(snapshot.requireData);
+                          return InkWell(
+                            onTap: () {
+                              Get.to(Chat(
+                                id: chats[index],
+                                chatRoom: chatRoom,
+                              ));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
+                              child: Row(
+                                children: [
+                                  Stack(
+                                    children: [
+                                      ClipOval(
+                                        child: Image.asset(
+                                          "assets/images/avatar.jpg",
+                                          width: 50,
+                                        ),
+                                      ),
+                                      if (index % 3 != 0)
+                                        Positioned(
+                                          right: 0,
+                                          child: Container(
+                                            width: 14,
+                                            height: 14,
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(90),
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 2,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                    ],
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              chatRoom.user1.id.compareTo(
+                                                          FirebaseAuth
+                                                              .instance
+                                                              .currentUser!
+                                                              .uid) ==
+                                                      0
+                                                  ? chatRoom.user2.name
+                                                  : chatRoom.user1.name,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            const Text(
+                                              "10:00 PM",
+                                              style: TextStyle(
+                                                color: Colors.black38,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          "Messenger $index",
+                                          style: const TextStyle(fontSize: 16),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        return Container();
+                      });
+                },
+              ),
+            );
+          }
+
+          return Expanded(child: Container());
+        });
   }
 }

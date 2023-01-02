@@ -53,7 +53,9 @@ class Friends extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
-                      Get.to(const Chat());
+                      Get.to(const Chat(
+                        id: "",
+                      ));
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(

@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import '../services/user.dart' as dt;
-import 'friends_list.dart';
 
 // auto enable realtime when init
 class UserItemController extends GetxController {
@@ -18,13 +16,18 @@ class UserItemController extends GetxController {
   final String uid;
 
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? userDatalistener;
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? friendStatusListener;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+      friendStatusListener;
 
   final isFriend = false.obs;
   RxMap<String, dynamic> userData = dt.emptyUserData().obs;
 
-  DocumentReference<Map<String, dynamic>> get userDocRef => FirebaseFirestore.instance.collection('users').doc(uid);
-  DocumentReference<Map<String, dynamic>> get friendDocRef => FirebaseFirestore.instance.collection('users/$currentUserId/friends').doc(uid);
+  DocumentReference<Map<String, dynamic>> get userDocRef =>
+      FirebaseFirestore.instance.collection('users').doc(uid);
+  DocumentReference<Map<String, dynamic>> get friendDocRef =>
+      FirebaseFirestore.instance
+          .collection('users/$currentUserId/friends')
+          .doc(uid);
   String get currentUserId => FirebaseAuth.instance.currentUser!.uid;
 
   Future<void> getCachedUserData() async {
@@ -105,7 +108,7 @@ class UserItemControllers {
     controllers[uid]?.resumeRealtime();
   }
 
-  void dispose(){
-    controllers.entries.map((item)=>item.value.dispose());
+  void dispose() {
+    controllers.entries.map((item) => item.value.dispose());
   }
 }

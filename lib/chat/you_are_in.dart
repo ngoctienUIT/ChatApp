@@ -29,9 +29,7 @@ class _YouAreInState extends State<YouAreIn> {
   void initState() {
     super.initState();
     loadUserData(() {
-      setState(
-        () => _isLoading = false,
-      );
+      setState(() => _isLoading = false);
       setUserActive();
     });
   }

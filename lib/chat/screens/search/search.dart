@@ -1,7 +1,11 @@
+import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/screens/messages/chat.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:chat_app/chat/models/user.dart' as myuser;
 
 class Search extends StatefulWidget {
   const Search({Key? key}) : super(key: key);
@@ -12,6 +16,12 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
   final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() => setState(() {}));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,63 +83,104 @@ class _SearchState extends State<Search> {
                 ),
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                itemCount: 15,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      Get.to(const Chat());
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 10),
-                      child: Row(
-                        children: [
-                          Stack(
-                            children: [
-                              ClipOval(
-                                child: Image.asset(
-                                  "assets/images/avatar.jpg",
-                                  width: 50,
+            FutureBuilder<QuerySnapshot>(
+                future: FirebaseFirestore.instance.collection("users").get(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && _searchController.text.isNotEmpty) {
+                    var data = snapshot.requireData;
+                    List<myuser.User> users = [];
+                    for (var doc in data.docs) {
+                      if (doc.id.compareTo(
+                              FirebaseAuth.instance.currentUser!.uid) !=
+                          0) {
+                        myuser.User user = myuser.User.fromFirebase(doc);
+                        user.id = doc.id;
+                        users.add(user);
+                      }
+                    }
+                    users = users
+                        .where((element) => element.name
+                            .toLowerCase()
+                            .contains(_searchController.text.toLowerCase()))
+                        .toList();
+                    return Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        itemCount: users.length,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () async {
+                              myuser.User user = (await myuser.User.getInfoUser(
+                                  FirebaseAuth.instance.currentUser!.uid))!;
+                              Get.to(Chat(
+                                id: "${FirebaseAuth.instance.currentUser!.uid}-${users[index].id}",
+                                chatRoom: ChatRoom(
+                                  user1: myuser.User(
+                                    id: FirebaseAuth.instance.currentUser!.uid,
+                                    name: user.name,
+                                  ),
+                                  user2: myuser.User(
+                                    id: users[index].id,
+                                    name: users[index].name,
+                                  ),
+                                  mainReaction: "",
+                                  theme: "",
                                 ),
-                              ),
-                              if (index % 3 != 0)
-                                Positioned(
-                                  right: 0,
-                                  child: Container(
-                                    width: 14,
-                                    height: 14,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(90),
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 2,
+                              ));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
+                              child: Row(
+                                children: [
+                                  Stack(
+                                    children: [
+                                      ClipOval(
+                                        child: Image.asset(
+                                          "assets/images/avatar.jpg",
+                                          width: 50,
+                                        ),
+                                      ),
+                                      if (index % 3 != 0)
+                                        Positioned(
+                                          right: 0,
+                                          child: Container(
+                                            width: 14,
+                                            height: 14,
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(90),
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 2,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                    ],
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: Text(
+                                      users[index].name,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                  ),
-                                )
-                            ],
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Text(
-                              "Name $index",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                                  )
+                                ],
                               ),
                             ),
-                          )
-                        ],
+                          );
+                        },
                       ),
-                    ),
-                  );
-                },
-              ),
-            )
+                    );
+                  }
+
+                  return Container();
+                })
           ],
         ),
       ),
