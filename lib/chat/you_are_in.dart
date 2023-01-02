@@ -1,6 +1,6 @@
-import 'package:chat_app/auth/screens/friends.dart';
-import 'package:chat_app/auth/screens/profile.dart';
-import 'package:chat_app/auth/widgets/list_chat.dart';
+import 'package:chat_app/chat/screens/friends_list/friends.dart';
+import 'package:chat_app/chat/screens/profile/profile.dart';
+import 'package:chat_app/chat/screens/messages/list_chat.dart';
 import 'package:chat_app/chat/services/user.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,9 +23,8 @@ class _YouAreInState extends State<YouAreIn> {
 
   DateTime? currentBackPressTime;
   final PageStorageBucket bucket = PageStorageBucket();
-
-  int _currentIndex = 0;
   bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -41,13 +40,6 @@ class _YouAreInState extends State<YouAreIn> {
   void dispose() {
     //pageController.dispose();
     super.dispose();
-  }
-
-  //final pageController = PageController();
-  void onPageChanged(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
   }
 
   @override

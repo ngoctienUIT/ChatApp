@@ -1,11 +1,17 @@
-import 'package:chat_app/auth/screens/chat.dart';
-import 'package:chat_app/auth/screens/search.dart';
+import 'package:chat_app/chat/screens/messages/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-class Friends extends StatelessWidget {
-  const Friends({Key? key}) : super(key: key);
+class Search extends StatefulWidget {
+  const Search({Key? key}) : super(key: key);
+
+  @override
+  State<Search> createState() => _SearchState();
+}
+
+class _SearchState extends State<Search> {
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +25,7 @@ class Friends extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Friends",
+                    "Search",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -34,16 +40,37 @@ class Friends extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        Get.to(const Search());
+                        Navigator.pop(context);
                       },
                       child: const Icon(
-                        FontAwesomeIcons.magnifyingGlass,
+                        FontAwesomeIcons.xmark,
                         color: Colors.black,
                         size: 20,
                       ),
                     ),
                   )
                 ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: TextField(
+                controller: _searchController,
+                style: const TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide:
+                        const BorderSide(width: 0, style: BorderStyle.none),
+                  ),
+                  hintStyle: const TextStyle(fontSize: 16),
+                  filled: true,
+                  fillColor: const Color.fromRGBO(234, 235, 237, 1),
+                  hintText: "Tìm kiếm",
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                ),
               ),
             ),
             Expanded(
@@ -95,22 +122,6 @@ class Friends extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              FontAwesomeIcons.phone,
-                              color: Color.fromRGBO(77, 189, 204, 1),
-                              size: 20,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              FontAwesomeIcons.comment,
-                              color: Color.fromRGBO(77, 189, 204, 1),
-                              size: 20,
-                            ),
                           )
                         ],
                       ),
@@ -120,23 +131,6 @@ class Friends extends StatelessWidget {
               ),
             )
           ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Container(
-          width: 60,
-          height: 60,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [
-                Color.fromRGBO(26, 157, 196, 1),
-                Color.fromRGBO(21, 201, 179, 1)
-              ],
-            ),
-          ),
-          child: const Icon(Icons.add, size: 30),
         ),
       ),
     );
