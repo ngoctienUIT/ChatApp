@@ -1,5 +1,6 @@
 import 'package:chat_app/auth/screens/forgot_password.dart';
 import 'package:chat_app/auth/screens/sign_up.dart';
+import 'package:chat_app/auth/widgets/custom_button.dart';
 import 'package:chat_app/auth/widgets/facebook_button.dart';
 import 'package:chat_app/auth/widgets/faded_overlay.dart';
 import 'package:flutter/material.dart';
@@ -15,33 +16,67 @@ class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        onVerticalDragEnd: (DragEndDetails details) => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Scaffold(
-            appBar: AppBar(title: const Text('Sign In')),
-            resizeToAvoidBottomInset: false,
-            body: Column(children: [
-              const _EmailInput(),
-              //const _UserIdInput(),
-              const _PasswordInput(),
-              const _ForgotPassword(),
-              const _SignInButton(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onVerticalDragEnd: (DragEndDetails details) =>
+          FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        // appBar: AppBar(title: const Text('Sign In')),
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
                 children: [
-                  const Text('Don\'t have an account?'),
-                  TextButton(
-                      onPressed: () {
-                        Get.to(()=>const SignUp());
-                      },
-                      child: const Text('Sign up')),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Sign in",
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 30),
+                  Image.asset("assets/images/chat.png", width: 80),
+                  const SizedBox(height: 30),
+                  const _EmailInput(),
+                  const SizedBox(height: 20),
+                  const _PasswordInput(),
+                  const _ForgotPassword(),
+                  const _SignInButton(),
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Don't have an account?",
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Get.off(const SignUp());
+                        },
+                        child: const Text(
+                          "Sign up",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  const Text('Or'),
+                  const SizedBox(height: 10),
+                  const GoogleButton(),
+                  const SizedBox(height: 10),
+                  const FacebookButton()
                 ],
               ),
-              const Text('Or'),
-              //const _SwitchSignInMethodButton(),
-              const GoogleButton(),
-              const FacebookButton()
-            ])));
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -50,12 +85,13 @@ class _SignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-        onPressed: () {
-          FadedOverlay.showLoading(context);
-          SignInController.inst.validateEmailAndSignIn();
-        },
-        child: const Text('Sign In'));
+    return CustomButton(
+      onPress: () {
+        FadedOverlay.showLoading(context);
+        SignInController.inst.validateEmailAndSignIn();
+      },
+      text: 'Sign In',
+    );
   }
 }
 
@@ -78,12 +114,17 @@ class _ForgotPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        alignment: Alignment.centerRight,
-        child: TextButton(
-            onPressed: () {
-              Get.to(()=>const ForgotPassword());
-            },
-            child: const Text('Forgot password?')));
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () {
+          Get.to(() => const ForgotPassword());
+        },
+        child: const Text(
+          'Forgot password?',
+          style: TextStyle(color: Colors.grey, fontSize: 16),
+        ),
+      ),
+    );
   }
 }
 
@@ -102,44 +143,3 @@ class _PasswordInput extends PasswordInput {
   @override
   String? get hintText => null;
 }
-// TODO
-// styling widget
-// class _SwitchSignInMethodButton extends StatelessWidget {
-//   const _SwitchSignInMethodButton({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox(
-//       width: 240,
-//       child: ElevatedButton(
-//           onPressed: SignInController.inst.usingEmail.toggle,
-//           child: Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceAround,
-//             children: [
-//               Obx((() => FaIcon(SignInController.inst.usingEmail.value ? FontAwesomeIcons.mobileScreen : FontAwesomeIcons.envelope, size: 18))),
-//               Container(
-//                   height: 25,
-//                   width: 1,
-//                   decoration: const BoxDecoration(
-//                     color: Colors.black,
-//                   )),
-//               Obx(() => Text('Login with ${SignInController.inst.usingEmail.value ? 'phone number' : 'email'}'))
-//             ],
-//           )),
-//     );
-//   }
-// }
-
-// class _UserIdInput extends StatelessWidget {
-//   const _UserIdInput({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox(
-//         height: 100,
-//         child: Container(
-//             padding: const EdgeInsets.only(top: 10),
-//             alignment: Alignment.topCenter,
-//             child: Obx(() => SignInController.inst.usingEmail.value ? const EmailInput() : const PhoneNumberInput())));
-//   }
-// }

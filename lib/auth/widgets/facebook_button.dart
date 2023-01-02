@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-
 import '../../chat/you_are_in.dart';
 import '../services/facebook_auth.dart';
 
@@ -26,43 +25,55 @@ class FacebookButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 240,
+      width: 260,
+      height: 40,
       child: ElevatedButton(
-          style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.blue.shade800)),
-          onPressed: () {
-            // with this sign in method, user email may not verifed, especially the first time sign up to the system
-            FbAuth.inst.signIn().then((credentials) async {
-              if (credentials == null) return;
-              if (credentials.user!.emailVerified) {
-                Get.offAll(()=>const YouAreIn());
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.all(0),
+          backgroundColor: Colors.blue[400],
+        ),
+        onPressed: () {
+          // with this sign in method, user email may not verifed, especially the first time sign up to the system
+          FbAuth.inst.signIn().then((credentials) async {
+            if (credentials == null) return;
+            if (credentials.user!.emailVerified) {
+              Get.offAll(() => const YouAreIn());
+            } else {
+              if (credentials.additionalUserInfo!.isNewUser) {
+                await FirebaseAuth.instance.currentUser!
+                    .sendEmailVerification();
+                Get.offAll(() => const EmailVerification(
+                      isNewUser: true,
+                    ));
               } else {
-                if (credentials.additionalUserInfo!.isNewUser) {
-                  await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-                  Get.offAll(()=>const EmailVerification(
-                    isNewUser: true,
-                  ));
-                } else {
-                  Get.offAll(()=>const EmailVerification());
-                }
+                Get.offAll(() => const EmailVerification());
               }
-            })
-            .catchError((e) {
-              Get.snackbar('Facabook Sign In Error', e.toString());
-            });
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const FaIcon(FontAwesomeIcons.facebook, size: 18),
-              Container(
-                  height: 25,
-                  width: 1,
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                  )),
-              const Text('Sign in with Facebook')
-            ],
-          )),
+            }
+          }).catchError((e) {
+            Get.snackbar('Facebook Sign In Error', e.toString());
+          });
+        },
+        child: Row(
+          children: const [
+            SizedBox(
+              width: 60,
+              child: Center(child: Icon(FontAwesomeIcons.facebookF)),
+            ),
+            VerticalDivider(
+              color: Colors.white,
+              width: 1,
+              endIndent: 7,
+              indent: 7,
+            ),
+            Spacer(),
+            Text(
+              "Sign In with Facebook",
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            Spacer(),
+          ],
+        ),
+      ),
     );
   }
 }
