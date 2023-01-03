@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:chat_app/chat/controllers/firebase_controllers.dart';
 import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/models/content_messages.dart';
 import 'package:chat_app/chat/models/messages.dart';
@@ -665,12 +666,6 @@ class _ChatState extends State<Chat> {
       if (!value.exists) check = false;
     });
     return check;
-  }
-
-  Future<String> uploadFile(File file, String folder, String name) async {
-    Reference upload = FirebaseStorage.instance.ref().child("$folder/$name");
-    await upload.putFile(file);
-    return await upload.getDownloadURL();
   }
 
   Widget bottomSheet() {

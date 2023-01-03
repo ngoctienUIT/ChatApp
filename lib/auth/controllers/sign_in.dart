@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chat_app/chat/services/user.dart';
 import 'package:chat_app/chat/you_are_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +114,7 @@ class SignInController extends GetxController {
     password('');
 
     await Auth.signOut().then((_) {
-      Get.offAll(()=>const SignIn());
+      Get.offAll(() => const SignIn());
     }).catchError((e) {
       showError(e);
     });
@@ -123,7 +124,10 @@ class SignInController extends GetxController {
 
   Future<void> _onSuccessValidation() async {
     try {
-      var credentials = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.value, password: password.value);
+      var credentials = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email.value,
+        password: password.value,
+      );
       FadedOverlay.remove();
       if (!credentials.user!.emailVerified) {
         await _promptUserToVerifyEmail(credentials);
@@ -131,6 +135,9 @@ class SignInController extends GetxController {
       }
 
       await FbAuth.originalInst?.linkCredentials(email.value);
+      if (await checkNewUser()) {
+        createNewUserData();
+      }
 
       Get.to(() => const YouAreIn());
     } on FirebaseAuthException catch (e) {
@@ -141,15 +148,17 @@ class SignInController extends GetxController {
           emailErrorText.value = 'Invalid email, please try again';
           break;
         case 'user-disabled':
-          showError('Your account is disabled, please contract admin for support.');
+          showError(
+              'Your account is disabled, please contract admin for support.');
           break;
         case 'user-not-found':
           Get.defaultDialog(
               title: 'We could not find your account',
-              middleText: 'Looks like you are new to us, try signing up to our system',
+              middleText:
+                  'Looks like you are new to us, try signing up to our system',
               textConfirm: 'Sign up',
               onConfirm: () {
-                Get.offAll(()=>const SignUp());
+                Get.offAll(() => const SignUp());
               });
           break;
         case 'wrong-password':
@@ -176,7 +185,10 @@ Future<void> _promptUserToVerifyEmail(UserCredential credential) async {
   await Get.defaultDialog(
       barrierDismissible: false,
       title: 'Verify your email',
-      content: Column(children: const [Text('Please check your mail box to verify your email'), _NeedHelpButton()]),
+      content: Column(children: const [
+        Text('Please check your mail box to verify your email'),
+        _NeedHelpButton()
+      ]),
       textConfirm: 'OK',
       onConfirm: () async {
         // sign out
@@ -208,7 +220,8 @@ class _NeedHelpButton extends StatelessWidget {
                 barrierDismissible: false,
                 title: 'Support',
                 content: Column(children: const [
-                  Text('You don\'t see the mail? Please check other places such as spam box'),
+                  Text(
+                      'You don\'t see the mail? Please check other places such as spam box'),
                   Text('Or'),
                   SendVerificationLinkButton()
                 ]),
@@ -217,7 +230,7 @@ class _NeedHelpButton extends StatelessWidget {
                   await FirebaseAuth.instance.signOut();
                   return true;
                 });
-          },  
+          },
         ));
   }
 }

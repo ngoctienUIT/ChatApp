@@ -26,6 +26,7 @@ class GoogleButton extends StatelessWidget {
                 ?.linkCredentials(credentials.user!.email!);
             if (credentials.additionalUserInfo!.isNewUser) {
               // suggest create a password for primary sign in method
+
               Get.offAll(() => const CreatePassword());
             } else {
               Get.offAll(() => const YouAreIn());

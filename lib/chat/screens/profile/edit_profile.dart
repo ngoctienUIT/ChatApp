@@ -1,26 +1,39 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/auth/widgets/custom_button.dart';
 import 'package:chat_app/auth/widgets/gender_widget.dart';
 import 'package:chat_app/auth/widgets/show_birthday.dart';
+import 'package:chat_app/chat/controllers/firebase_controllers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:chat_app/chat/models/user.dart' as myuser;
 
 class EditProfile extends StatefulWidget {
-  const EditProfile({super.key});
+  const EditProfile({super.key, required this.user});
+  final myuser.User user;
 
   @override
   State<EditProfile> createState() => _EditProfileState();
 }
 
 class _EditProfileState extends State<EditProfile> {
-  final nameController = TextEditingController(text: "Trần Ngọc Tiến");
+  final nameController = TextEditingController();
   final addressController = TextEditingController(text: "Khánh Hòa");
   final phoneController = TextEditingController(text: "032124435");
   bool gender = true;
   File? image;
   DateTime selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = widget.user.name;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,16 +80,33 @@ class _EditProfileState extends State<EditProfile> {
                   children: [
                     ClipOval(
                       child: image == null
-                          ? Image.asset("assets/images/avatar.jpg", width: 170)
+                          ? CachedNetworkImage(
+                              imageUrl: widget.user.image!,
+                              width: 170,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) {
+                                // return loadingInfo(width: 150, height: 150, radius: 90);
+                                return Container();
+                              },
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            )
                           : Image.file(image!, width: 170),
                     ),
                     Positioned(
-                      bottom: 5,
-                      right: 5,
-                      child: Image.asset(
-                        "assets/images/image.png",
-                        width: 35,
-                        color: Colors.black54,
+                      bottom: 10,
+                      right: 10,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(90),
+                          border: Border.all(color: Colors.white),
+                        ),
+                        child: const Icon(
+                          FontAwesomeIcons.circlePlus,
+                          color: Colors.blue,
+                          size: 28,
+                        ),
                       ),
                     )
                   ],
@@ -91,6 +121,7 @@ class _EditProfileState extends State<EditProfile> {
                     textProfile("Full Name"),
                     TextField(
                       controller: nameController,
+                      textCapitalization: TextCapitalization.words,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -162,13 +193,32 @@ class _EditProfileState extends State<EditProfile> {
                       ],
                     ),
                     const SizedBox(height: 30),
-                    CustomButton(onPress: () {}, text: "Save")
+                    CustomButton(
+                      onPress: () {
+                        updateInfo();
+                        Navigator.pop(context);
+                      },
+                      text: "Save",
+                    )
                   ],
                 ),
               )
             ],
           ),
         ));
+  }
+
+  Future updateInfo() async {
+    String avatar = widget.user.image!;
+    if (image != null) {
+      avatar = await uploadFile(
+          image!, "avatar", "${FirebaseAuth.instance.currentUser!.uid}.png");
+    }
+
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({"name": nameController.text, "profile_picture": avatar});
   }
 
   Widget textProfile(String text) {

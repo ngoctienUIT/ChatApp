@@ -2,7 +2,6 @@ import 'package:chat_app/auth/screens/sign_in.dart';
 import 'package:chat_app/auth/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controllers/sign_up.dart';
 import '../widgets/email_input.dart';
 import '../widgets/faded_overlay.dart';

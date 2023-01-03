@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/sign_up.dart';
 
@@ -49,6 +48,7 @@ class _NameInputState extends State<NameInput> {
             },
             onChanged: SignUpController.inst.name,
             decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.person),
               errorText: SignUpController.inst.nameErrorText.value,
               enabledBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey, width: 0.6),
@@ -60,7 +60,7 @@ class _NameInputState extends State<NameInput> {
               label: const Text("Full Name", style: TextStyle(fontSize: 16)),
             ),
             autofillHints: const [AutofillHints.name],
-            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+            textCapitalization: TextCapitalization.words,
           ),
         ),
       ),

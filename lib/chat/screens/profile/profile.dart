@@ -1,12 +1,15 @@
+import 'package:chat_app/auth/screens/sign_in.dart';
 import 'package:chat_app/chat/screens/profile/edit_profile.dart';
 import 'package:chat_app/auth/widgets/custom_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get/get.dart';
 import 'package:chat_app/chat/models/user.dart' as myuser;
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -26,11 +29,11 @@ class _ProfileState extends State<Profile> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: FutureBuilder<DocumentSnapshot>(
-                future: FirebaseFirestore.instance
+            child: StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
                     .collection("users")
                     .doc(FirebaseAuth.instance.currentUser!.uid.toString())
-                    .get(),
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     myuser.User user =
@@ -38,8 +41,8 @@ class _ProfileState extends State<Profile> {
                     return Column(
                       children: [
                         ClipOval(
-                          child: Image.asset(
-                            "assets/images/avatar.jpg",
+                          child: Image.network(
+                            user.image!,
                             width: 150,
                             height: 150,
                           ),
@@ -56,7 +59,7 @@ class _ProfileState extends State<Profile> {
                           height: 45,
                           child: ElevatedButton(
                             onPressed: () {
-                              Get.to(const EditProfile());
+                              Get.to(EditProfile(user: user));
                             },
                             style: ButtonStyle(
                               elevation: MaterialStateProperty.all(0),
@@ -176,7 +179,15 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                         const SizedBox(height: 50),
-                        CustomButton(onPress: () {}, text: "Log out")
+                        CustomButton(
+                          onPress: () async {
+                            await FirebaseAuth.instance.signOut();
+                            await GoogleSignIn().signOut();
+                            await FacebookAuth.instance.logOut();
+                            Get.offAll(const SignIn());
+                          },
+                          text: "Log out",
+                        )
                       ],
                     );
                   }

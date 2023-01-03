@@ -1,5 +1,6 @@
 import 'package:chat_app/auth/screens/not_verified.dart';
 import 'package:chat_app/auth/screens/sign_in.dart';
+import 'package:chat_app/auth/screens/verify_page.dart';
 import 'package:chat_app/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,15 +23,19 @@ void main() async {
   //await DynamicLinks.inst.initialLink;
 
   // Transparent status bar, dont need to use SafeArea
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+  SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   // print('currentUser:');
   // print(FirebaseAuth.instance.currentUser);
-  runApp(GetMaterialApp(
+  runApp(
+    GetMaterialApp(
       debugShowCheckedModeBanner: false,
       locale: Localization.inst.defaultLocale,
       fallbackLocale: Localization.inst.defaultLocale,
       translations: Localization.inst,
-      home: const _Home()));
+      home: const _Home(),
+    ),
+  );
 }
 
 class _Home extends StatelessWidget {
@@ -42,7 +47,7 @@ class _Home extends StatelessWidget {
 
     if (user == null) return const SignIn();
 
-    if (!user.emailVerified) return const NotVerified();
+    if (!user.emailVerified) return const VerifyPage();
 
     return const YouAreIn();
   }

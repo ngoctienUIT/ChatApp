@@ -3,16 +3,27 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 Map<String, dynamic> emptyUserData() {
-  return {'name': 'User name', 'is_active': true, 'profile_picture': '', 'friends': [], 'last_seen': Timestamp.now()};
+  return {
+    'name': 'User name',
+    'is_active': true,
+    'profile_picture': '',
+    'friends': [],
+    'last_seen': Timestamp.now()
+  };
 }
 
-Future<void> createNewUserData() async {
+String defaultAvatar =
+    "https://firebasestorage.googleapis.com/v0/b/chatapp-d4407.appspot.com/o/avatar%2Favatar.jpg?alt=media&token=b7a309ac-0c1d-4650-813e-33dcad44fcfc";
+
+Future<void> createNewUserData({String? name}) async {
   final users = FirebaseFirestore.instance.collection('users');
   final currentUser = FirebaseAuth.instance.currentUser!;
   final userId = currentUser.uid;
   var newData = emptyUserData();
-  if (currentUser.displayName != null) newData['name'] = currentUser.displayName;
-  if (currentUser.photoURL != null) newData['profile_picture'] = currentUser.photoURL;
+  if (currentUser.displayName != null) {
+    newData['name'] = currentUser.displayName ?? name;
+  }
+  newData['profile_picture'] = currentUser.photoURL ?? defaultAvatar;
   await users.doc(userId).set(newData);
 }
 
@@ -37,6 +48,17 @@ void loadUserData(Function onGetSuccess) async {
   }
 }
 
+Future<bool> checkNewUser() async {
+  final users = FirebaseFirestore.instance.collection('users');
+  final userId = FirebaseAuth.instance.currentUser!.uid;
+  final doc = await users.doc(userId).get();
+
+  if (doc.exists) {
+    return false;
+  }
+  return true;
+}
+
 Future<DocumentSnapshot<Map<String, dynamic>>> getUserData() async {
   final users = FirebaseFirestore.instance.collection('users');
   final userId = FirebaseAuth.instance.currentUser!.uid;
@@ -51,7 +73,9 @@ Future<void> setUserActive() async {
 }
 
 Future<void> setUserOffline() async {
-    final users = FirebaseFirestore.instance.collection('users');
+  final users = FirebaseFirestore.instance.collection('users');
   final userId = FirebaseAuth.instance.currentUser!.uid;
-  return await users.doc(userId).update({'is_active': false, 'last_seen': Timestamp.now()});
+  return await users
+      .doc(userId)
+      .update({'is_active': false, 'last_seen': Timestamp.now()});
 }
