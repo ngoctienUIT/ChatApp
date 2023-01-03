@@ -38,6 +38,15 @@ class _ChatState extends State<Chat> {
   void initState() {
     initRecorder();
     super.initState();
+    _controller.addListener(() {
+      setState(() {
+        if (_controller.text.isNotEmpty) {
+          sendButton = true;
+        } else {
+          sendButton = false;
+        }
+      });
+    });
   }
 
   Future initRecorder() async {
@@ -85,9 +94,13 @@ class _ChatState extends State<Chat> {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            showMessages(),
+            Expanded(child: showMessages()),
             const SizedBox(height: 10),
             bottomInput(),
+            Expanded(
+              flex: show ? 1 : 0,
+              child: show ? emojiSelect() : const SizedBox.shrink(),
+            )
           ],
         ),
       ),
@@ -289,8 +302,7 @@ class _ChatState extends State<Chat> {
             for (var element in snapshot.requireData.docs) {
               messages.add(Messages.fromFirebase(element));
             }
-            return Expanded(
-                child: ListView.builder(
+            return ListView.builder(
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 bool check = messages[index].sender.compareTo(
@@ -315,7 +327,7 @@ class _ChatState extends State<Chat> {
                 }
                 return Container();
               },
-            ));
+            );
           }
           return Expanded(child: Container());
         });
@@ -494,7 +506,21 @@ class _ChatState extends State<Chat> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.camera_alt),
-                            onPressed: () {},
+                            onPressed: () async {
+                              try {
+                                final image = await ImagePicker()
+                                    .pickImage(source: ImageSource.camera);
+                                if (image != null) {
+                                  List<String> link = [];
+                                  link.add(await uploadFile(
+                                      File(image.path),
+                                      "chats/${widget.id}/image",
+                                      "${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}.${image.path.split('.').last}"));
+                                  sendMessages(ContentMessages(
+                                      activity: 2, image: link));
+                                }
+                              } on PlatformException catch (_) {}
+                            },
                           ),
                         ],
                       ),
@@ -535,10 +561,6 @@ class _ChatState extends State<Chat> {
               ),
             ],
           ),
-          Expanded(
-            flex: show ? 1 : 0,
-            child: show ? emojiSelect() : const SizedBox.shrink(),
-          )
         ],
       ),
     );
@@ -583,7 +605,7 @@ class _ChatState extends State<Chat> {
         .collection("private_chats")
         .doc(widget.id)
         .collection("chats")
-        .doc(DateFormat("yyyyMMddhhmmss").format(DateTime.now()))
+        .doc(DateTime.now().microsecondsSinceEpoch.toString())
         .set(
           Messages(
             sender: FirebaseAuth.instance.currentUser!.uid,
@@ -594,11 +616,14 @@ class _ChatState extends State<Chat> {
   }
 
   Future initChat() async {
+    // init room chat
     FirebaseFirestore.instance
         .collection("private_chats")
         .doc(widget.id)
         .set(widget.chatRoom!.toMap());
 
+    // save room chat id
+
     FirebaseFirestore.instance
         .collection("users")
         .doc(widget.chatRoom!.user1.id)
@@ -612,6 +637,22 @@ class _ChatState extends State<Chat> {
         .collection("private_chats")
         .doc(widget.chatRoom!.user1.id)
         .set({"chat_id": widget.id});
+
+    //add friend
+
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(widget.chatRoom!.user1.id)
+        .collection("friends")
+        .doc(widget.chatRoom!.user2.id)
+        .set({});
+
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(widget.chatRoom!.user2.id)
+        .collection("friends")
+        .doc(widget.chatRoom!.user1.id)
+        .set({});
   }
 
   Future<bool> checkExist() async {
