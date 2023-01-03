@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -193,7 +194,18 @@ class _ChatState extends State<Chat> {
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       onSelected: (value) {
-        print(value);
+        switch (value) {
+          case 0:
+            break;
+          case 1:
+            break;
+          case 2:
+            deleteChat();
+            Navigator.pop(context);
+            break;
+          case 3:
+            break;
+        }
       },
       icon: const Icon(
         FontAwesomeIcons.ellipsisVertical,
@@ -231,6 +243,39 @@ class _ChatState extends State<Chat> {
     );
   }
 
+  Future deleteChat() async {
+    final instance = FirebaseFirestore.instance;
+    final batch = instance.batch();
+    //delete info room chat
+    await instance.collection("private_chats").doc(widget.id).delete();
+    // delete all chat
+    var snapshots = await instance
+        .collection("private_chats")
+        .doc(widget.id)
+        .collection("chats")
+        .get();
+    for (var doc in snapshots.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+    // delete id room in user 1
+    await instance
+        .collection("users")
+        .doc(widget.chatRoom!.user1.id)
+        .collection("private_chats")
+        .doc(widget.chatRoom!.user2.id)
+        .delete();
+    // delete id room in user 2
+    await instance
+        .collection("users")
+        .doc(widget.chatRoom!.user2.id)
+        .collection("private_chats")
+        .doc(widget.chatRoom!.user1.id)
+        .delete();
+    // delete all file in chat room
+    FirebaseStorage.instance.ref().child(widget.id).delete();
+  }
+
   Widget showMessages() {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -251,38 +296,133 @@ class _ChatState extends State<Chat> {
                 bool check = messages[index].sender.compareTo(
                         FirebaseAuth.instance.currentUser!.uid.toString()) ==
                     0;
-                return Container(
-                  alignment:
-                      check ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        constraints:
-                            BoxConstraints(maxWidth: Get.width * 2 / 3),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          color: check ? Colors.blue : Colors.grey,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Text(
-                              messages[index].content.text!,
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+
+                switch (messages[index].content.activity) {
+                  case 0:
+                    break;
+                  case 1:
+                    return showFile(check, messages[index].content);
+                  case 2:
+                    return showImage(check, messages[index].content);
+                  case 3:
+                    break;
+                  case 4:
+                    break;
+                  case 5:
+                    return showMessagesText(check, messages[index].content);
+                  default:
+                    return Container();
+                }
+                return Container();
               },
             ));
           }
           return Expanded(child: Container());
         });
+  }
+
+  Widget showFile(bool check, ContentMessages content) {
+    String fileName = content.file!;
+    fileName = fileName.split("/").last;
+    fileName = fileName.split("%2F").last;
+    fileName = fileName.split("?").first;
+    return Container(
+      alignment: check ? Alignment.centerRight : Alignment.centerLeft,
+      child: Card(
+        color: Colors.blue.shade400,
+        child: SizedBox(
+          height: 50,
+          width: Get.width * (2 / 3 - 0.02),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  fileName,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.download_rounded, color: Colors.white),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget showImage(bool check, ContentMessages content) {
+    return Container(
+      alignment: check ? Alignment.centerRight : Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            constraints: BoxConstraints(maxWidth: Get.width * 2 / 3),
+            padding: const EdgeInsets.all(5),
+            child: Wrap(
+              spacing: 2,
+              runSpacing: 2,
+              children: List.generate(content.image!.length, (index) {
+                if (content.image!.length > 1) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Image.network(
+                      content.image![index],
+                      width: Get.width * 2 / 10,
+                      height: Get.width * 2 / 10,
+                      fit: BoxFit.fill,
+                    ),
+                  );
+                }
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    content.image![index],
+                    width: Get.width * 2 / 3,
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget showMessagesText(bool check, ContentMessages content) {
+    return Container(
+      alignment: check ? Alignment.centerRight : Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            constraints: BoxConstraints(maxWidth: Get.width * 2 / 3),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              color: check ? Colors.blue : Colors.grey,
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  content.text!,
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget bottomInput() {
@@ -381,7 +521,8 @@ class _ChatState extends State<Chat> {
                     ),
                     onPressed: () {
                       if (sendButton) {
-                        sendMessages(_controller.text);
+                        sendMessages(ContentMessages(
+                            activity: 5, text: _controller.text));
                         _controller.text = "";
                       } else if (recorder.isRecording) {
                         stop();
@@ -396,7 +537,7 @@ class _ChatState extends State<Chat> {
           ),
           Expanded(
             flex: show ? 1 : 0,
-            child: show ? emojiSelect() : Container(),
+            child: show ? emojiSelect() : const SizedBox.shrink(),
           )
         ],
       ),
@@ -436,27 +577,8 @@ class _ChatState extends State<Chat> {
     );
   }
 
-  Future sendMessages(String message) async {
-    if (!await checkExist()) {
-      FirebaseFirestore.instance
-          .collection("private_chats")
-          .doc(widget.id)
-          .set(widget.chatRoom!.toMap());
-
-      FirebaseFirestore.instance
-          .collection("users")
-          .doc(widget.chatRoom!.user1.id)
-          .collection("private_chats")
-          .doc(widget.chatRoom!.user2.id)
-          .set({"chat_id": widget.id});
-
-      FirebaseFirestore.instance
-          .collection("users")
-          .doc(widget.chatRoom!.user2.id)
-          .collection("private_chats")
-          .doc(widget.chatRoom!.user1.id)
-          .set({"chat_id": widget.id});
-    }
+  Future sendMessages(ContentMessages content) async {
+    if (!await checkExist()) initChat();
     await FirebaseFirestore.instance
         .collection("private_chats")
         .doc(widget.id)
@@ -465,10 +587,31 @@ class _ChatState extends State<Chat> {
         .set(
           Messages(
             sender: FirebaseAuth.instance.currentUser!.uid,
-            content: ContentMessages(activity: "", text: message),
+            content: content,
             timestamp: DateTime.now(),
           ).toMap(),
         );
+  }
+
+  Future initChat() async {
+    FirebaseFirestore.instance
+        .collection("private_chats")
+        .doc(widget.id)
+        .set(widget.chatRoom!.toMap());
+
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(widget.chatRoom!.user1.id)
+        .collection("private_chats")
+        .doc(widget.chatRoom!.user2.id)
+        .set({"chat_id": widget.id});
+
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(widget.chatRoom!.user2.id)
+        .collection("private_chats")
+        .doc(widget.chatRoom!.user1.id)
+        .set({"chat_id": widget.id});
   }
 
   Future<bool> checkExist() async {
@@ -481,6 +624,12 @@ class _ChatState extends State<Chat> {
       if (!value.exists) check = false;
     });
     return check;
+  }
+
+  Future<String> uploadFile(File file, String folder, String name) async {
+    Reference upload = FirebaseStorage.instance.ref().child("$folder/$name");
+    await upload.putFile(file);
+    return await upload.getDownloadURL();
   }
 
   Widget bottomSheet() {
@@ -502,12 +651,23 @@ class _ChatState extends State<Chat> {
                     Colors.indigo,
                     "Document",
                     () async {
+                      Navigator.pop(context);
                       FilePickerResult? result = await FilePicker.platform
                           .pickFiles(allowMultiple: true);
 
                       if (result != null) {
                         List<File> files =
                             result.paths.map((path) => File(path!)).toList();
+                        if (files.isNotEmpty) {
+                          for (File file in files) {
+                            String link = await uploadFile(
+                                file,
+                                "chats/${widget.id}/file/${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}",
+                                file.path.split('/').last);
+                            sendMessages(
+                                ContentMessages(activity: 1, file: link));
+                          }
+                        }
                       } else {
                         // User canceled the picker
                       }
@@ -519,10 +679,19 @@ class _ChatState extends State<Chat> {
                     Colors.pink,
                     "Camera",
                     () async {
+                      Navigator.pop(context);
                       try {
                         final image = await ImagePicker()
                             .pickImage(source: ImageSource.camera);
-                        if (image != null) {}
+                        if (image != null) {
+                          List<String> link = [];
+                          link.add(await uploadFile(
+                              File(image.path),
+                              "chats/${widget.id}/image",
+                              "${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}.${image.path.split('.').last}"));
+                          sendMessages(
+                              ContentMessages(activity: 2, image: link));
+                        }
                       } on PlatformException catch (_) {}
                     },
                   ),
@@ -532,9 +701,21 @@ class _ChatState extends State<Chat> {
                     Colors.purple,
                     "Gallery",
                     () async {
+                      Navigator.pop(context);
                       try {
                         List<XFile>? images =
                             await ImagePicker().pickMultiImage();
+                        List<String> link = [];
+                        if (images.isNotEmpty) {
+                          for (XFile image in images) {
+                            link.add(await uploadFile(
+                                File(image.path),
+                                "chats/${widget.id}/image",
+                                "${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}.${image.path.split('.').last}"));
+                          }
+                          sendMessages(
+                              ContentMessages(activity: 2, image: link));
+                        }
                       } catch (_) {}
                     },
                   ),
