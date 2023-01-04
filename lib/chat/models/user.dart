@@ -6,6 +6,7 @@ class User {
   String? image;
   DateTime? lastSeen;
   String? token;
+  bool isActive;
 
   User({
     required this.id,
@@ -13,6 +14,7 @@ class User {
     this.image,
     this.lastSeen,
     this.token,
+    this.isActive = true,
   });
 
   factory User.fromFirebase(DocumentSnapshot snapshot) {
@@ -24,6 +26,7 @@ class User {
         (snapshot["last_seen"] as Timestamp).microsecondsSinceEpoch,
       ),
       token: snapshot["token"],
+      isActive: snapshot["is_active"],
     );
   }
 

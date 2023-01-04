@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TitleChat extends StatelessWidget {
-  const TitleChat({Key? key, required this.id, required this.chatRoom})
-      : super(key: key);
-
-  final String id;
+  const TitleChat({Key? key, required this.chatRoom}) : super(key: key);
   final ChatRoom chatRoom;
 
   @override
@@ -17,7 +14,7 @@ class TitleChat extends StatelessWidget {
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection("private_chats")
-            .doc(id)
+            .doc(chatRoom.id)
             .snapshots(),
         builder: (context, snapshot) {
           return AppBar(
@@ -51,7 +48,7 @@ class TitleChat extends StatelessWidget {
                   color: Color.fromRGBO(34, 184, 190, 1),
                 ),
               ),
-              OptionChat(id: id, chatRoom: chatRoom),
+              OptionChat(chatRoom: chatRoom),
             ],
           );
         });

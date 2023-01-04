@@ -54,14 +54,14 @@ Future initChat(String id, ChatRoom chatRoom) async {
       .doc(chatRoom.user1.id)
       .collection("friends")
       .doc(chatRoom.user2.id)
-      .set({});
+      .set({"chat_id": id});
 
   FirebaseFirestore.instance
       .collection("users")
       .doc(chatRoom.user2.id)
       .collection("friends")
       .doc(chatRoom.user1.id)
-      .set({});
+      .set({"chat_id": id});
 }
 
 Future sendMessages(
@@ -127,4 +127,17 @@ Future<bool> checkExist(String id) async {
     if (!value.exists) check = false;
   });
   return check;
+}
+
+Future<String?> checkExistPrivateChat(String id1, String id2) async {
+  String? id;
+  bool check = await checkExist("$id1-$id2");
+  if (check) {
+    id = "$id1-$id2";
+  }
+  check = await checkExist("$id2-$id1");
+  if (check) {
+    id = "$id2-$id1";
+  }
+  return id;
 }

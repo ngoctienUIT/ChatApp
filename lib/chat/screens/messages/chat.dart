@@ -76,14 +76,14 @@ class _ChatState extends State<Chat> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
-        child: TitleChat(id: widget.chatRoom.id, chatRoom: widget.chatRoom),
+        child: TitleChat(chatRoom: widget.chatRoom),
       ),
       body: WillPopScope(
         onWillPop: () {
           if (show) {
             setState(() => show = false);
           } else {
-            Navigator.pop(context);
+            Get.back();
           }
           return Future.value(false);
         },

@@ -15,164 +15,7 @@ class Friends extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Friends",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 45,
-                    width: 45,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(0),
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(90),
-                        ),
-                      ),
-                      onPressed: () {
-                        Get.to(const Search());
-                      },
-                      child: const Icon(
-                        FontAwesomeIcons.magnifyingGlass,
-                        color: Colors.black,
-                        size: 20,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection("friends")
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    List<String> id = [];
-                    for (var doc in snapshot.requireData.docs) {
-                      id.add(doc.id);
-                    }
-                    return Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        itemCount: id.length,
-                        itemBuilder: (context, index) {
-                          return FutureBuilder<DocumentSnapshot>(
-                              future: FirebaseFirestore.instance
-                                  .collection("users")
-                                  .doc(id[index])
-                                  .get(),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  myuser.User user = myuser.User.fromFirebase(
-                                      snapshot.requireData);
-
-                                  return InkWell(
-                                    onTap: () {
-                                      FirebaseFirestore.instance
-                                          .collection("users")
-                                          .doc(FirebaseAuth
-                                              .instance.currentUser!.uid)
-                                          .collection("private_chats")
-                                          .doc(id[index])
-                                          .get()
-                                          .then((value) {
-                                        var data = value.data();
-                                        String id = data!["chat_id"];
-                                        //TODO
-                                        // Get.to(const Chat(
-                                        //   chatRoom: ChatRoom(),
-                                        // ));
-                                      });
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5, horizontal: 10),
-                                      child: Row(
-                                        children: [
-                                          Stack(
-                                            children: [
-                                              ClipOval(
-                                                child: Image.asset(
-                                                  "assets/images/avatar.jpg",
-                                                  width: 50,
-                                                ),
-                                              ),
-                                              if (index % 3 != 0)
-                                                Positioned(
-                                                  right: 0,
-                                                  child: Container(
-                                                    width: 14,
-                                                    height: 14,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.red,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              90),
-                                                      border: Border.all(
-                                                        color: Colors.white,
-                                                        width: 2,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                            ],
-                                          ),
-                                          const SizedBox(width: 20),
-                                          Expanded(
-                                            child: Text(
-                                              user.name,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          IconButton(
-                                            onPressed: () {},
-                                            icon: const Icon(
-                                              FontAwesomeIcons.phone,
-                                              color: Color.fromRGBO(
-                                                  77, 189, 204, 1),
-                                              size: 20,
-                                            ),
-                                          ),
-                                          IconButton(
-                                            onPressed: () {},
-                                            icon: const Icon(
-                                              FontAwesomeIcons.comment,
-                                              color: Color.fromRGBO(
-                                                  77, 189, 204, 1),
-                                              size: 20,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }
-
-                                return Container();
-                              });
-                        },
-                      ),
-                    );
-                  }
-
-                  return Container();
-                })
-          ],
-        ),
+        child: Column(children: [header(), body()]),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
@@ -189,6 +32,155 @@ class Friends extends StatelessWidget {
             ),
           ),
           child: const Icon(Icons.add, size: 30),
+        ),
+      ),
+    );
+  }
+
+  Widget header() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            "Friends",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: 45,
+            width: 45,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(0),
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(90),
+                ),
+              ),
+              onPressed: () {
+                Get.to(const Search());
+              },
+              child: const Icon(
+                FontAwesomeIcons.magnifyingGlass,
+                color: Colors.black,
+                size: 20,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget body() {
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("friends")
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List<String> listId = [];
+            List<String> listChat = [];
+            for (var doc in snapshot.requireData.docs) {
+              var data = doc.data() as Map<String, dynamic>;
+              listId.add(doc.id);
+              listChat.add(data["chat_id"]);
+            }
+            return Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                itemCount: listId.length,
+                itemBuilder: (context, index) {
+                  return FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection("users")
+                          .doc(listId[index])
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          myuser.User user =
+                              myuser.User.fromFirebase(snapshot.requireData);
+
+                          return itemFriend(listChat[index], user);
+                        }
+
+                        return Container();
+                      });
+                },
+              ),
+            );
+          }
+
+          return Container();
+        });
+  }
+
+  Widget itemFriend(String chatID, myuser.User user) {
+    return InkWell(
+      onTap: () {
+        FirebaseFirestore.instance
+            .collection("private_chats")
+            .doc(chatID)
+            .get()
+            .then((value) {
+          ChatRoom chatRoom = ChatRoom.fromFirebase(value);
+          Get.to(Chat(chatRoom: chatRoom));
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        child: Row(
+          children: [
+            Stack(
+              children: [
+                ClipOval(
+                  child: Image.network(user.image!, width: 50),
+                ),
+                if (user.isActive)
+                  Positioned(
+                    right: 0,
+                    child: Container(
+                      width: 14,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(90),
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                    ),
+                  )
+              ],
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Text(
+                user.name,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                FontAwesomeIcons.phone,
+                color: Color.fromRGBO(77, 189, 204, 1),
+                size: 20,
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                FontAwesomeIcons.comment,
+                color: Color.fromRGBO(77, 189, 204, 1),
+                size: 20,
+              ),
+            )
+          ],
         ),
       ),
     );
