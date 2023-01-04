@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/screens/messages/chat.dart';
 import 'package:chat_app/chat/services/chat.dart';
+import 'package:chat_app/chat/widgets/loading_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -140,7 +142,18 @@ class _SearchState extends State<Search> {
             Stack(
               children: [
                 ClipOval(
-                  child: Image.network(user.image!, width: 50, height: 50),
+                  child: CachedNetworkImage(
+                    imageUrl: user.image!,
+                    width: 50,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => loadingImage(
+                      width: 50,
+                      height: 50,
+                      radius: 90,
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
                 ),
                 if (user.isActive)
                   Positioned(

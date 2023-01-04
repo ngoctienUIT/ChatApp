@@ -61,6 +61,7 @@ dependencies:
   flutter_background: ^1.1.0
   path_provider: ^2.0.11
   firebase_messaging: ^13.1.0
+  shimmer: ^2.0.0
   #progress_state_button: ^1.0.4
 
 dev_dependencies:
