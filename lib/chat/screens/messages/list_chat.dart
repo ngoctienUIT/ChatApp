@@ -85,10 +85,7 @@ class ListChat extends StatelessWidget {
                               ChatRoom.fromFirebase(snapshot.requireData);
                           return InkWell(
                             onTap: () {
-                              Get.to(Chat(
-                                id: chats[index],
-                                chatRoom: chatRoom,
-                              ));
+                              Get.to(Chat(chatRoom: chatRoom));
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(

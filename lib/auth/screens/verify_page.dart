@@ -85,8 +85,8 @@ class _VerifyPageState extends State<VerifyPage> {
                 Text(
                   textAlign: TextAlign.center,
                   isEmailVerify
-                      ? 'congratulation_your_email_verified'
-                      : 'please_check_your_email_verify_your_email',
+                      ? 'Congratulation your email verified'
+                      : 'Please check your email verify your email',
                   style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 20),

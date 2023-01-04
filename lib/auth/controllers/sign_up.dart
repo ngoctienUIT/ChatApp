@@ -120,7 +120,8 @@ class SignUpController extends GetxController {
         password: password.value,
       );
       await credentials.user!.sendEmailVerification();
-      if (await checkNewUser()) {
+      updateToken();
+      if (credentials.additionalUserInfo!.isNewUser) {
         createNewUserData(name: name.value);
       }
       // await FirebaseAuth.instance.signOut();

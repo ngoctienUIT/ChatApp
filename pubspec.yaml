@@ -57,6 +57,10 @@ dependencies:
   flutter_sound: ^9.1.9
   intl: ^0.17.0
   fluttertoast: ^8.1.2
+  flutter_webrtc: ^0.9.18
+  flutter_background: ^1.1.0
+  path_provider: ^2.0.11
+  firebase_messaging: ^13.1.0
   #progress_state_button: ^1.0.4
 
 dev_dependencies:

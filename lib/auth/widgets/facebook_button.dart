@@ -1,4 +1,5 @@
 import 'package:chat_app/auth/screens/email_verification.dart';
+import 'package:chat_app/chat/services/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,13 +43,13 @@ class FacebookButton extends StatelessWidget {
               if (credentials.additionalUserInfo!.isNewUser) {
                 await FirebaseAuth.instance.currentUser!
                     .sendEmailVerification();
-                Get.offAll(() => const EmailVerification(
-                      isNewUser: true,
-                    ));
+                createNewUserData();
+                Get.offAll(() => const EmailVerification(isNewUser: true));
               } else {
                 Get.offAll(() => const EmailVerification());
               }
             }
+            updateToken();
           }).catchError((e) {
             Get.snackbar('Facebook Sign In Error', e.toString());
           });

@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +9,8 @@ Map<String, dynamic> emptyUserData() {
     'is_active': true,
     'profile_picture': '',
     'friends': [],
-    'last_seen': Timestamp.now()
+    'last_seen': Timestamp.now(),
+    "token": "",
   };
 }
 
@@ -20,9 +22,7 @@ Future<void> createNewUserData({String? name}) async {
   final currentUser = FirebaseAuth.instance.currentUser!;
   final userId = currentUser.uid;
   var newData = emptyUserData();
-  if (currentUser.displayName != null) {
-    newData['name'] = currentUser.displayName ?? name;
-  }
+  newData['name'] = name ?? currentUser.displayName;
   newData['profile_picture'] = currentUser.photoURL ?? defaultAvatar;
   await users.doc(userId).set(newData);
 }
@@ -48,17 +48,6 @@ void loadUserData(Function onGetSuccess) async {
   }
 }
 
-Future<bool> checkNewUser() async {
-  final users = FirebaseFirestore.instance.collection('users');
-  final userId = FirebaseAuth.instance.currentUser!.uid;
-  final doc = await users.doc(userId).get();
-
-  if (doc.exists) {
-    return false;
-  }
-  return true;
-}
-
 Future<DocumentSnapshot<Map<String, dynamic>>> getUserData() async {
   final users = FirebaseFirestore.instance.collection('users');
   final userId = FirebaseAuth.instance.currentUser!.uid;
@@ -77,5 +66,15 @@ Future<void> setUserOffline() async {
   final userId = FirebaseAuth.instance.currentUser!.uid;
   return await users
       .doc(userId)
-      .update({'is_active': false, 'last_seen': Timestamp.now()});
+      .update({'is_active': false, 'last_seen': DateTime.now()});
+}
+
+Future updateToken() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  messaging.getToken().then((value) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({"token": value});
+  });
 }

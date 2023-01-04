@@ -2,12 +2,14 @@ import 'package:chat_app/chat/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatRoom {
+  String id;
   User user1;
   User user2;
   String theme;
   String mainReaction;
 
   ChatRoom({
+    required this.id,
     required this.user1,
     required this.user2,
     required this.theme,
@@ -18,6 +20,7 @@ class ChatRoom {
     Map<String, dynamic> mapUser1 = snapshot["user1"];
     Map<String, dynamic> mapUser2 = snapshot["user2"];
     return ChatRoom(
+      id: snapshot.id,
       user1: User(
         id: mapUser1["id"],
         name: mapUser1["nick_name"],

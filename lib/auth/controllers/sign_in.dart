@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chat_app/auth/screens/verify_page.dart';
 import 'package:chat_app/chat/services/user.dart';
 import 'package:chat_app/chat/you_are_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -130,14 +131,13 @@ class SignInController extends GetxController {
       );
       FadedOverlay.remove();
       if (!credentials.user!.emailVerified) {
-        await _promptUserToVerifyEmail(credentials);
+        Get.off(const VerifyPage());
+        // await _promptUserToVerifyEmail(credentials);
         return;
       }
 
       await FbAuth.originalInst?.linkCredentials(email.value);
-      if (await checkNewUser()) {
-        createNewUserData();
-      }
+      updateToken();
 
       Get.to(() => const YouAreIn());
     } on FirebaseAuthException catch (e) {
@@ -176,7 +176,6 @@ class SignInController extends GetxController {
       FadedOverlay.remove();
       showError(e);
     }
-
     return;
   }
 }

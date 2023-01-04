@@ -5,20 +5,25 @@ class User {
   String name;
   String? image;
   DateTime? lastSeen;
+  String? token;
 
   User({
     required this.id,
     required this.name,
     this.image,
     this.lastSeen,
+    this.token,
   });
 
   factory User.fromFirebase(DocumentSnapshot snapshot) {
     return User(
-      id: "",
+      id: snapshot.id,
       name: snapshot["name"],
       image: snapshot["profile_picture"],
-      lastSeen: DateTime.now(),
+      lastSeen: DateTime.fromMicrosecondsSinceEpoch(
+        (snapshot["last_seen"] as Timestamp).microsecondsSinceEpoch,
+      ),
+      token: snapshot["token"],
     );
   }
 

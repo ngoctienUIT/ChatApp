@@ -112,21 +112,24 @@ class _SearchState extends State<Search> {
                             onTap: () async {
                               myuser.User user = (await myuser.User.getInfoUser(
                                   FirebaseAuth.instance.currentUser!.uid))!;
-                              Get.to(Chat(
-                                id: "${FirebaseAuth.instance.currentUser!.uid}-${users[index].id}",
-                                chatRoom: ChatRoom(
-                                  user1: myuser.User(
-                                    id: FirebaseAuth.instance.currentUser!.uid,
-                                    name: user.name,
+                              Get.to(
+                                Chat(
+                                  chatRoom: ChatRoom(
+                                    id: "${FirebaseAuth.instance.currentUser!.uid}-${users[index].id}",
+                                    user1: myuser.User(
+                                      id: FirebaseAuth
+                                          .instance.currentUser!.uid,
+                                      name: user.name,
+                                    ),
+                                    user2: myuser.User(
+                                      id: users[index].id,
+                                      name: users[index].name,
+                                    ),
+                                    mainReaction: "",
+                                    theme: "",
                                   ),
-                                  user2: myuser.User(
-                                    id: users[index].id,
-                                    name: users[index].name,
-                                  ),
-                                  mainReaction: "",
-                                  theme: "",
                                 ),
-                              ));
+                              );
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(

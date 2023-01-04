@@ -1,3 +1,4 @@
+import 'package:chat_app/chat/services/user.dart';
 import 'package:chat_app/chat/you_are_in.dart';
 import 'package:chat_app/auth/services/facebook_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +27,12 @@ class GoogleButton extends StatelessWidget {
                 ?.linkCredentials(credentials.user!.email!);
             if (credentials.additionalUserInfo!.isNewUser) {
               // suggest create a password for primary sign in method
-
+              createNewUserData();
               Get.offAll(() => const CreatePassword());
             } else {
               Get.offAll(() => const YouAreIn());
             }
+            updateToken();
           }).catchError((e) {
             //Get.snackbar('Google Sign In Error', e.toString());
           });

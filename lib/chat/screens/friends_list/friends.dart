@@ -1,3 +1,4 @@
+import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/screens/messages/chat.dart';
 import 'package:chat_app/chat/screens/search/search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -78,9 +79,21 @@ class Friends extends StatelessWidget {
 
                                   return InkWell(
                                     onTap: () {
-                                      Get.to(const Chat(
-                                        id: "",
-                                      ));
+                                      FirebaseFirestore.instance
+                                          .collection("users")
+                                          .doc(FirebaseAuth
+                                              .instance.currentUser!.uid)
+                                          .collection("private_chats")
+                                          .doc(id[index])
+                                          .get()
+                                          .then((value) {
+                                        var data = value.data();
+                                        String id = data!["chat_id"];
+                                        //TODO
+                                        // Get.to(const Chat(
+                                        //   chatRoom: ChatRoom(),
+                                        // ));
+                                      });
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(

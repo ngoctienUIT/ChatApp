@@ -2,9 +2,9 @@ import 'package:chat_app/chat/screens/friends_list/friends.dart';
 import 'package:chat_app/chat/screens/profile/profile.dart';
 import 'package:chat_app/chat/screens/messages/list_chat.dart';
 import 'package:chat_app/chat/services/user.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 
 class YouAreIn extends StatefulWidget {
   const YouAreIn({Key? key}) : super(key: key);
@@ -13,7 +13,7 @@ class YouAreIn extends StatefulWidget {
   State<YouAreIn> createState() => _YouAreInState();
 }
 
-class _YouAreInState extends State<YouAreIn> {
+class _YouAreInState extends State<YouAreIn> with WidgetsBindingObserver {
   int currentTab = 0;
   List<Widget> screens = [
     const ListChat(),
@@ -23,35 +23,51 @@ class _YouAreInState extends State<YouAreIn> {
 
   DateTime? currentBackPressTime;
   final PageStorageBucket bucket = PageStorageBucket();
-  bool _isLoading = true;
+  // bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    loadUserData(() {
-      setState(() => _isLoading = false);
-      setUserActive();
+    // loadUserData(() {
+    //   setState(() => _isLoading = false);
+    //   // setUserActive();
+    // });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+        // setState(() {
+        //   title = message.notification!.title!;
+        //   body = message.notification!.body!;
+        // });
+      }
     });
   }
 
   @override
-  void dispose() {
-    //pageController.dispose();
-    super.dispose();
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      setUserActive();
+    } else {
+      setUserOffline();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: SizedBox(
-            width: 100,
-            child: LoadingIndicator(indicatorType: Indicator.ballPulseRise),
-          ),
-        ),
-      );
-    }
+    // if (_isLoading) {
+    //   return const Scaffold(
+    //     body: Center(
+    //       child: SizedBox(
+    //         width: 100,
+    //         child: LoadingIndicator(indicatorType: Indicator.ballPulseRise),
+    //       ),
+    //     ),
+    //   );
+    // }
 
     return Scaffold(
       body: PageStorage(
