@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:chat_app/chat/models/user.dart' as myuser;
 
 String baseURL = "https://fcm.googleapis.com/fcm/send";
 String serverKey =
@@ -77,20 +76,23 @@ Future sendMessages(
 ) async {
   String uid = FirebaseAuth.instance.currentUser!.uid;
   if (!await checkExist(chatRoom.id)) initChat(chatRoom);
-  myuser.User receiveUser =
-      uid == chatRoom.user1.id ? chatRoom.user2 : chatRoom.user1;
-  myuser.User sendUser =
-      uid == chatRoom.user1.id ? chatRoom.user1 : chatRoom.user2;
-  String body = contentFCM(content.activity) ?? content.text!;
-  FirebaseFirestore.instance
-      .collection("users")
-      .doc(receiveUser.id)
-      .get()
-      .then((value) {
-    String token = value.data()!["token"];
-    sendPushMessage(
-        token: token, id: chatRoom.id, body: body, title: sendUser.name);
-  });
+  bool check = uid == chatRoom.user1.id;
+  if (check ? chatRoom.user2.notify : chatRoom.user1.notify) {
+    String body = contentFCM(content.activity) ?? content.text!;
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(check ? chatRoom.user2.id : chatRoom.user1.id)
+        .get()
+        .then((value) {
+      String token = value.data()!["token"];
+      sendPushMessage(
+        token: token,
+        id: chatRoom.id,
+        body: body,
+        title: check ? chatRoom.user1.name : chatRoom.user2.name,
+      );
+    });
+  }
   await FirebaseFirestore.instance
       .collection("private_chats")
       .doc(chatRoom.id)

@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:chat_app/chat/models/user.dart' as myuser;
 
 class OptionChat extends StatefulWidget {
   const OptionChat({Key? key, required this.chatRoom}) : super(key: key);
@@ -39,57 +38,10 @@ class _OptionChatState extends State<OptionChat> {
       onSelected: (value) {
         switch (value) {
           case 0:
+            changeNotify();
             break;
           case 1:
-            Get.defaultDialog(
-              title: "Đổi biệt danh",
-              content: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _name,
-                      textAlign: TextAlign.center,
-                      textCapitalization: TextCapitalization.words,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Get.back();
-                          },
-                          child: const Text(
-                            "Hủy",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            if (widget.chatRoom.user1.id ==
-                                FirebaseAuth.instance.currentUser!.uid) {
-                              widget.chatRoom.user2.name = _name.text.trim();
-                            } else {
-                              widget.chatRoom.user1.name = _name.text.trim();
-                            }
-                            FirebaseFirestore.instance
-                                .collection("private_chats")
-                                .doc(widget.chatRoom.id)
-                                .update(widget.chatRoom.toMap());
-                            Get.back();
-                          },
-                          child: const Text(
-                            "Ok",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
+            changeNickname();
             break;
           case 2:
             break;
@@ -107,10 +59,17 @@ class _OptionChatState extends State<OptionChat> {
         color: Color.fromRGBO(34, 184, 190, 1),
       ),
       itemBuilder: (context) {
+        bool checkUser =
+            FirebaseAuth.instance.currentUser!.uid == widget.chatRoom.user1.id;
+        bool checkNotify = checkUser
+            ? widget.chatRoom.user1.notify
+            : widget.chatRoom.user2.notify;
         return [
           itemPopup(
-            text: 'Thông báo',
-            icon: FontAwesomeIcons.solidBell,
+            text: checkNotify ? 'Tắt thông báo' : 'Bật thông báo',
+            icon: checkNotify
+                ? FontAwesomeIcons.bellSlash
+                : FontAwesomeIcons.solidBell,
             color: const Color.fromRGBO(59, 190, 253, 1),
             index: 0,
           ),
@@ -140,6 +99,70 @@ class _OptionChatState extends State<OptionChat> {
           ),
         ];
       },
+    );
+  }
+
+  Future changeNotify() async {
+    if (FirebaseAuth.instance.currentUser!.uid == widget.chatRoom.user1.id) {
+      widget.chatRoom.user1.notify = !widget.chatRoom.user1.notify;
+    } else {
+      widget.chatRoom.user2.notify = !widget.chatRoom.user2.notify;
+    }
+    FirebaseFirestore.instance
+        .collection("private_chats")
+        .doc(widget.chatRoom.id)
+        .update(widget.chatRoom.toMap());
+  }
+
+  Future changeNickname() async {
+    Get.defaultDialog(
+      title: "Đổi biệt danh",
+      content: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            TextField(
+              controller: _name,
+              textAlign: TextAlign.center,
+              textCapitalization: TextCapitalization.words,
+              style: const TextStyle(fontSize: 16),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: const Text(
+                    "Hủy",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (widget.chatRoom.user1.id ==
+                        FirebaseAuth.instance.currentUser!.uid) {
+                      widget.chatRoom.user2.name = _name.text.trim();
+                    } else {
+                      widget.chatRoom.user1.name = _name.text.trim();
+                    }
+                    FirebaseFirestore.instance
+                        .collection("private_chats")
+                        .doc(widget.chatRoom.id)
+                        .update(widget.chatRoom.toMap());
+                    Get.back();
+                  },
+                  child: const Text(
+                    "Ok",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -24,10 +24,12 @@ class ChatRoom {
       user1: User(
         id: mapUser1["id"],
         name: mapUser1["nick_name"],
+        notify: mapUser1["notify"],
       ),
       user2: User(
         id: mapUser2["id"],
         name: mapUser2["nick_name"],
+        notify: mapUser2["notify"],
       ),
       theme: snapshot["theme"],
       mainReaction: snapshot["main_reaction"],
@@ -36,8 +38,16 @@ class ChatRoom {
 
   Map<String, dynamic> toMap() {
     return {
-      "user1": {"id": user1.id, "nick_name": user1.name},
-      "user2": {"id": user2.id, "nick_name": user2.name},
+      "user1": {
+        "id": user1.id,
+        "nick_name": user1.name,
+        "notify": user1.notify,
+      },
+      "user2": {
+        "id": user2.id,
+        "nick_name": user2.name,
+        "notify": user2.notify,
+      },
       "theme": theme,
       "main_reaction": mainReaction,
     };

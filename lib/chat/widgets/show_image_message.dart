@@ -35,14 +35,22 @@ class ShowImageMessage extends StatelessWidget {
                     ),
                   );
                 }
+                if (content.image!.length == 2) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(
+                      content.image![index],
+                      width: Get.width * 2 / 6 - 6,
+                      height: Get.width * 2 / 6 - 6,
+                      fit: BoxFit.fill,
+                    ),
+                  );
+                }
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Image.network(
                     content.image![index],
-                    width: Get.width * 2 / (3 * content.image!.length) -
-                        content.image!.length * 3,
-                    height: Get.width * 2 / (3 * content.image!.length) -
-                        content.image!.length * 3,
+                    width: Get.width * 2 / 3,
                     fit: BoxFit.fill,
                   ),
                 );

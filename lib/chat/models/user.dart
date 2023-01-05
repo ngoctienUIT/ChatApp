@@ -7,6 +7,7 @@ class User {
   DateTime? lastSeen;
   String? token;
   bool isActive;
+  bool notify;
 
   User({
     required this.id,
@@ -15,6 +16,7 @@ class User {
     this.lastSeen,
     this.token,
     this.isActive = true,
+    this.notify = true,
   });
 
   factory User.fromFirebase(DocumentSnapshot snapshot) {
