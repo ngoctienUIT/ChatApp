@@ -51,7 +51,6 @@ void loadUserData(Function onGetSuccess) async {
 Future<DocumentSnapshot<Map<String, dynamic>>> getUserData() async {
   final users = FirebaseFirestore.instance.collection('users');
   final userId = FirebaseAuth.instance.currentUser!.uid;
-
   return await users.doc(userId).get();
 }
 

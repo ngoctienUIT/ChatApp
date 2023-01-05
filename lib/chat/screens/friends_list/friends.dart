@@ -96,11 +96,11 @@ class Friends extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 itemCount: listId.length,
                 itemBuilder: (context, index) {
-                  return FutureBuilder<DocumentSnapshot>(
-                      future: FirebaseFirestore.instance
+                  return StreamBuilder<DocumentSnapshot>(
+                      stream: FirebaseFirestore.instance
                           .collection("users")
                           .doc(listId[index])
-                          .get(),
+                          .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           myuser.User user =

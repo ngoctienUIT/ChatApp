@@ -28,6 +28,7 @@ class _YouAreInState extends State<YouAreIn> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // loadUserData(() {
     //   setState(() => _isLoading = false);
     //   // setUserActive();
@@ -44,13 +45,19 @@ class _YouAreInState extends State<YouAreIn> with WidgetsBindingObserver {
   }
 
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
       setUserActive();
     } else {
       setUserOffline();
     }
+    super.didChangeAppLifecycleState(state);
   }
 
   @override

@@ -75,32 +75,32 @@ Future sendMessages(
   ChatRoom chatRoom,
   ContentMessages content,
 ) async {
-  if (!await checkExist(chatRoom.id)) initChat(chatRoom);
   String uid = FirebaseAuth.instance.currentUser!.uid;
+  if (!await checkExist(chatRoom.id)) initChat(chatRoom);
+  myuser.User receiveUser =
+      uid == chatRoom.user1.id ? chatRoom.user2 : chatRoom.user1;
+  myuser.User sendUser =
+      uid == chatRoom.user1.id ? chatRoom.user1 : chatRoom.user2;
+  String body = contentFCM(content.activity) ?? content.text!;
+  FirebaseFirestore.instance
+      .collection("users")
+      .doc(receiveUser.id)
+      .get()
+      .then((value) {
+    String token = value.data()!["token"];
+    sendPushMessage(
+        token: token, id: chatRoom.id, body: body, title: sendUser.name);
+  });
   await FirebaseFirestore.instance
       .collection("private_chats")
       .doc(chatRoom.id)
       .collection("chats")
       .doc(DateTime.now().microsecondsSinceEpoch.toString())
-      .set(
-        Messages(
-          sender: uid,
-          content: content,
-          timestamp: DateTime.now(),
-        ).toMap(),
-      )
-      .then((value) {
-    myuser.User user =
-        uid == chatRoom.user1.id ? chatRoom.user1 : chatRoom.user2;
-    String body = contentFCM(content.activity) ?? content.text!;
-    sendPushMessage(
-      token:
-          "eJpcqLt2QySESMHB33LWtd:APA91bECOXtQhW1t4w6mthfJC6_MalA2o0ve-ZtVbMFCA3mCFgYoJNcrFJJRUCmuHNbh3m9RhVerPxKITEdluj5zBDM4XdtMisU5_-N-m-LH4HXMt8FHndHMtV0IjNd8B0EDIFNZLHT7",
-      id: chatRoom.id,
-      body: body,
-      title: user.name,
-    );
-  });
+      .set(Messages(
+        sender: uid,
+        content: content,
+        timestamp: DateTime.now(),
+      ).toMap());
 }
 
 String? contentFCM(int id) {
@@ -186,10 +186,7 @@ Future sendPushMessage({
     };
 
     Map<String, dynamic> bodyFCM = {
-      'notification': <String, dynamic>{
-        'body': body,
-        'title': title,
-      },
+      'notification': <String, dynamic>{'body': body, 'title': title},
       'priority': 'high',
       'data': <String, dynamic>{
         'click_action': 'FLUTTER_NOTIFICATION_CLICK',
