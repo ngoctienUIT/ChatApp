@@ -1,9 +1,16 @@
+import 'dart:convert';
 import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/models/content_messages.dart';
 import 'package:chat_app/chat/models/messages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:chat_app/chat/models/user.dart' as myuser;
+
+String baseURL = "https://fcm.googleapis.com/fcm/send";
+String serverKey =
+    "key=AAAAKDWX1SQ:APA91bGSKguvK1e4NZPyPrhcDPdki4ujqGxBo1tpoydj0LAL7gq4GpRUe16N0-l9BF13bBAZV9nHYqwoStiDnC1zuw4pX7aGbD3ugGUfm8wm8sFWbMavp2SwHqT8AOL3E3mJjSGuQEsz";
 
 Future<String> findExistingPrivateChatId(String uid) async {
   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
@@ -26,11 +33,11 @@ Future<String> findExistingPrivateChatId(String uid) async {
   }
 }
 
-Future initChat(String id, ChatRoom chatRoom) async {
+Future initChat(ChatRoom chatRoom) async {
   // init room chat
   FirebaseFirestore.instance
       .collection("private_chats")
-      .doc(id)
+      .doc(chatRoom.id)
       .set(chatRoom.toMap());
 
   // save room chat id
@@ -39,14 +46,14 @@ Future initChat(String id, ChatRoom chatRoom) async {
       .doc(chatRoom.user1.id)
       .collection("private_chats")
       .doc(chatRoom.user2.id)
-      .set({"chat_id": id});
+      .set({"chat_id": chatRoom.id});
 
   FirebaseFirestore.instance
       .collection("users")
       .doc(chatRoom.user2.id)
       .collection("private_chats")
       .doc(chatRoom.user1.id)
-      .set({"chat_id": id});
+      .set({"chat_id": chatRoom.id});
 
   //add friend
   FirebaseFirestore.instance
@@ -54,45 +61,74 @@ Future initChat(String id, ChatRoom chatRoom) async {
       .doc(chatRoom.user1.id)
       .collection("friends")
       .doc(chatRoom.user2.id)
-      .set({"chat_id": id});
+      .set({"chat_id": chatRoom.id});
 
   FirebaseFirestore.instance
       .collection("users")
       .doc(chatRoom.user2.id)
       .collection("friends")
       .doc(chatRoom.user1.id)
-      .set({"chat_id": id});
+      .set({"chat_id": chatRoom.id});
 }
 
 Future sendMessages(
-  String id,
   ChatRoom chatRoom,
   ContentMessages content,
 ) async {
-  if (!await checkExist(id)) initChat(id, chatRoom);
+  if (!await checkExist(chatRoom.id)) initChat(chatRoom);
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   await FirebaseFirestore.instance
       .collection("private_chats")
-      .doc(id)
+      .doc(chatRoom.id)
       .collection("chats")
       .doc(DateTime.now().microsecondsSinceEpoch.toString())
       .set(
         Messages(
-          sender: FirebaseAuth.instance.currentUser!.uid,
+          sender: uid,
           content: content,
           timestamp: DateTime.now(),
         ).toMap(),
-      );
+      )
+      .then((value) {
+    myuser.User user =
+        uid == chatRoom.user1.id ? chatRoom.user1 : chatRoom.user2;
+    String body = contentFCM(content.activity) ?? content.text!;
+    sendPushMessage(
+      token:
+          "eJpcqLt2QySESMHB33LWtd:APA91bECOXtQhW1t4w6mthfJC6_MalA2o0ve-ZtVbMFCA3mCFgYoJNcrFJJRUCmuHNbh3m9RhVerPxKITEdluj5zBDM4XdtMisU5_-N-m-LH4HXMt8FHndHMtV0IjNd8B0EDIFNZLHT7",
+      id: chatRoom.id,
+      body: body,
+      title: user.name,
+    );
+  });
 }
 
-Future deleteChat(String id, ChatRoom chatRoom) async {
+String? contentFCM(int id) {
+  switch (id) {
+    case 0:
+      return "Đã gọi cho bạn";
+    case 1:
+      return "Đã gửi tệp tin";
+    case 2:
+      return "Đã gửi hình ảnh";
+    case 3:
+      return "Đã gửi hội thoại";
+    case 4:
+      return "Đã gửi sticker";
+    default:
+      return null;
+  }
+}
+
+Future deleteChat(ChatRoom chatRoom) async {
   final instance = FirebaseFirestore.instance;
   final batch = instance.batch();
   //delete info room chat
-  await instance.collection("private_chats").doc(id).delete();
+  await instance.collection("private_chats").doc(chatRoom.id).delete();
   // delete all chat
   var snapshots = await instance
       .collection("private_chats")
-      .doc(id)
+      .doc(chatRoom.id)
       .collection("chats")
       .get();
   for (var doc in snapshots.docs) {
@@ -114,30 +150,59 @@ Future deleteChat(String id, ChatRoom chatRoom) async {
       .doc(chatRoom.user1.id)
       .delete();
   // delete all file in chat room
-  FirebaseStorage.instance.ref().child(id).delete();
+  FirebaseStorage.instance.ref().child(chatRoom.id).delete();
 }
 
 Future<bool> checkExist(String id) async {
-  bool check = true;
-  await FirebaseFirestore.instance
+  var doc = await FirebaseFirestore.instance
       .collection("private_chats")
       .doc(id)
-      .get()
-      .then((value) {
-    if (!value.exists) check = false;
-  });
-  return check;
+      .get();
+  return doc.exists;
 }
 
 Future<String?> checkExistPrivateChat(String id1, String id2) async {
-  String? id;
   bool check = await checkExist("$id1-$id2");
   if (check) {
-    id = "$id1-$id2";
+    return "$id1-$id2";
   }
   check = await checkExist("$id2-$id1");
   if (check) {
-    id = "$id2-$id1";
+    return "$id2-$id1";
   }
-  return id;
+  return null;
+}
+
+Future sendPushMessage({
+  required String token,
+  required String id,
+  required String body,
+  required String title,
+}) async {
+  try {
+    Map<String, String> headerFCM = {
+      "Content-Type": "application/json",
+      "Authorization": serverKey,
+    };
+
+    Map<String, dynamic> bodyFCM = {
+      'notification': <String, dynamic>{
+        'body': body,
+        'title': title,
+      },
+      'priority': 'high',
+      'data': <String, dynamic>{
+        'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+        'id': id,
+        'status': 'done'
+      },
+      "to": token,
+    };
+
+    http.post(
+      Uri.parse(baseURL),
+      headers: headerFCM,
+      body: jsonEncode(bodyFCM),
+    );
+  } catch (_) {}
 }

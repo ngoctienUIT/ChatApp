@@ -52,7 +52,6 @@ class BottomSheetFile extends StatelessWidget {
                                 "chats/id/file/${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}",
                                 file.path.split('/').last);
                             sendMessages(
-                              id,
                               chatRoom,
                               ContentMessages(activity: 1, file: link),
                             );
@@ -80,7 +79,6 @@ class BottomSheetFile extends StatelessWidget {
                               "chats/$id/image",
                               "${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}.${image.path.split('.').last}"));
                           sendMessages(
-                            id,
                             chatRoom,
                             ContentMessages(activity: 2, image: link),
                           );
@@ -107,7 +105,6 @@ class BottomSheetFile extends StatelessWidget {
                                 "${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}.${image.path.split('.').last}"));
                           }
                           sendMessages(
-                            id,
                             chatRoom,
                             ContentMessages(activity: 2, image: link),
                           );

@@ -1,10 +1,12 @@
 import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/services/chat.dart';
 import 'package:chat_app/chat/widgets/item_popup.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:chat_app/chat/models/user.dart' as myuser;
 
 class OptionChat extends StatefulWidget {
   const OptionChat({Key? key, required this.chatRoom}) : super(key: key);
@@ -48,6 +50,7 @@ class _OptionChatState extends State<OptionChat> {
                     TextField(
                       controller: _name,
                       textAlign: TextAlign.center,
+                      textCapitalization: TextCapitalization.words,
                       style: const TextStyle(fontSize: 16),
                     ),
                     Row(
@@ -64,6 +67,16 @@ class _OptionChatState extends State<OptionChat> {
                         ),
                         TextButton(
                           onPressed: () {
+                            if (widget.chatRoom.user1.id ==
+                                FirebaseAuth.instance.currentUser!.uid) {
+                              widget.chatRoom.user2.name = _name.text.trim();
+                            } else {
+                              widget.chatRoom.user1.name = _name.text.trim();
+                            }
+                            FirebaseFirestore.instance
+                                .collection("private_chats")
+                                .doc(widget.chatRoom.id)
+                                .update(widget.chatRoom.toMap());
                             Get.back();
                           },
                           child: const Text(
@@ -81,7 +94,7 @@ class _OptionChatState extends State<OptionChat> {
           case 2:
             break;
           case 3:
-            deleteChat(widget.chatRoom.id, widget.chatRoom);
+            deleteChat(widget.chatRoom);
             Get.back();
             break;
           case 4:

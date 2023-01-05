@@ -186,7 +186,6 @@ class _ChatState extends State<Chat> {
                                       "chats/${widget.chatRoom.id}/image",
                                       "${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}.${image.path.split('.').last}"));
                                   sendMessages(
-                                    widget.chatRoom.id,
                                     widget.chatRoom,
                                     ContentMessages(activity: 2, image: link),
                                   );
@@ -220,7 +219,6 @@ class _ChatState extends State<Chat> {
                     onPressed: () {
                       if (sendButton) {
                         sendMessages(
-                          widget.chatRoom.id,
                           widget.chatRoom,
                           ContentMessages(activity: 5, text: _controller.text),
                         );
