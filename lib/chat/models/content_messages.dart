@@ -7,8 +7,6 @@ class ContentMessages {
   String? sticker;
   String? text;
   DateTime? seen;
-  bool? delete;
-  String? reaction;
 
   ContentMessages({
     required this.activity,
@@ -19,8 +17,6 @@ class ContentMessages {
     this.recording,
     this.text,
     this.seen,
-    this.delete,
-    this.reaction,
   });
 
   factory ContentMessages.fromMap(Map<String, dynamic> data) {
@@ -35,8 +31,6 @@ class ContentMessages {
           .map((e) => e.toString())
           .toList(),
       seen: data["seen"],
-      delete: data["delete"],
-      reaction: data["reaction"],
     );
   }
 
@@ -50,8 +44,6 @@ class ContentMessages {
       "text": text,
       "recording": recording,
       "seen": seen,
-      "delete": delete,
-      "reaction": reaction,
     };
   }
 }

@@ -38,7 +38,7 @@ class _OptionChatState extends State<OptionChat> {
       onSelected: (value) {
         switch (value) {
           case 0:
-            changeNotify();
+            changeNotify(widget.chatRoom);
             break;
           case 1:
             changeNickname();
@@ -46,8 +46,7 @@ class _OptionChatState extends State<OptionChat> {
           case 2:
             break;
           case 3:
-            deleteChat(widget.chatRoom);
-            Get.back();
+            showDialogDelete(widget.chatRoom);
             break;
           case 4:
             break;
@@ -102,18 +101,6 @@ class _OptionChatState extends State<OptionChat> {
     );
   }
 
-  Future changeNotify() async {
-    if (FirebaseAuth.instance.currentUser!.uid == widget.chatRoom.user1.id) {
-      widget.chatRoom.user1.notify = !widget.chatRoom.user1.notify;
-    } else {
-      widget.chatRoom.user2.notify = !widget.chatRoom.user2.notify;
-    }
-    FirebaseFirestore.instance
-        .collection("private_chats")
-        .doc(widget.chatRoom.id)
-        .update(widget.chatRoom.toMap());
-  }
-
   Future changeNickname() async {
     Get.defaultDialog(
       title: "Đổi biệt danh",
@@ -165,4 +152,34 @@ class _OptionChatState extends State<OptionChat> {
       ),
     );
   }
+}
+
+Future showDialogDelete(ChatRoom chatRoom) async {
+  Get.defaultDialog(
+    title: "Xóa đoạn chat",
+    content: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        TextButton(
+          onPressed: () {
+            Get.back();
+          },
+          child: const Text(
+            "Hủy",
+            style: TextStyle(fontSize: 16),
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            deleteChat(chatRoom);
+            Get.back();
+          },
+          child: const Text(
+            "Ok",
+            style: TextStyle(fontSize: 16),
+          ),
+        )
+      ],
+    ),
+  );
 }

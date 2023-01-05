@@ -205,3 +205,15 @@ Future sendPushMessage({
     );
   } catch (_) {}
 }
+
+Future changeNotify(ChatRoom chatRoom) async {
+  if (FirebaseAuth.instance.currentUser!.uid == chatRoom.user1.id) {
+    chatRoom.user1.notify = !chatRoom.user1.notify;
+  } else {
+    chatRoom.user2.notify = !chatRoom.user2.notify;
+  }
+  FirebaseFirestore.instance
+      .collection("private_chats")
+      .doc(chatRoom.id)
+      .update(chatRoom.toMap());
+}

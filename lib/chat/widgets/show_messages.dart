@@ -1,3 +1,4 @@
+import 'package:chat_app/chat/widgets/show_delete_message.dart';
 import 'package:chat_app/chat/widgets/show_file_message.dart';
 import 'package:chat_app/chat/widgets/show_image_message.dart';
 import 'package:chat_app/chat/widgets/show_text_message.dart';
@@ -8,7 +9,6 @@ import '../models/messages.dart';
 
 class ShowMessages extends StatelessWidget {
   const ShowMessages({Key? key, required this.id}) : super(key: key);
-
   final String id;
 
   @override
@@ -23,7 +23,7 @@ class ShowMessages extends StatelessWidget {
           if (snapshot.hasData) {
             List<Messages> messages = [];
             for (var element in snapshot.requireData.docs) {
-              messages.add(Messages.fromFirebase(element));
+              messages.add(Messages.fromFirebase(element)..chatID = id);
             }
             return SingleChildScrollView(
               reverse: true,
@@ -35,33 +35,34 @@ class ShowMessages extends StatelessWidget {
                   bool check = messages[index].sender.compareTo(
                           FirebaseAuth.instance.currentUser!.uid.toString()) ==
                       0;
-
-                  switch (messages[index].content.activity) {
-                    case 0:
-                      break;
-                    case 1:
-                      return ShowFileMessage(
-                        check: check,
-                        content: messages[index].content,
-                      );
-                    case 2:
-                      return ShowImageMessage(
-                        check: check,
-                        content: messages[index].content,
-                      );
-                    case 3:
-                      break;
-                    case 4:
-                      break;
-                    case 5:
-                      return ShowTextMessage(
-                        check: check,
-                        content: messages[index].content,
-                      );
-                    default:
-                      return Container();
+                  if (!messages[index].delete) {
+                    switch (messages[index].content.activity) {
+                      case 0:
+                        break;
+                      case 1:
+                        return ShowFileMessage(
+                          check: check,
+                          messages: messages[index],
+                        );
+                      case 2:
+                        return ShowImageMessage(
+                          check: check,
+                          messages: messages[index],
+                        );
+                      case 3:
+                        break;
+                      case 4:
+                        break;
+                      case 5:
+                        return ShowTextMessage(
+                          check: check,
+                          messages: messages[index],
+                        );
+                      default:
+                        return Container();
+                    }
                   }
-                  return Container();
+                  return ShowDeleteMessage(check: check);
                 },
               ),
             );

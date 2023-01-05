@@ -1,14 +1,23 @@
 import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/screens/messages/chat.dart';
 import 'package:chat_app/chat/screens/search/search.dart';
+import 'package:chat_app/chat/services/chat.dart';
+import 'package:chat_app/chat/widgets/option_chat.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-class ListChat extends StatelessWidget {
+class ListChat extends StatefulWidget {
   const ListChat({Key? key}) : super(key: key);
+
+  @override
+  State<ListChat> createState() => _ListChatState();
+}
+
+class _ListChatState extends State<ListChat> {
+  Offset tapPosition = Offset.zero;
 
   @override
   Widget build(BuildContext context) {
@@ -97,9 +106,73 @@ class ListChat extends StatelessWidget {
   }
 
   Widget itemChat(ChatRoom chatRoom) {
-    return InkWell(
+    bool checkUser =
+        FirebaseAuth.instance.currentUser!.uid == chatRoom.user1.id;
+    bool checkNotify =
+        checkUser ? chatRoom.user1.notify : chatRoom.user2.notify;
+    return GestureDetector(
+      onTapDown: (details) {
+        tapPosition = details.globalPosition;
+      },
       onTap: () {
         Get.to(Chat(chatRoom: chatRoom));
+      },
+      onLongPress: () {
+        showMenu(
+          context: context,
+          position: RelativeRect.fromLTRB(
+              Get.size.width / 3, tapPosition.dy + 20, Get.size.width / 3, 0),
+          items: <PopupMenuEntry>[
+            PopupMenuItem(
+              onTap: () {
+                changeNotify(chatRoom);
+              },
+              child: Row(
+                children: [
+                  Icon(
+                    checkNotify
+                        ? FontAwesomeIcons.bellSlash
+                        : FontAwesomeIcons.solidBell,
+                    color: const Color.fromRGBO(59, 190, 253, 1),
+                  ),
+                  const SizedBox(width: 7),
+                  Text(
+                    checkNotify ? 'Tắt thông báo' : 'Bật thông báo',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              onTap: () {
+                showDialogDelete(chatRoom);
+              },
+              child: Row(
+                children: const [
+                  Icon(
+                    FontAwesomeIcons.trash,
+                    color: Color.fromRGBO(255, 113, 150, 1),
+                  ),
+                  SizedBox(width: 7),
+                  Text('Xóa đoạn chat', style: TextStyle(fontSize: 16)),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              onTap: () {},
+              child: Row(
+                children: const [
+                  Icon(
+                    FontAwesomeIcons.ban,
+                    color: Color.fromRGBO(252, 177, 188, 1),
+                  ),
+                  SizedBox(width: 7),
+                  Text('Chặn', style: TextStyle(fontSize: 16)),
+                ],
+              ),
+            )
+          ],
+        );
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
