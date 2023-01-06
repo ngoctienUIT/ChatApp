@@ -118,9 +118,7 @@ class _OptionChatState extends State<OptionChat> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 TextButton(
-                  onPressed: () {
-                    Get.back();
-                  },
+                  onPressed: () => Get.back(),
                   child: const Text(
                     "Hủy",
                     style: TextStyle(fontSize: 16),
@@ -171,6 +169,7 @@ Future showDialogDelete(ChatRoom chatRoom) async {
         ),
         TextButton(
           onPressed: () {
+            Get.back();
             deleteChat(chatRoom);
             Get.back();
           },

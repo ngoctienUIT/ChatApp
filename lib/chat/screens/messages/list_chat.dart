@@ -9,15 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-class ListChat extends StatefulWidget {
+class ListChat extends StatelessWidget {
   const ListChat({Key? key}) : super(key: key);
-
-  @override
-  State<ListChat> createState() => _ListChatState();
-}
-
-class _ListChatState extends State<ListChat> {
-  Offset tapPosition = Offset.zero;
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +42,7 @@ class _ListChatState extends State<ListChat> {
                   borderRadius: BorderRadius.circular(90),
                 ),
               ),
-              onPressed: () {
-                Get.to(const Search());
-              },
+              onPressed: () => Get.to(const Search()),
               child: const Icon(
                 FontAwesomeIcons.magnifyingGlass,
                 color: Colors.black,
@@ -106,74 +97,9 @@ class _ListChatState extends State<ListChat> {
   }
 
   Widget itemChat(ChatRoom chatRoom) {
-    bool checkUser =
-        FirebaseAuth.instance.currentUser!.uid == chatRoom.user1.id;
-    bool checkNotify =
-        checkUser ? chatRoom.user1.notify : chatRoom.user2.notify;
-    return GestureDetector(
-      onTapDown: (details) {
-        tapPosition = details.globalPosition;
-      },
-      onTap: () {
-        Get.to(Chat(chatRoom: chatRoom));
-      },
-      onLongPress: () {
-        showMenu(
-          context: context,
-          position: RelativeRect.fromLTRB(
-              Get.size.width / 3, tapPosition.dy + 20, Get.size.width / 3, 0),
-          items: <PopupMenuEntry>[
-            PopupMenuItem(
-              onTap: () {
-                changeNotify(chatRoom);
-              },
-              child: Row(
-                children: [
-                  Icon(
-                    checkNotify
-                        ? FontAwesomeIcons.bellSlash
-                        : FontAwesomeIcons.solidBell,
-                    color: const Color.fromRGBO(59, 190, 253, 1),
-                  ),
-                  const SizedBox(width: 7),
-                  Text(
-                    checkNotify ? 'Tắt thông báo' : 'Bật thông báo',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              onTap: () {
-                showDialogDelete(chatRoom);
-              },
-              child: Row(
-                children: const [
-                  Icon(
-                    FontAwesomeIcons.trash,
-                    color: Color.fromRGBO(255, 113, 150, 1),
-                  ),
-                  SizedBox(width: 7),
-                  Text('Xóa đoạn chat', style: TextStyle(fontSize: 16)),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              onTap: () {},
-              child: Row(
-                children: const [
-                  Icon(
-                    FontAwesomeIcons.ban,
-                    color: Color.fromRGBO(252, 177, 188, 1),
-                  ),
-                  SizedBox(width: 7),
-                  Text('Chặn', style: TextStyle(fontSize: 16)),
-                ],
-              ),
-            )
-          ],
-        );
-      },
+    return InkWell(
+      onTap: () => Get.to(Chat(chatRoom: chatRoom)),
+      onLongPress: () => showOptionChat(chatRoom),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         child: Row(
@@ -181,10 +107,7 @@ class _ListChatState extends State<ListChat> {
             Stack(
               children: [
                 ClipOval(
-                  child: Image.asset(
-                    "assets/images/avatar.jpg",
-                    width: 50,
-                  ),
+                  child: Image.asset("assets/images/avatar.jpg", width: 50),
                 ),
                 if (chatRoom.user1.isActive)
                   Positioned(
@@ -231,6 +154,90 @@ class _ListChatState extends State<ListChat> {
                 ],
               ),
             )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showOptionChat(ChatRoom chatRoom) {
+    bool checkUser =
+        FirebaseAuth.instance.currentUser!.uid == chatRoom.user1.id;
+    bool checkNotify =
+        checkUser ? chatRoom.user1.notify : chatRoom.user2.notify;
+    Get.bottomSheet(
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(15),
+          topRight: Radius.circular(15),
+        ),
+      ),
+      Container(
+        height: 150,
+        padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            InkWell(
+              onTap: () => changeNotify(chatRoom),
+              child: Row(
+                children: [
+                  Icon(
+                    checkNotify
+                        ? FontAwesomeIcons.bellSlash
+                        : FontAwesomeIcons.solidBell,
+                    color: const Color.fromRGBO(59, 190, 253, 1),
+                  ),
+                  const SizedBox(width: 15),
+                  Text(
+                    checkNotify ? 'Tắt thông báo' : 'Bật thông báo',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () => showDialogDelete(chatRoom),
+              child: Row(
+                children: const [
+                  Icon(
+                    FontAwesomeIcons.trash,
+                    color: Color.fromRGBO(255, 113, 150, 1),
+                  ),
+                  SizedBox(width: 15),
+                  Text(
+                    'Xóa đoạn chat',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () {},
+              child: Row(
+                children: const [
+                  Icon(
+                    FontAwesomeIcons.ban,
+                    color: Color.fromRGBO(252, 177, 188, 1),
+                  ),
+                  SizedBox(width: 15),
+                  Text(
+                    'Chặn',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

@@ -23,9 +23,7 @@ class MessageWidget extends StatelessWidget {
     Offset tapPosition = Offset.zero;
 
     return GestureDetector(
-      onTapDown: (details) {
-        tapPosition = details.globalPosition;
-      },
+      onTapDown: (details) => tapPosition = details.globalPosition,
       onLongPress: () {
         showMenu(
           elevation: 0,
@@ -119,22 +117,32 @@ class MessageWidget extends StatelessWidget {
           ],
         );
       },
-      child: Stack(
+      child: Row(
         children: [
-          Padding(
-            padding: EdgeInsets.only(bottom: messages.reaction != null ? 8 : 0),
-            child: child,
-          ),
-          if (messages.reaction != null)
-            Positioned(
-              left: check ? null : 5,
-              right: check ? 5 : null,
-              bottom: 0,
-              child: Text(
-                react[messages.reaction!],
-                style: const TextStyle(fontSize: 18),
+          if (check) Expanded(child: Container()),
+          Stack(
+            children: [
+              Padding(
+                padding:
+                    EdgeInsets.only(bottom: messages.reaction != null ? 8 : 0),
+                child: child,
               ),
-            ),
+              if (messages.reaction != null)
+                Positioned(
+                  left: check ? 7 : null,
+                  right: check ? null : 7,
+                  bottom: 0,
+                  child: InkWell(
+                    onTap: () {},
+                    child: Text(
+                      react[messages.reaction!],
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          if (!check) Expanded(child: Container()),
         ],
       ),
     );
