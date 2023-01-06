@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/auth/screens/sign_in.dart';
+import 'package:chat_app/chat/screens/about.dart';
 import 'package:chat_app/chat/screens/profile/edit_profile.dart';
 import 'package:chat_app/auth/widgets/custom_button.dart';
 import 'package:chat_app/chat/widgets/loading_image.dart';
@@ -163,9 +164,7 @@ class _ProfileState extends State<Profile> {
                         ),
                         const SizedBox(height: 20),
                         InkWell(
-                          onTap: () {
-                            _showBottomSheet();
-                          },
+                          onTap: () => Get.to(const About()),
                           child: Row(
                             children: [
                               Container(

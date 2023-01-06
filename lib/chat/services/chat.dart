@@ -77,8 +77,8 @@ Future sendMessages(
   String uid = FirebaseAuth.instance.currentUser!.uid;
   if (!await checkExist(chatRoom.id)) initChat(chatRoom);
   bool check = uid == chatRoom.user1.id;
+  String body = contentFCM(content.activity) ?? content.text!;
   if (check ? chatRoom.user2.notify : chatRoom.user1.notify) {
-    String body = contentFCM(content.activity) ?? content.text!;
     FirebaseFirestore.instance
         .collection("users")
         .doc(check ? chatRoom.user2.id : chatRoom.user1.id)
@@ -93,6 +93,13 @@ Future sendMessages(
       );
     });
   }
+
+  DateTime time = DateTime.now();
+  FirebaseFirestore.instance
+      .collection("private_chats")
+      .doc(chatRoom.id)
+      .update({"last_message": time, "text": body});
+
   await FirebaseFirestore.instance
       .collection("private_chats")
       .doc(chatRoom.id)
@@ -101,7 +108,7 @@ Future sendMessages(
       .set(Messages(
         sender: uid,
         content: content,
-        timestamp: DateTime.now(),
+        timestamp: time,
       ).toMap());
 }
 

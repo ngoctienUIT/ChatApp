@@ -7,6 +7,8 @@ class ChatRoom {
   User user2;
   String theme;
   String mainReaction;
+  DateTime? lastMessage;
+  String? text;
 
   ChatRoom({
     required this.id,
@@ -14,11 +16,14 @@ class ChatRoom {
     required this.user2,
     required this.theme,
     required this.mainReaction,
+    this.lastMessage,
+    this.text,
   });
 
   factory ChatRoom.fromFirebase(DocumentSnapshot snapshot) {
     Map<String, dynamic> mapUser1 = snapshot["user1"];
     Map<String, dynamic> mapUser2 = snapshot["user2"];
+    Timestamp time = snapshot["last_message"];
     return ChatRoom(
       id: snapshot.id,
       user1: User(
@@ -33,6 +38,9 @@ class ChatRoom {
       ),
       theme: snapshot["theme"],
       mainReaction: snapshot["main_reaction"],
+      lastMessage:
+          DateTime.fromMicrosecondsSinceEpoch(time.microsecondsSinceEpoch),
+      text: snapshot["text"],
     );
   }
 
@@ -50,6 +58,8 @@ class ChatRoom {
       },
       "theme": theme,
       "main_reaction": mainReaction,
+      "last_message": lastMessage ?? DateTime.now(),
+      "text": text,
     };
   }
 }

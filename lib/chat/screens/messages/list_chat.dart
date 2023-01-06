@@ -1,13 +1,17 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/screens/messages/chat.dart';
 import 'package:chat_app/chat/screens/search/search.dart';
 import 'package:chat_app/chat/services/chat.dart';
+import 'package:chat_app/chat/widgets/loading_image.dart';
 import 'package:chat_app/chat/widgets/option_chat.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:chat_app/chat/models/user.dart' as myuser;
+import 'package:intl/intl.dart';
 
 class ListChat extends StatelessWidget {
   const ListChat({Key? key}) : super(key: key);
@@ -73,11 +77,11 @@ class ListChat extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 itemCount: chats.length,
                 itemBuilder: (context, index) {
-                  return FutureBuilder<DocumentSnapshot>(
-                      future: FirebaseFirestore.instance
+                  return StreamBuilder<DocumentSnapshot>(
+                      stream: FirebaseFirestore.instance
                           .collection("private_chats")
                           .doc(chats[index])
-                          .get(),
+                          .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           ChatRoom chatRoom =
@@ -97,67 +101,95 @@ class ListChat extends StatelessWidget {
   }
 
   Widget itemChat(ChatRoom chatRoom) {
-    return InkWell(
-      onTap: () => Get.to(Chat(chatRoom: chatRoom)),
-      onLongPress: () => showOptionChat(chatRoom),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        child: Row(
-          children: [
-            Stack(
-              children: [
-                ClipOval(
-                  child: Image.asset("assets/images/avatar.jpg", width: 50),
-                ),
-                if (chatRoom.user1.isActive)
-                  Positioned(
-                    right: 0,
-                    child: Container(
-                      width: 14,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(90),
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
-                    ),
-                  )
-              ],
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        chatRoom.user1.id.compareTo(
-                                    FirebaseAuth.instance.currentUser!.uid) ==
-                                0
-                            ? chatRoom.user2.name
-                            : chatRoom.user1.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+    bool check = chatRoom.user1.id == FirebaseAuth.instance.currentUser!.uid;
+    return StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            .doc(check ? chatRoom.user2.id : chatRoom.user1.id)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            myuser.User user = myuser.User.fromFirebase(snapshot.requireData);
+
+            return InkWell(
+              onTap: () => Get.to(Chat(chatRoom: chatRoom)),
+              onLongPress: () => showOptionChat(chatRoom),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Row(
+                  children: [
+                    Stack(
+                      children: [
+                        ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: user.image!,
+                            width: 50,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => loadingImage(
+                              width: 50,
+                              height: 50,
+                              radius: 90,
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ),
                         ),
+                        if (user.isActive)
+                          Positioned(
+                            right: 0,
+                            child: Container(
+                              width: 14,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(90),
+                                border:
+                                    Border.all(color: Colors.white, width: 2),
+                              ),
+                            ),
+                          )
+                      ],
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                check
+                                    ? chatRoom.user2.name
+                                    : chatRoom.user1.name,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                DateFormat.jm().format(chatRoom.lastMessage!),
+                                style: const TextStyle(color: Colors.black38),
+                              )
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            chatRoom.text!,
+                            style: const TextStyle(fontSize: 16),
+                          )
+                        ],
                       ),
-                      const Spacer(),
-                      const Text(
-                        "10:00 PM",
-                        style: TextStyle(color: Colors.black38),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  const Text("Messenger", style: TextStyle(fontSize: 16))
-                ],
+                    )
+                  ],
+                ),
               ),
-            )
-          ],
-        ),
-      ),
-    );
+            );
+          }
+
+          return Container();
+        });
   }
 
   void showOptionChat(ChatRoom chatRoom) {

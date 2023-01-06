@@ -8,24 +8,37 @@ import 'package:chat_app/chat/models/user.dart' as myuser;
 
 class TitleWidget extends StatelessWidget {
   const TitleWidget({Key? key, required this.chatRoom}) : super(key: key);
-
   final ChatRoom chatRoom;
+
+  String getOfflineTime(DateTime dateTime) {
+    if (DateTime.now().difference(dateTime).inSeconds < 60) {
+      return "${DateTime.now().difference(dateTime).inSeconds} giây trước";
+    }
+    if (DateTime.now().difference(dateTime).inMinutes < 60) {
+      return "${DateTime.now().difference(dateTime).inMinutes} phút trước";
+    }
+    if (DateTime.now().difference(dateTime).inHours < 24) {
+      return "${DateTime.now().difference(dateTime)} giờ trước";
+    }
+    return "${DateTime.now().difference(dateTime).inDays} ngày trước";
+  }
 
   @override
   Widget build(BuildContext context) {
     String id = FirebaseAuth.instance.currentUser!.uid == chatRoom.user1.id
         ? chatRoom.user2.id
         : chatRoom.user1.id;
-    return Row(
-      children: [
-        FutureBuilder<DocumentSnapshot>(
-            future:
-                FirebaseFirestore.instance.collection("users").doc(id).get(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                myuser.User user =
-                    myuser.User.fromFirebase(snapshot.requireData);
-                return ClipOval(
+    return StreamBuilder<DocumentSnapshot>(
+        stream:
+            FirebaseFirestore.instance.collection("users").doc(id).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            myuser.User user = myuser.User.fromFirebase(snapshot.requireData);
+            String offline =
+                user.isActive ? "" : getOfflineTime(user.lastSeen!);
+            return Row(
+              children: [
+                ClipOval(
                   child: CachedNetworkImage(
                     imageUrl: user.image!,
                     width: 40,
@@ -38,50 +51,57 @@ class TitleWidget extends StatelessWidget {
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
                   ),
-                );
-              }
-              return const SizedBox(width: 40, height: 40);
-            }),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                chatRoom.user1.id.compareTo(
-                            FirebaseAuth.instance.currentUser!.uid) ==
-                        0
-                    ? chatRoom.user2.name
-                    : chatRoom.user1.name,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
                 ),
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(90),
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        chatRoom.user1.id.compareTo(
+                                    FirebaseAuth.instance.currentUser!.uid) ==
+                                0
+                            ? chatRoom.user2.name
+                            : chatRoom.user1.name,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          if (user.isActive)
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(90),
+                              ),
+                            ),
+                          if (user.isActive) const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              user.isActive
+                                  ? "Đang hoạt động"
+                                  : "Hoạt động $offline",
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 12),
+                            ),
+                          )
+                        ],
+                      )
+                    ],
                   ),
-                  const SizedBox(width: 5),
-                  const Text(
-                    "Đang hoạt động",
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      ],
-    );
+                ),
+              ],
+            );
+          }
+
+          return Container();
+        });
   }
 }

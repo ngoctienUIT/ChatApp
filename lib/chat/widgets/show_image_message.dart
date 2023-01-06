@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/chat/models/content_messages.dart';
 import 'package:chat_app/chat/models/messages.dart';
+import 'package:chat_app/chat/widgets/loading_image.dart';
 import 'package:chat_app/chat/widgets/message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -34,31 +36,52 @@ class ShowImageMessage extends StatelessWidget {
                   if (content.image!.length > 2) {
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      child: Image.network(
-                        content.image![index],
+                      child: CachedNetworkImage(
+                        imageUrl: content.image![index],
                         width: Get.width * 2 / 9 - 6,
                         height: Get.width * 2 / 9 - 6,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => loadingImage(
+                          width: Get.width * 2 / 9 - 6,
+                          height: Get.width * 2 / 9 - 6,
+                          radius: 5,
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                       ),
                     );
                   }
                   if (content.image!.length == 2) {
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        content.image![index],
+                      child: CachedNetworkImage(
+                        imageUrl: content.image![index],
                         width: Get.width * 2 / 6 - 6,
                         height: Get.width * 2 / 6 - 6,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => loadingImage(
+                          width: Get.width * 2 / 6 - 6,
+                          height: Get.width * 2 / 6 - 6,
+                          radius: 5,
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                       ),
                     );
                   }
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      content.image![index],
+                    child: CachedNetworkImage(
+                      imageUrl: content.image![index],
                       width: Get.width * 2 / 3,
-                      fit: BoxFit.fill,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => loadingImage(
+                        width: Get.width * 2 / 3,
+                        height: Get.width * 2 / 3,
+                        radius: 5,
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                     ),
                   );
                 }),
