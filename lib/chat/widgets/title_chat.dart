@@ -1,9 +1,11 @@
 import 'package:chat_app/chat/models/chat_room.dart';
+import 'package:chat_app/chat/screens/video_call/video_call.dart';
 import 'package:chat_app/chat/widgets/option_chat.dart';
 import 'package:chat_app/chat/widgets/title_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 class TitleChat extends StatelessWidget {
   const TitleChat({Key? key, required this.chatRoom}) : super(key: key);
@@ -41,7 +43,9 @@ class TitleChat extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(const VideoCall());
+                },
                 icon: const Icon(
                   FontAwesomeIcons.video,
                   size: 20,
