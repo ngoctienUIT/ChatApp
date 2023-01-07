@@ -49,7 +49,7 @@ class BottomSheetFile extends StatelessWidget {
                           for (File file in files) {
                             String link = await uploadFile(
                                 file,
-                                "chats/id/file/${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}",
+                                "chats/${chatRoom.id}/file/${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}",
                                 file.path.split('/').last);
                             sendMessages(
                               chatRoom,

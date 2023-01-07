@@ -2,11 +2,16 @@ import 'package:chat_app/chat/screens/friends_list/friends.dart';
 import 'package:chat_app/chat/screens/profile/profile.dart';
 import 'package:chat_app/chat/screens/messages/list_chat.dart';
 import 'package:chat_app/chat/screens/video_call/video_call.dart';
+import 'package:chat_app/chat/services/notification_services.dart';
 import 'package:chat_app/chat/services/user.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class YouAreIn extends StatefulWidget {
   const YouAreIn({Key? key}) : super(key: key);
@@ -46,7 +51,13 @@ class _YouAreInState extends State<YouAreIn> with WidgetsBindingObserver {
       }
 
       if (message.notification != null) {
+        RemoteNotification notification = message.notification!;
         print('Message also contained a notification: ${message.notification}');
+        NotificationServices.showNotification(
+          title: notification.title!,
+          body: notification.body!,
+          fln: flutterLocalNotificationsPlugin,
+        );
       }
     });
   }
