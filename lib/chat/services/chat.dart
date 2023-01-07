@@ -187,6 +187,7 @@ Future sendPushMessage({
   required String id,
   required String body,
   required String title,
+  String status = 'message',
 }) async {
   try {
     Map<String, String> headerFCM = {
@@ -200,7 +201,7 @@ Future sendPushMessage({
       'data': <String, dynamic>{
         'click_action': 'FLUTTER_NOTIFICATION_CLICK',
         'id': id,
-        'status': 'done'
+        'status': status,
       },
       "to": token,
     };

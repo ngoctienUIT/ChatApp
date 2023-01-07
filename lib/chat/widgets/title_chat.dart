@@ -44,7 +44,7 @@ class TitleChat extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () {
-                  Get.to(const VideoCall());
+                  Get.to(VideoCall(chatRoom: chatRoom));
                 },
                 icon: const Icon(
                   FontAwesomeIcons.video,
