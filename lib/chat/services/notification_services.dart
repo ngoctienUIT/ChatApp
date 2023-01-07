@@ -1,5 +1,4 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'dart:io' show Platform;
 
 class NotificationServices {
   static Future initialize(
@@ -31,6 +30,6 @@ class NotificationServices {
     var not = NotificationDetails(
         android: androidPlatformChannelSpecifics,
         iOS: const DarwinNotificationDetails());
-    fln.show(0, title, body, not, payload: "payload");
+    fln.show(id, title, body, not, payload: "payload");
   }
 }

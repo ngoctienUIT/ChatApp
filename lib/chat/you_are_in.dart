@@ -54,6 +54,7 @@ class _YouAreInState extends State<YouAreIn> with WidgetsBindingObserver {
         RemoteNotification notification = message.notification!;
         print('Message also contained a notification: ${message.notification}');
         NotificationServices.showNotification(
+          id: data["id"].hashCode,
           title: notification.title!,
           body: notification.body!,
           fln: flutterLocalNotificationsPlugin,
