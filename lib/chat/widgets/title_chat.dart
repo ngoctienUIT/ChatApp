@@ -1,5 +1,7 @@
 import 'package:chat_app/chat/models/chat_room.dart';
+import 'package:chat_app/chat/models/content_messages.dart';
 import 'package:chat_app/chat/screens/video_call/video_call.dart';
+import 'package:chat_app/chat/services/chat.dart';
 import 'package:chat_app/chat/widgets/option_chat.dart';
 import 'package:chat_app/chat/widgets/title_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,6 +46,13 @@ class TitleChat extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () {
+                  sendMessages(
+                    chatRoom,
+                    ContentMessages(
+                      activity: 0,
+                      callDuration: DateTime(2023, 1, 1, 1, 1, 1),
+                    ),
+                  );
                   Get.to(VideoCall(chatRoom: chatRoom));
                 },
                 icon: const Icon(

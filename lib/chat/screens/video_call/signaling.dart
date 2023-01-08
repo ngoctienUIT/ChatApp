@@ -54,7 +54,7 @@ class Signaling {
     Map<String, dynamic> roomWithOffer = {'offer': offer.toMap()};
 
     await roomRef.set(roomWithOffer);
-    var roomId = roomRef.id;
+    roomId = roomRef.id;
     print('New room created with SDK offer. Room ID: $roomId');
     currentRoomText = 'Current room is $roomId - You are the caller!';
     // Created a Room
@@ -104,7 +104,7 @@ class Signaling {
     });
     // Listen for remote ICE candidates above
 
-    return roomId;
+    return roomId!;
   }
 
   Future<void> joinRoom(String roomId, RTCVideoRenderer remoteVideo) async {
@@ -180,6 +180,19 @@ class Signaling {
     }
   }
 
+  void switchCamera() {
+    if (localStream != null) {
+      Helper.switchCamera(localStream!.getVideoTracks()[0]);
+    }
+  }
+
+  void muteMic() {
+    if (localStream != null) {
+      bool enabled = localStream!.getAudioTracks()[0].enabled;
+      localStream!.getAudioTracks()[0].enabled = !enabled;
+    }
+  }
+
   Future<void> openUserMedia(
     RTCVideoRenderer localVideo,
     RTCVideoRenderer remoteVideo, {
@@ -200,27 +213,29 @@ class Signaling {
     for (var track in tracks) {
       track.stop();
     }
+    print("room id: $roomId");
+    deleteRoom();
 
     if (remoteStream != null) {
       remoteStream!.getTracks().forEach((track) => track.stop());
     }
     if (peerConnection != null) peerConnection!.close();
 
-    if (roomId != null) {
-      var db = FirebaseFirestore.instance;
-      var roomRef = db.collection('rooms').doc(roomId);
-      var calleeCandidates = await roomRef.collection('calleeCandidates').get();
-      for (var document in calleeCandidates.docs) {
-        document.reference.delete();
-      }
-
-      var callerCandidates = await roomRef.collection('callerCandidates').get();
-      for (var document in callerCandidates.docs) {
-        document.reference.delete();
-      }
-
-      await roomRef.delete();
-    }
+    // if (roomId != null) {
+    //   var db = FirebaseFirestore.instance;
+    //   var roomRef = db.collection('rooms').doc(roomId);
+    //   var calleeCandidates = await roomRef.collection('calleeCandidates').get();
+    //   for (var document in calleeCandidates.docs) {
+    //     document.reference.delete();
+    //   }
+    //
+    //   var callerCandidates = await roomRef.collection('callerCandidates').get();
+    //   for (var document in callerCandidates.docs) {
+    //     document.reference.delete();
+    //   }
+    //
+    //   await roomRef.delete();
+    // }
 
     localStream!.dispose();
     remoteStream?.dispose();
@@ -248,5 +263,32 @@ class Signaling {
       onAddRemoteStream?.call(stream);
       remoteStream = stream;
     };
+  }
+
+  Future deleteRoom() async {
+    final instance = FirebaseFirestore.instance;
+    final batch = instance.batch();
+
+    // delete all video
+    var snapshots = await instance
+        .collection("rooms")
+        .doc(roomId)
+        .collection("callerCandidates")
+        .get();
+    for (var doc in snapshots.docs) {
+      batch.delete(doc.reference);
+    }
+    snapshots = await instance
+        .collection("rooms")
+        .doc(roomId)
+        .collection("calleeCandidates")
+        .get();
+    for (var doc in snapshots.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+
+    //delete info room video
+    await instance.collection("rooms").doc(roomId).delete();
   }
 }

@@ -111,7 +111,7 @@ class _VideoCallState extends State<VideoCall> {
             if (!isIncomingCall)
               Positioned(
                 right: 10,
-                top: 10,
+                top: 20,
                 child: SizedBox(
                   height: Get.width * 0.3 * 15 / 9,
                   width: Get.width * 0.3,
@@ -119,6 +119,16 @@ class _VideoCallState extends State<VideoCall> {
                 ),
               ),
             isIncomingCall ? incomingCall() : callAway(),
+            Positioned(
+              right: 10,
+              top: 10,
+              child: IconButton(
+                onPressed: () {
+                  signaling.switchCamera();
+                },
+                icon: const Icon(Icons.cameraswitch),
+              ),
+            )
           ],
         ),
       ),
@@ -211,12 +221,13 @@ class _VideoCallState extends State<VideoCall> {
                   ),
                 ),
                 onPressed: () {
-                  signaling.openUserMedia(
-                    _localRenderer,
-                    _remoteRenderer,
-                    video: isOpenCamera,
-                    audio: !isOpenMic,
-                  );
+                  signaling.muteMic();
+                  // signaling.openUserMedia(
+                  //   _localRenderer,
+                  //   _remoteRenderer,
+                  //   video: isOpenCamera,
+                  //   audio: !isOpenMic,
+                  // );
                   setState(() => isOpenMic = !isOpenMic);
                 },
                 child: Icon(isOpenMic ? Icons.mic : Icons.mic_off),

@@ -132,8 +132,7 @@ String? contentFCM(int id) {
 Future deleteChat(ChatRoom chatRoom) async {
   final instance = FirebaseFirestore.instance;
   final batch = instance.batch();
-  //delete info room chat
-  await instance.collection("private_chats").doc(chatRoom.id).delete();
+
   // delete all chat
   var snapshots = await instance
       .collection("private_chats")
@@ -144,6 +143,8 @@ Future deleteChat(ChatRoom chatRoom) async {
     batch.delete(doc.reference);
   }
   await batch.commit();
+  //delete info room chat
+  await instance.collection("private_chats").doc(chatRoom.id).delete();
   // delete id room in user 1
   await instance
       .collection("users")

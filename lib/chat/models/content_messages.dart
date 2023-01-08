@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ContentMessages {
   int activity; //0: callDuration, 1: file, 2: image, 3: recording, 4: sticker, 5: text
   DateTime? callDuration;
@@ -20,9 +22,13 @@ class ContentMessages {
   });
 
   factory ContentMessages.fromMap(Map<String, dynamic> data) {
+    Timestamp? timestamp = data["call_duration"];
     return ContentMessages(
       activity: data["activity"],
-      callDuration: data["call_duration"],
+      callDuration: timestamp != null
+          ? DateTime.fromMicrosecondsSinceEpoch(
+              timestamp.microsecondsSinceEpoch)
+          : null,
       text: data["text"],
       sticker: data["sticker"],
       recording: data["recording"],

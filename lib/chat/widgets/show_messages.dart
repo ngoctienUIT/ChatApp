@@ -1,3 +1,4 @@
+import 'package:chat_app/chat/widgets/show_call_message.dart';
 import 'package:chat_app/chat/widgets/show_delete_message.dart';
 import 'package:chat_app/chat/widgets/show_file_message.dart';
 import 'package:chat_app/chat/widgets/show_image_message.dart';
@@ -38,7 +39,10 @@ class ShowMessages extends StatelessWidget {
                   if (!messages[index].delete) {
                     switch (messages[index].content.activity) {
                       case 0:
-                        break;
+                        return ShowCallMessage(
+                          check: check,
+                          messages: messages[index],
+                        );
                       case 1:
                         return ShowFileMessage(
                           check: check,

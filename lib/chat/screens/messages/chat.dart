@@ -28,6 +28,7 @@ class _ChatState extends State<Chat> {
   FocusNode focusNode = FocusNode();
   bool show = false;
   bool sendButton = false;
+  File? audio;
   late FlutterSoundRecorder recorder = FlutterSoundRecorder();
 
   @override
@@ -56,7 +57,7 @@ class _ChatState extends State<Chat> {
 
   Future stop() async {
     final path = await recorder.stopRecorder();
-    final audio = File(path!);
+    audio = File(path!);
     setState(() {});
   }
 
@@ -216,7 +217,7 @@ class _ChatState extends State<Chat> {
                           : (recorder.isRecording ? Icons.stop : Icons.mic),
                       color: Colors.white,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (sendButton) {
                         sendMessages(
                           widget.chatRoom,
@@ -224,7 +225,15 @@ class _ChatState extends State<Chat> {
                         );
                         _controller.text = "";
                       } else if (recorder.isRecording) {
-                        stop();
+                        await stop();
+                        String link = await uploadFile(
+                            audio!,
+                            "chats/${widget.chatRoom.id}/recording",
+                            "${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}.mp3");
+                        sendMessages(
+                          widget.chatRoom,
+                          ContentMessages(activity: 3, recording: link),
+                        );
                       } else {
                         record();
                       }
