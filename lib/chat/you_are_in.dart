@@ -47,10 +47,14 @@ class _YouAreInState extends State<YouAreIn> with WidgetsBindingObserver {
       Map<String, dynamic> data = message.data;
 
       if (data["status"] == "video_call") {
-        Get.to(VideoCall(id: data["id"]));
+        Get.to(VideoCall(
+          id: data["id"],
+          yourToken: data["token"],
+        ));
       }
 
-      if (message.notification != null) {
+      if (message.notification != null &&
+          data["status"] != "disable_video_call") {
         RemoteNotification notification = message.notification!;
         print('Message also contained a notification: ${message.notification}');
         NotificationServices.showNotification(

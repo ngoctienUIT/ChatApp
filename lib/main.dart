@@ -43,7 +43,7 @@ void main() async {
     sound: true,
   );
 
-  NotificationServices.initialize(flutterLocalNotificationsPlugin);
+  await NotificationServices.initialize(flutterLocalNotificationsPlugin);
 
   runApp(
     GetMaterialApp(
