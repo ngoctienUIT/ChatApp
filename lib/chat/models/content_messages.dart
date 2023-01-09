@@ -58,8 +58,8 @@ class ContentMessages {
       "text": text,
       "recording": recording,
       "seen": seen,
-      "name_contact": contact!.displayName,
-      "phone_contact": contact!.phones![0].value,
+      "name_contact": contact != null ? contact!.displayName : null,
+      "phone_contact": contact != null ? contact!.phones![0].value : null,
     };
   }
 }
