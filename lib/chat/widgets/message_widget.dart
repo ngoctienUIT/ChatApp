@@ -4,10 +4,11 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 List<String> react = ["❤", "😯", "😆", "😢", "😠", "👍"];
 
-class MessageWidget extends StatelessWidget {
+class MessageWidget extends StatefulWidget {
   const MessageWidget({
     Key? key,
     required this.child,
@@ -18,6 +19,13 @@ class MessageWidget extends StatelessWidget {
   final Widget child;
   final bool check;
   final Messages messages;
+
+  @override
+  State<MessageWidget> createState() => _MessageWidgetState();
+}
+
+class _MessageWidgetState extends State<MessageWidget> {
+  bool show = false;
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +39,9 @@ class MessageWidget extends StatelessWidget {
           color: Colors.transparent,
           context: context,
           position: RelativeRect.fromLTRB(
-            check ? tapPosition.dx : 0,
+            widget.check ? tapPosition.dx : 0,
             tapPosition.dy + 20,
-            check ? 0 : tapPosition.dx,
+            widget.check ? 0 : tapPosition.dx,
             0,
           ),
           items: <PopupMenuEntry>[
@@ -50,15 +58,15 @@ class MessageWidget extends StatelessWidget {
                       return InkWell(
                         onTap: () {
                           int? reaction;
-                          if (!(messages.reaction != null &&
-                              messages.reaction! == index)) {
+                          if (!(widget.messages.reaction != null &&
+                              widget.messages.reaction! == index)) {
                             reaction = index;
                           }
                           FirebaseFirestore.instance
                               .collection("private_chats")
-                              .doc(messages.chatID)
+                              .doc(widget.messages.chatID)
                               .collection("chats")
-                              .doc(messages.id)
+                              .doc(widget.messages.id)
                               .update({"reaction": reaction});
                           Get.back();
                         },
@@ -72,10 +80,18 @@ class MessageWidget extends StatelessWidget {
                 ),
               ),
             ),
-            if (messages.content.activity == 5)
+            if ([5, 6].contains(widget.messages.content.activity))
               PopupMenuItem(
                 onTap: () {
-                  Clipboard.setData(ClipboardData(text: messages.content.text));
+                  if (widget.messages.content.activity == 5) {
+                    Clipboard.setData(
+                        ClipboardData(text: widget.messages.content.text));
+                  } else {
+                    Clipboard.setData(ClipboardData(
+                      text:
+                          "${widget.messages.content.contact!.displayName}/n${widget.messages.content.contact!.phones![0].value}",
+                    ));
+                  }
                 },
                 child: Material(
                   elevation: 5,
@@ -83,10 +99,10 @@ class MessageWidget extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
-                        Icon(Icons.copy),
                         Text("Copy", style: TextStyle(fontSize: 16)),
+                        Icon(Icons.copy),
                       ],
                     ),
                   ),
@@ -96,9 +112,9 @@ class MessageWidget extends StatelessWidget {
               onTap: () {
                 FirebaseFirestore.instance
                     .collection("private_chats")
-                    .doc(messages.chatID)
+                    .doc(widget.messages.chatID)
                     .collection("chats")
-                    .doc(messages.id)
+                    .doc(widget.messages.id)
                     .update({"delete": true});
               },
               child: Material(
@@ -107,19 +123,19 @@ class MessageWidget extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Icon(Icons.delete),
                       Text("Delete", style: TextStyle(fontSize: 16)),
+                      Icon(Icons.delete),
                     ],
                   ),
                 ),
               ),
             ),
-            if (messages.content.activity == 6)
+            if (widget.messages.content.activity == 6)
               PopupMenuItem(
                 onTap: () {
-                  ContactsService.addContact(messages.content.contact!)
+                  ContactsService.addContact(widget.messages.content.contact!)
                       .then((value) async {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text("Thêm liên hệ Thành công")));
@@ -131,10 +147,10 @@ class MessageWidget extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
-                        Icon(Icons.person_add_outlined),
                         Text("Add contact", style: TextStyle(fontSize: 16)),
+                        Icon(Icons.person_add_outlined),
                       ],
                     ),
                   ),
@@ -143,32 +159,54 @@ class MessageWidget extends StatelessWidget {
           ],
         );
       },
-      child: Row(
+      onTap: () => setState(() => show = !show),
+      onDoubleTap: () {
+        int? reaction;
+        if (!(widget.messages.reaction != null &&
+            widget.messages.reaction! == 0)) {
+          reaction = 0;
+        }
+        FirebaseFirestore.instance
+            .collection("private_chats")
+            .doc(widget.messages.chatID)
+            .collection("chats")
+            .doc(widget.messages.id)
+            .update({"reaction": reaction});
+      },
+      child: Column(
         children: [
-          if (check) Expanded(child: Container()),
-          Stack(
+          if (show) const SizedBox(height: 10),
+          if (show)
+            Text(DateFormat("dd/MM/yyyy HH:mm")
+                .format(widget.messages.timestamp)),
+          Row(
             children: [
-              Padding(
-                padding:
-                    EdgeInsets.only(bottom: messages.reaction != null ? 8 : 0),
-                child: child,
-              ),
-              if (messages.reaction != null)
-                Positioned(
-                  left: check ? 7 : null,
-                  right: check ? null : 7,
-                  bottom: 0,
-                  child: InkWell(
-                    onTap: () {},
-                    child: Text(
-                      react[messages.reaction!],
-                      style: const TextStyle(fontSize: 18),
-                    ),
+              if (widget.check) Expanded(child: Container()),
+              Stack(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                        bottom: widget.messages.reaction != null ? 8 : 0),
+                    child: widget.child,
                   ),
-                ),
+                  if (widget.messages.reaction != null)
+                    Positioned(
+                      left: widget.check ? 7 : null,
+                      right: widget.check ? null : 7,
+                      bottom: 0,
+                      child: InkWell(
+                        onTap: () {},
+                        child: Text(
+                          react[widget.messages.reaction!],
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              if (!widget.check) Expanded(child: Container()),
             ],
           ),
-          if (!check) Expanded(child: Container()),
         ],
       ),
     );

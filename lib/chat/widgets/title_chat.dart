@@ -30,14 +30,21 @@ class TitleChat extends StatelessWidget {
                 Icons.arrow_back_ios_new_rounded,
                 color: Color.fromRGBO(150, 150, 150, 1),
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Get.back(),
             ),
             title: TitleWidget(chatRoom: chatRoom),
             actions: [
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  sendMessages(
+                    chatRoom,
+                    ContentMessages(
+                      activity: 0,
+                      callDuration: DateTime.now(),
+                    ),
+                  );
+                  Get.to(VideoCall(chatRoom: chatRoom));
+                },
                 icon: const Icon(
                   FontAwesomeIcons.phone,
                   size: 20,
@@ -50,7 +57,7 @@ class TitleChat extends StatelessWidget {
                     chatRoom,
                     ContentMessages(
                       activity: 0,
-                      callDuration: DateTime(2023, 1, 1, 1, 1, 1),
+                      callDuration: DateTime.now(),
                     ),
                   );
                   Get.to(VideoCall(chatRoom: chatRoom));

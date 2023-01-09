@@ -12,15 +12,15 @@ class TitleWidget extends StatelessWidget {
 
   String getOfflineTime(DateTime dateTime) {
     if (DateTime.now().difference(dateTime).inSeconds < 60) {
-      return "${DateTime.now().difference(dateTime).inSeconds} giây trước";
+      return "${DateTime.now().difference(dateTime).inSeconds.abs()} giây trước";
     }
     if (DateTime.now().difference(dateTime).inMinutes < 60) {
-      return "${DateTime.now().difference(dateTime).inMinutes} phút trước";
+      return "${DateTime.now().difference(dateTime).inMinutes.abs()} phút trước";
     }
     if (DateTime.now().difference(dateTime).inHours < 24) {
-      return "${DateTime.now().difference(dateTime)} giờ trước";
+      return "${DateTime.now().difference(dateTime).inHours.abs()} giờ trước";
     }
-    return "${DateTime.now().difference(dateTime).inDays} ngày trước";
+    return "${DateTime.now().difference(dateTime).inDays.abs()} ngày trước";
   }
 
   @override
