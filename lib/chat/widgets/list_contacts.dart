@@ -68,11 +68,7 @@ class _ListContactState extends State<ListContact> {
                   onTap: () {
                     sendMessages(
                       widget.chatRoom,
-                      ContentMessages(
-                        activity: 6,
-                        nameContact: contacts[index].displayName!,
-                        phoneContact: phone,
-                      ),
+                      ContentMessages(activity: 6, contact: contacts[index]),
                     );
                     Get.back();
                   },
@@ -97,7 +93,7 @@ class _ListContactState extends State<ListContact> {
                       color: const Color(0xff262626),
                     ),
                     child: Text(
-                      contacts[index].givenName![0],
+                      "${contacts[index].givenName}"[0],
                       style: TextStyle(
                         fontSize: 23,
                         color: Colors.primaries[

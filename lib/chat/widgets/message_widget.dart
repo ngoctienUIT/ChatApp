@@ -1,5 +1,6 @@
 import 'package:chat_app/chat/models/messages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -71,25 +72,26 @@ class MessageWidget extends StatelessWidget {
                 ),
               ),
             ),
-            PopupMenuItem(
-              onTap: () {
-                Clipboard.setData(const ClipboardData(text: "test"));
-              },
-              child: Material(
-                elevation: 5,
-                borderRadius: BorderRadius.circular(10),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.copy),
-                      Text("Copy", style: TextStyle(fontSize: 16)),
-                    ],
+            if (messages.content.activity == 5)
+              PopupMenuItem(
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: messages.content.text));
+                },
+                child: Material(
+                  elevation: 5,
+                  borderRadius: BorderRadius.circular(10),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.copy),
+                        Text("Copy", style: TextStyle(fontSize: 16)),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
             PopupMenuItem(
               onTap: () {
                 FirebaseFirestore.instance
@@ -113,7 +115,31 @@ class MessageWidget extends StatelessWidget {
                   ),
                 ),
               ),
-            )
+            ),
+            if (messages.content.activity == 6)
+              PopupMenuItem(
+                onTap: () {
+                  ContactsService.addContact(messages.content.contact!)
+                      .then((value) async {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Thêm liên hệ Thành công")));
+                  });
+                },
+                child: Material(
+                  elevation: 5,
+                  borderRadius: BorderRadius.circular(10),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.person_add_outlined),
+                        Text("Add contact", style: TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
           ],
         );
       },

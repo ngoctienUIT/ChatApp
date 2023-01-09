@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
 
 class ContentMessages {
   int activity; //0: callDuration, 1: file, 2: image, 3: recording, 4: sticker, 5: text
@@ -9,8 +10,7 @@ class ContentMessages {
   String? sticker;
   String? text;
   DateTime? seen;
-  String? nameContact;
-  String? phoneContact;
+  Contact? contact;
 
   ContentMessages({
     required this.activity,
@@ -21,8 +21,7 @@ class ContentMessages {
     this.recording,
     this.text,
     this.seen,
-    this.nameContact,
-    this.phoneContact,
+    this.contact,
   });
 
   factory ContentMessages.fromMap(Map<String, dynamic> data) {
@@ -41,8 +40,11 @@ class ContentMessages {
           .map((e) => e.toString())
           .toList(),
       seen: data["seen"],
-      nameContact: data["name_contact"],
-      phoneContact: data["phone_contact"],
+      contact: Contact(
+        displayName: data["name_contact"],
+        phones: [Item(value: data["phone_contact"])],
+        givenName: data["name_contact"],
+      ),
     );
   }
 
@@ -56,8 +58,8 @@ class ContentMessages {
       "text": text,
       "recording": recording,
       "seen": seen,
-      "name_contact": nameContact,
-      "phone_contact": phoneContact,
+      "name_contact": contact!.displayName,
+      "phone_contact": contact!.phones![0].value,
     };
   }
 }
