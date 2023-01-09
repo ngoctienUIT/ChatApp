@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/chat/models/chat_room.dart';
+import 'package:chat_app/chat/models/content_messages.dart';
 import 'package:chat_app/chat/screens/messages/chat.dart';
 import 'package:chat_app/chat/screens/search/search.dart';
+import 'package:chat_app/chat/screens/video_call/video_call.dart';
+import 'package:chat_app/chat/services/chat.dart';
 import 'package:chat_app/chat/widgets/loading_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -178,7 +181,23 @@ class Friends extends StatelessWidget {
               ),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                FirebaseFirestore.instance
+                    .collection("private_chats")
+                    .doc(chatID)
+                    .get()
+                    .then((value) {
+                  ChatRoom chatRoom = ChatRoom.fromFirebase(value);
+                  sendMessages(
+                    chatRoom,
+                    ContentMessages(
+                      activity: 0,
+                      callDuration: DateTime(2023, 1, 1, 1, 1, 1),
+                    ),
+                  );
+                  Get.to(VideoCall(chatRoom: chatRoom));
+                });
+              },
               icon: const Icon(
                 FontAwesomeIcons.phone,
                 color: Color.fromRGBO(77, 189, 204, 1),
@@ -186,7 +205,16 @@ class Friends extends StatelessWidget {
               ),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                FirebaseFirestore.instance
+                    .collection("private_chats")
+                    .doc(chatID)
+                    .get()
+                    .then((value) {
+                  ChatRoom chatRoom = ChatRoom.fromFirebase(value);
+                  Get.to(Chat(chatRoom: chatRoom));
+                });
+              },
               icon: const Icon(
                 FontAwesomeIcons.comment,
                 color: Color.fromRGBO(77, 189, 204, 1),
