@@ -9,6 +9,8 @@ class ContentMessages {
   String? sticker;
   String? text;
   DateTime? seen;
+  String? nameContact;
+  String? phoneContact;
 
   ContentMessages({
     required this.activity,
@@ -19,6 +21,8 @@ class ContentMessages {
     this.recording,
     this.text,
     this.seen,
+    this.nameContact,
+    this.phoneContact,
   });
 
   factory ContentMessages.fromMap(Map<String, dynamic> data) {
@@ -37,6 +41,8 @@ class ContentMessages {
           .map((e) => e.toString())
           .toList(),
       seen: data["seen"],
+      nameContact: data["name_contact"],
+      phoneContact: data["phone_contact"],
     );
   }
 
@@ -50,6 +56,8 @@ class ContentMessages {
       "text": text,
       "recording": recording,
       "seen": seen,
+      "name_contact": nameContact,
+      "phone_contact": phoneContact,
     };
   }
 }

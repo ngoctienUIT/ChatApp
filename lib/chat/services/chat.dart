@@ -124,6 +124,8 @@ String? contentFCM(int id) {
       return "Đã gửi hội thoại";
     case 4:
       return "Đã gửi sticker";
+    case 6:
+      return "Đã gửi liên hệ";
     default:
       return null;
   }

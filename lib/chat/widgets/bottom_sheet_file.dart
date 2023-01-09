@@ -4,6 +4,7 @@ import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/models/content_messages.dart';
 import 'package:chat_app/chat/services/chat.dart';
 import 'package:chat_app/chat/widgets/icon_creation.dart';
+import 'package:chat_app/chat/widgets/list_contacts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,10 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class BottomSheetFile extends StatelessWidget {
-  const BottomSheetFile({Key? key, required this.id, required this.chatRoom})
-      : super(key: key);
-
-  final String id;
+  const BottomSheetFile({Key? key, required this.chatRoom}) : super(key: key);
   final ChatRoom chatRoom;
 
   @override
@@ -76,7 +74,7 @@ class BottomSheetFile extends StatelessWidget {
                           List<String> link = [];
                           link.add(await uploadFile(
                               File(image.path),
-                              "chats/$id/image",
+                              "chats/${chatRoom.id}/image",
                               "${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}.${image.path.split('.').last}"));
                           sendMessages(
                             chatRoom,
@@ -101,7 +99,7 @@ class BottomSheetFile extends StatelessWidget {
                           for (XFile image in images) {
                             link.add(await uploadFile(
                                 File(image.path),
-                                "chats/$id/image",
+                                "chats/${chatRoom.id}/image",
                                 "${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}.${image.path.split('.').last}"));
                           }
                           sendMessages(
@@ -161,7 +159,10 @@ class BottomSheetFile extends StatelessWidget {
                     Icons.person,
                     Colors.blue,
                     "Contact",
-                    () {},
+                    () {
+                      Get.back();
+                      Get.to(ListContact(chatRoom: chatRoom));
+                    },
                   ),
                 ],
               ),

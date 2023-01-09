@@ -168,7 +168,6 @@ class _ChatState extends State<Chat> {
                                 backgroundColor: Colors.transparent,
                                 context: context,
                                 builder: (builder) => BottomSheetFile(
-                                  id: widget.chatRoom.id,
                                   chatRoom: widget.chatRoom,
                                 ),
                               );

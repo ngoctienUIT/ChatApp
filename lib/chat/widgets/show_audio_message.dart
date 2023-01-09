@@ -57,21 +57,6 @@ class _ShowAudioMessageState extends State<ShowAudioMessage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Container(
-        alignment: widget.check ? Alignment.centerRight : Alignment.centerLeft,
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          color: Colors.green.shade400,
-          child: SizedBox(
-              height: 50,
-              width: Get.width / 2,
-              child: const Center(child: CircularProgressIndicator())),
-        ),
-      );
-    }
     return MessageWidget(
       messages: widget.messages,
       check: widget.check,
@@ -85,37 +70,39 @@ class _ShowAudioMessageState extends State<ShowAudioMessage> {
           child: SizedBox(
             height: 50,
             width: Get.width / 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                  onPressed: () async {
-                    if (isPlaying) {
-                      await audioPlayer.pause();
-                    } else {
-                      await audioPlayer.resume();
-                    }
-                    setState(() => isPlaying = !isPlaying);
-                  },
-                  icon: Icon(
-                    isPlaying ? Icons.pause : Icons.play_arrow_rounded,
-                    color: Colors.white,
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(
+                        onPressed: () async {
+                          if (isPlaying) {
+                            await audioPlayer.pause();
+                          } else {
+                            await audioPlayer.resume();
+                          }
+                          setState(() => isPlaying = !isPlaying);
+                        },
+                        icon: Icon(
+                          isPlaying ? Icons.pause : Icons.play_arrow_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Flexible(
+                        child: Text(
+                          "${formatTime(position)} / ${formatTime(duration)}",
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 5),
-                Flexible(
-                  child: Text(
-                    "${formatTime(position)} / ${formatTime(duration)}",
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 5),
-              ],
-            ),
           ),
         ),
       ),
