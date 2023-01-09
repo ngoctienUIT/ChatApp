@@ -92,13 +92,13 @@ class _ProfileState extends State<Profile> {
                             ),
                           ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 20),
                           child: Text(
-                            "Đây là phần mô tả viết đại dùng để test UI, không có gì ở đây hết",
+                            user.description ?? "Không có mô tả",
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16),
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
                         const Divider(
@@ -163,6 +163,34 @@ class _ProfileState extends State<Profile> {
                           ],
                         ),
                         const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.orange,
+                                borderRadius: BorderRadius.circular(90),
+                              ),
+                              padding: const EdgeInsets.all(10),
+                              child: const Icon(
+                                FontAwesomeIcons.bell,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            const Text("Notification",
+                                style: TextStyle(fontSize: 18)),
+                            const Spacer(),
+                            FlutterSwitch(
+                              height: 30,
+                              width: 60,
+                              value: darkMode,
+                              onToggle: (value) {
+                                setState(() => darkMode = value);
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
                         InkWell(
                           onTap: () => Get.to(const About()),
                           child: Row(
@@ -192,6 +220,11 @@ class _ProfileState extends State<Profile> {
                             await FirebaseAuth.instance.signOut();
                             await GoogleSignIn().signOut();
                             await FacebookAuth.instance.logOut();
+                            FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(FirebaseAuth.instance.currentUser!.uid
+                                    .toString())
+                                .update({"token": null});
                             Get.offAll(const SignIn());
                           },
                           text: "Log out",

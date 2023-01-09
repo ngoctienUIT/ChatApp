@@ -23,8 +23,9 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   final nameController = TextEditingController();
-  final addressController = TextEditingController(text: "Khánh Hòa");
-  final phoneController = TextEditingController(text: "032124435");
+  final addressController = TextEditingController();
+  final phoneController = TextEditingController();
+  final descriptionController = TextEditingController();
   bool gender = true;
   File? image;
   DateTime selectedDate = DateTime.now();
@@ -32,7 +33,21 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
+    gender = widget.user.gender;
+    selectedDate = widget.user.birthday!;
     nameController.text = widget.user.name;
+    addressController.text = widget.user.address ?? "";
+    phoneController.text = widget.user.phone ?? "";
+    descriptionController.text = widget.user.description ?? "";
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    addressController.dispose();
+    phoneController.dispose();
+    descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -129,9 +144,21 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                     ),
                     const SizedBox(height: 30),
+                    textProfile("Description"),
+                    TextField(
+                      controller: descriptionController,
+                      textCapitalization: TextCapitalization.sentences,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
                     textProfile("Address"),
                     TextField(
                       controller: addressController,
+                      textCapitalization: TextCapitalization.words,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -215,10 +242,18 @@ class _EditProfileState extends State<EditProfile> {
           image!, "avatar", "${FirebaseAuth.instance.currentUser!.uid}.png");
     }
 
+    widget.user.image = avatar;
+    widget.user.name = nameController.text;
+    widget.user.description = descriptionController.text;
+    widget.user.address = addressController.text;
+    widget.user.phone = phoneController.text;
+    widget.user.gender = gender;
+    widget.user.birthday = selectedDate;
+
     FirebaseFirestore.instance
         .collection("users")
         .doc(FirebaseAuth.instance.currentUser!.uid)
-        .update({"name": nameController.text, "profile_picture": avatar});
+        .update(widget.user.toMapProfile());
   }
 
   Widget textProfile(String text) {
