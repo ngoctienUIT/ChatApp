@@ -134,6 +134,16 @@ class BottomSheetFile extends StatelessWidget {
                       if (result != null) {
                         List<File> files =
                             result.paths.map((path) => File(path!)).toList();
+                        for (File file in files) {
+                          String link = await uploadFile(
+                              file,
+                              "chats/${chatRoom.id}/recording",
+                              "${DateFormat("yyyyMMddhhmmss").format(DateTime.now())}.${file.path.split('.').last}");
+                          sendMessages(
+                            chatRoom,
+                            ContentMessages(activity: 3, recording: link),
+                          );
+                        }
                       } else {
                         // User canceled the picker
                       }

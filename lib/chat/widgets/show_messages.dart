@@ -1,3 +1,4 @@
+import 'package:chat_app/chat/widgets/show_audio_message.dart';
 import 'package:chat_app/chat/widgets/show_call_message.dart';
 import 'package:chat_app/chat/widgets/show_delete_message.dart';
 import 'package:chat_app/chat/widgets/show_file_message.dart';
@@ -54,7 +55,10 @@ class ShowMessages extends StatelessWidget {
                           messages: messages[index],
                         );
                       case 3:
-                        break;
+                        return ShowAudioMessage(
+                          check: check,
+                          messages: messages[index],
+                        );
                       case 4:
                         break;
                       case 5:

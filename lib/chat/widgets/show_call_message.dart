@@ -21,7 +21,7 @@ class ShowCallMessage extends StatelessWidget {
         color: Colors.red.shade400,
         child: SizedBox(
           height: 60,
-          width: Get.width * 0.5,
+          width: Get.width / 2,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
