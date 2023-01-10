@@ -1,4 +1,9 @@
+import 'package:chat_app/chat/models/chat_room.dart';
+import 'package:chat_app/chat/models/content_messages.dart';
 import 'package:chat_app/chat/models/messages.dart';
+import 'package:chat_app/chat/screens/video_call/video_call.dart';
+import 'package:chat_app/chat/services/chat.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -25,13 +30,31 @@ class ShowCallMessage extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade100,
-                  borderRadius: BorderRadius.circular(90),
+              InkWell(
+                onTap: () {
+                  FirebaseFirestore.instance
+                      .collection("private_chats")
+                      .doc(messages.chatID)
+                      .get()
+                      .then((value) {
+                    ChatRoom chatRoom = ChatRoom.fromFirebase(value);
+                    sendMessages(
+                        chatRoom,
+                        ContentMessages(
+                          activity: 0,
+                          callDuration: DateTime.now(),
+                        ));
+                    Get.to(VideoCall(chatRoom: chatRoom));
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade100,
+                    borderRadius: BorderRadius.circular(90),
+                  ),
+                  child: const Icon(Icons.call),
                 ),
-                child: const Icon(Icons.call),
               ),
               const SizedBox(width: 5),
               Flexible(

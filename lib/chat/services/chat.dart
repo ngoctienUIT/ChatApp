@@ -90,6 +90,7 @@ Future sendMessages(
         id: chatRoom.id,
         body: body,
         title: check ? chatRoom.user1.name : chatRoom.user2.name,
+        screen: content.activity == 0 ? 'video_call' : 'chat',
       );
     });
   }
@@ -192,6 +193,7 @@ Future sendPushMessage({
   required String title,
   String status = 'message',
   String myToken = "",
+  String screen = 'chat',
 }) async {
   try {
     Map<String, String> headerFCM = {
@@ -207,6 +209,7 @@ Future sendPushMessage({
         'id': id,
         'status': status,
         'token': myToken,
+        'screen': screen,
       },
       "to": token,
     };

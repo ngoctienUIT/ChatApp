@@ -1,4 +1,5 @@
 import 'package:chat_app/chat/screens/friends_list/friends.dart';
+import 'package:chat_app/chat/screens/messages/chat.dart';
 import 'package:chat_app/chat/screens/profile/profile.dart';
 import 'package:chat_app/chat/screens/messages/list_chat.dart';
 import 'package:chat_app/chat/screens/video_call/video_call.dart';
@@ -50,6 +51,17 @@ class _YouAreInState extends State<YouAreIn> with WidgetsBindingObserver {
         Get.to(VideoCall(
           id: data["id"],
           yourToken: data["token"],
+        ));
+      }
+
+      if (data["screen"] == "chat") {
+        // Navigator.of(context).push(MaterialPageRoute(
+        //   builder: (context) => Chat(chatRoom: chatRoom),
+        // ));
+      } else {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) =>
+              VideoCall(id: data["id"], yourToken: data["token"]),
         ));
       }
 
