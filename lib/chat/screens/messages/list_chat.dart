@@ -8,6 +8,7 @@ import 'package:chat_app/chat/widgets/option_chat.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:chat_app/chat/models/user.dart' as myuser;
@@ -192,6 +193,8 @@ class ListChat extends StatelessWidget {
         });
   }
 
+  static const platform = MethodChannel('chat_app.flutter.dev/chatBubble');
+
   void showOptionChat(ChatRoom chatRoom) {
     bool checkUser =
         FirebaseAuth.instance.currentUser!.uid == chatRoom.user1.id;
@@ -225,6 +228,25 @@ class ListChat extends StatelessWidget {
                   Text(
                     checkNotify ? 'Tắt thông báo' : 'Bật thông báo',
                     style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () => platform.invokeMethod('showBubbleChat'),
+              child: Row(
+                children: const [
+                  Icon(
+                    FontAwesomeIcons.trash,
+                    color: Color.fromRGBO(255, 113, 150, 1),
+                  ),
+                  SizedBox(width: 15),
+                  Text(
+                    'Bong bóng chat',
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),

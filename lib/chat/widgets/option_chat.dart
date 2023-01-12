@@ -4,6 +4,7 @@ import 'package:chat_app/chat/widgets/item_popup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
@@ -18,6 +19,7 @@ class OptionChat extends StatefulWidget {
 
 class _OptionChatState extends State<OptionChat> {
   final TextEditingController _name = TextEditingController();
+  static const platform = MethodChannel('chat_app.flutter.dev/chatBubble');
 
   @override
   void initState() {
@@ -46,9 +48,12 @@ class _OptionChatState extends State<OptionChat> {
           case 2:
             break;
           case 3:
-            showDialogDelete(widget.chatRoom);
+            platform.invokeMethod('showBubbleChat');
             break;
           case 4:
+            showDialogDelete(widget.chatRoom);
+            break;
+          case 5:
             break;
         }
       },
@@ -85,16 +90,22 @@ class _OptionChatState extends State<OptionChat> {
             index: 2,
           ),
           itemPopup(
+            text: 'Bong bóng chat',
+            icon: FontAwesomeIcons.circle,
+            color: const Color.fromRGBO(26, 191, 185, 1),
+            index: 3,
+          ),
+          itemPopup(
             text: 'Xóa đoạn chat',
             icon: FontAwesomeIcons.trash,
             color: const Color.fromRGBO(255, 113, 150, 1),
-            index: 3,
+            index: 4,
           ),
           itemPopup(
             text: 'Chặn',
             icon: FontAwesomeIcons.ban,
             color: const Color.fromRGBO(252, 177, 188, 1),
-            index: 4,
+            index: 5,
           ),
         ];
       },
