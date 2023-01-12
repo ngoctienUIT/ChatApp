@@ -31,7 +31,7 @@ class ChatHeadService : Service() {
         //Add the view to the window.
         val params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
@@ -73,6 +73,8 @@ class ChatHeadService : Service() {
 
         avatar.setOnClickListener()
         {
+            params.width = WindowManager.LayoutParams.WRAP_CONTENT
+            mWindowManager?.updateViewLayout(mFloatingView, params)
             collapsedView.visibility = View.VISIBLE
             expandedView.visibility = View.GONE
         }
@@ -113,6 +115,9 @@ class ChatHeadService : Service() {
                                     //When user clicks on the image view of the collapsed layout,
                                     //visibility of the collapsed layout will be changed to "View.GONE"
                                     //and expanded view will become visible.
+
+                                    params.width = WindowManager.LayoutParams.MATCH_PARENT
+                                    mWindowManager?.updateViewLayout(mFloatingView, params)
                                     collapsedView.visibility = View.GONE
                                     expandedView.visibility = View.VISIBLE
                                 }
