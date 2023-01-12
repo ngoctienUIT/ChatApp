@@ -8,13 +8,14 @@ import android.os.Build
 import android.os.IBinder
 import android.view.*
 import android.view.View.OnTouchListener
+import android.view.View.SYSTEM_UI_LAYOUT_FLAGS
 import android.widget.ImageView
 import android.widget.RelativeLayout
-import android.widget.Toast
 
 class ChatHeadService : Service() {
     private var mWindowManager: WindowManager? = null
     private var mFloatingView: View? = null
+    private lateinit var imageClose: ImageView;
 
 //    fun FloatingViewService() {}
 
@@ -30,7 +31,7 @@ class ChatHeadService : Service() {
         //Add the view to the window.
         val params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
@@ -45,6 +46,16 @@ class ChatHeadService : Service() {
         params.x = 0
         params.y = 100
 
+        val imageParams = WindowManager.LayoutParams(140,140,
+            SYSTEM_UI_LAYOUT_FLAGS,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            PixelFormat.TRANSLUCENT)
+
+        imageClose = ImageView(this)
+        imageClose.setImageResource(R.drawable.ic_close)
+        imageClose.visibility = View.INVISIBLE
+        mWindowManager?.addView(imageClose, imageParams)
+
         //Add the view to the window
         mWindowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         mWindowManager!!.addView(mFloatingView, params)
@@ -54,63 +65,18 @@ class ChatHeadService : Service() {
         //The root element of the expanded view layout
         val expandedView: View = mFloatingView!!.findViewById(R.id.expanded_container)
 
-        //Set the close button
-        val closeButtonCollapsed = mFloatingView!!.findViewById(R.id.close_btn) as ImageView
-        closeButtonCollapsed.setOnClickListener { //close the service and remove the from from the window
-            stopSelf()
-        }
+        val window = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = window.defaultDisplay
+        val width = display.width
+        val height = display.height
+        val avatar = mFloatingView!!.findViewById(R.id.avatar) as ImageView
 
-        //Set the view while floating view is expanded.
-        //Set the play button.
-        val playButton = mFloatingView!!.findViewById(R.id.play_btn) as ImageView
-        playButton.setOnClickListener {
-            Toast.makeText(this@ChatHeadService, "Playing the song.", Toast.LENGTH_LONG)
-                .show()
-        }
-
-
-        //Set the next button.
-        val nextButton = mFloatingView!!.findViewById(R.id.next_btn) as ImageView
-        nextButton.setOnClickListener {
-            Toast.makeText(this@ChatHeadService, "Playing next song.", Toast.LENGTH_LONG)
-                .show()
-        }
-
-
-        //Set the pause button.
-        val prevButton = mFloatingView!!.findViewById(R.id.prev_btn) as ImageView
-        prevButton.setOnClickListener {
-            Toast.makeText(
-                this@ChatHeadService,
-                "Playing previous song.",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-
-
-        //Set the close button
-        val closeButton = mFloatingView!!.findViewById(R.id.close_button) as ImageView
-        closeButton.setOnClickListener {
+        avatar.setOnClickListener()
+        {
             collapsedView.visibility = View.VISIBLE
             expandedView.visibility = View.GONE
         }
 
-
-        //Open the application on thi button click
-        val openButton = mFloatingView!!.findViewById(R.id.open_button) as ImageView
-        openButton.setOnClickListener { //Open the application  click.
-            val intent = Intent(this@ChatHeadService, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-
-
-            //close the service and remove view from the view hierarchy
-            stopSelf()
-        }
-
-        val window = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display = window.defaultDisplay
-        val width = display.width
         val root = mFloatingView!!.findViewById(R.id.root_container) as RelativeLayout
 
         //Drag and move floating view using user's touch action.
@@ -155,8 +121,13 @@ class ChatHeadService : Service() {
                             if (lastEvent == MotionEvent.ACTION_MOVE)
                             {
                                 if (params.x<width/2) params.x=0
-                                else params.x=width;
+                                else params.x=width
                                 mWindowManager!!.updateViewLayout(mFloatingView, params)
+
+                                if (params.y>height*0.6)
+                                {
+                                    stopSelf()
+                                }
                             }
 
                             return true
@@ -168,6 +139,10 @@ class ChatHeadService : Service() {
 
                             //Update the layout with new X & Y coordinate
                             mWindowManager!!.updateViewLayout(mFloatingView, params)
+                            if (params.y>height*0.6)
+                            {
+                                imageClose.visibility = View.GONE
+                            }
                             lastEvent = MotionEvent.ACTION_MOVE
                             return true
                         }
