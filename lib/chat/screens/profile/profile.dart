@@ -35,7 +35,7 @@ class _ProfileState extends State<Profile> {
             child: StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection("users")
-                    .doc(FirebaseAuth.instance.currentUser!.uid.toString())
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {

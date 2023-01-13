@@ -199,7 +199,7 @@ class ListChat extends StatelessWidget {
                                     contentFCM(messages.content.activity) ??
                                         messages.content.text!,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 15,
                                       fontWeight: checkSeen
                                           ? FontWeight.bold
                                           : FontWeight.normal,

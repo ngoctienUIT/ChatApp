@@ -35,8 +35,9 @@ class ShowMessages extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
-                  bool check = messages[index].sender.compareTo(
-                          FirebaseAuth.instance.currentUser!.uid.toString()) ==
+                  bool check = messages[index]
+                          .sender
+                          .compareTo(FirebaseAuth.instance.currentUser!.uid) ==
                       0;
                   if (!messages[index].delete) {
                     switch (messages[index].content.activity) {

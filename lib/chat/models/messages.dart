@@ -9,7 +9,7 @@ class Messages {
   DateTime timestamp;
   bool delete;
   bool seen;
-  int? reaction;
+  Map<String, dynamic>? reaction;
 
   Messages({
     this.id,

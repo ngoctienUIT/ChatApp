@@ -1,10 +1,12 @@
 import 'package:chat_app/chat/models/messages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:chat_app/chat/models/user.dart' as myuser;
 
 List<String> react = ["❤", "😯", "😆", "😢", "😠", "👍"];
 
@@ -30,6 +32,7 @@ class _MessageWidgetState extends State<MessageWidget> {
   @override
   Widget build(BuildContext context) {
     Offset tapPosition = Offset.zero;
+    String uid = FirebaseAuth.instance.currentUser!.uid;
 
     return GestureDetector(
       onTapDown: (details) => tapPosition = details.globalPosition,
@@ -57,10 +60,14 @@ class _MessageWidgetState extends State<MessageWidget> {
                     children: List.generate(react.length, (index) {
                       return InkWell(
                         onTap: () {
-                          int? reaction;
+                          Map<String, dynamic> reaction =
+                              widget.messages.reaction ?? {};
+
                           if (!(widget.messages.reaction != null &&
-                              widget.messages.reaction! == index)) {
-                            reaction = index;
+                              widget.messages.reaction![uid] == index)) {
+                            reaction[uid] = index;
+                          } else {
+                            reaction.remove(uid);
                           }
                           FirebaseFirestore.instance
                               .collection("private_chats")
@@ -161,10 +168,13 @@ class _MessageWidgetState extends State<MessageWidget> {
       },
       onTap: () => setState(() => show = !show),
       onDoubleTap: () {
-        int? reaction;
+        Map<String, dynamic> reaction = widget.messages.reaction ?? {};
+
         if (!(widget.messages.reaction != null &&
-            widget.messages.reaction! == 0)) {
-          reaction = 0;
+            widget.messages.reaction![uid] == 0)) {
+          reaction[uid] = 0;
+        } else {
+          reaction.remove(uid);
         }
         FirebaseFirestore.instance
             .collection("private_chats")
@@ -191,14 +201,34 @@ class _MessageWidgetState extends State<MessageWidget> {
                   ),
                   if (widget.messages.reaction != null)
                     Positioned(
-                      left: widget.check ? 7 : null,
-                      right: widget.check ? null : 7,
-                      bottom: 0,
+                      right: 7,
+                      bottom: -5,
                       child: InkWell(
-                        onTap: () {},
-                        child: Text(
-                          react[widget.messages.reaction!],
-                          style: const TextStyle(fontSize: 18),
+                        onTap: () {
+                          bottomSheet();
+                        },
+                        child: Material(
+                          elevation: 1,
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              children: List.generate(
+                                  widget.messages.reaction!.keys.length,
+                                  (index) {
+                                return Text(
+                                  react[widget.messages.reaction!.values
+                                      .elementAt(index)],
+                                  style: const TextStyle(fontSize: 16),
+                                );
+                              }),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -208,6 +238,75 @@ class _MessageWidgetState extends State<MessageWidget> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void bottomSheet() {
+    Get.bottomSheet(
+      backgroundColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      Container(
+        height: 300,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.messages.reaction!.keys.length,
+                itemBuilder: (context, index) {
+                  return Row(
+                    children: [
+                      FutureBuilder<DocumentSnapshot>(
+                          future: FirebaseFirestore.instance
+                              .collection("users")
+                              .doc(widget.messages.reaction!.keys
+                                  .elementAt(index))
+                              .get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              myuser.User user = myuser.User.fromFirebase(
+                                  snapshot.requireData);
+                              return Text(
+                                user.name,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            }
+
+                            return Container();
+                          }),
+                      const Spacer(),
+                      Text(
+                        react[
+                            widget.messages.reaction!.values.elementAt(index)],
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () {},
+                  child: const Text("Tất cả"),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
