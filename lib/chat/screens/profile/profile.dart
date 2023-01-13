@@ -217,14 +217,14 @@ class _ProfileState extends State<Profile> {
                         const SizedBox(height: 50),
                         CustomButton(
                           onPress: () async {
-                            await FirebaseAuth.instance.signOut();
-                            await GoogleSignIn().signOut();
-                            await FacebookAuth.instance.logOut();
-                            FirebaseFirestore.instance
+                            await FirebaseFirestore.instance
                                 .collection("users")
                                 .doc(FirebaseAuth.instance.currentUser!.uid
                                     .toString())
                                 .update({"token": null});
+                            await GoogleSignIn().signOut();
+                            await FacebookAuth.instance.logOut();
+                            await FirebaseAuth.instance.signOut();
                             Get.offAll(const SignIn());
                           },
                           text: "Log out",

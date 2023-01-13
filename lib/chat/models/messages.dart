@@ -8,6 +8,7 @@ class Messages {
   ContentMessages content;
   DateTime timestamp;
   bool delete;
+  bool seen;
   int? reaction;
 
   Messages({
@@ -17,19 +18,22 @@ class Messages {
     required this.content,
     required this.timestamp,
     this.delete = false,
+    this.seen = false,
     this.reaction,
   });
 
   factory Messages.fromFirebase(DocumentSnapshot snapshot) {
-    Timestamp time = snapshot["timestamp"];
+    var data = snapshot.data() as Map<String, dynamic>;
+    Timestamp time = data["timestamp"];
     return Messages(
       id: snapshot.id,
-      sender: snapshot["sender"],
-      content: ContentMessages.fromMap(snapshot["content"]),
+      sender: data["sender"],
+      content: ContentMessages.fromMap(data["content"]),
       timestamp:
           DateTime.fromMicrosecondsSinceEpoch(time.microsecondsSinceEpoch),
-      delete: snapshot["delete"],
-      reaction: snapshot["reaction"],
+      delete: data["delete"],
+      reaction: data["reaction"],
+      seen: data["seen"] ?? false,
     );
   }
 
@@ -40,6 +44,7 @@ class Messages {
       "timestamp": timestamp,
       "delete": delete,
       "reaction": reaction,
+      "seen": seen,
     };
   }
 }

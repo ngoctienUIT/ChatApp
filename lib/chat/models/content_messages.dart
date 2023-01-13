@@ -9,7 +9,6 @@ class ContentMessages {
   String? recording;
   String? sticker;
   String? text;
-  DateTime? seen;
   Contact? contact;
 
   ContentMessages({
@@ -20,7 +19,6 @@ class ContentMessages {
     this.sticker,
     this.recording,
     this.text,
-    this.seen,
     this.contact,
   });
 
@@ -39,7 +37,6 @@ class ContentMessages {
       image: ((data["image"] ?? []) as List<dynamic>)
           .map((e) => e.toString())
           .toList(),
-      seen: data["seen"],
       contact: Contact(
         displayName: data["name_contact"],
         phones: [Item(value: data["phone_contact"])],
@@ -57,7 +54,6 @@ class ContentMessages {
       "sticker": sticker,
       "text": text,
       "recording": recording,
-      "seen": seen,
       "name_contact": contact != null ? contact!.displayName : null,
       "phone_contact": contact != null ? contact!.phones![0].value : null,
     };

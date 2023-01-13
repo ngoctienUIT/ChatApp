@@ -2,11 +2,14 @@ import 'dart:io';
 import 'package:chat_app/chat/controllers/firebase_controllers.dart';
 import 'package:chat_app/chat/models/chat_room.dart';
 import 'package:chat_app/chat/models/content_messages.dart';
+import 'package:chat_app/chat/models/messages.dart';
 import 'package:chat_app/chat/services/chat.dart';
 import 'package:chat_app/chat/widgets/bottom_sheet_file.dart';
 import 'package:chat_app/chat/widgets/select_emoji.dart';
 import 'package:chat_app/chat/widgets/show_messages.dart';
 import 'package:chat_app/chat/widgets/title_chat.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -35,6 +38,18 @@ class _ChatState extends State<Chat> {
   void initState() {
     initRecorder();
     super.initState();
+    var collect = FirebaseFirestore.instance
+        .collection("private_chats")
+        .doc(widget.chatRoom.id)
+        .collection("chats");
+    collect.orderBy("timestamp", descending: true).limit(1).get().then((value) {
+      Messages messages = Messages.fromFirebase(value.docs[0]);
+      if (messages.sender != FirebaseAuth.instance.currentUser!.uid &&
+          !messages.seen) {
+        collect.doc(value.docs[0].id).update({"seen": true});
+      }
+    });
+
     _controller.addListener(() {
       setState(() {
         if (_controller.text.isNotEmpty) {

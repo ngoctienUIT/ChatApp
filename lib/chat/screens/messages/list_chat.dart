@@ -13,6 +13,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:chat_app/chat/models/user.dart' as myuser;
 import 'package:intl/intl.dart';
+import 'package:chat_app/chat/models/messages.dart';
 
 class ListChat extends StatelessWidget {
   const ListChat({Key? key}) : super(key: key);
@@ -154,34 +155,61 @@ class ListChat extends StatelessWidget {
                     ),
                     const SizedBox(width: 20),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                check
-                                    ? chatRoom.user2.name
-                                    : chatRoom.user1.name,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const Spacer(),
-                              Text(
-                                DateFormat.jm().format(chatRoom.lastMessage!),
-                                style: const TextStyle(color: Colors.black38),
-                              )
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            chatRoom.text!,
-                            style: const TextStyle(fontSize: 16),
-                          )
-                        ],
-                      ),
+                      child: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection("private_chats")
+                              .doc(chatRoom.id)
+                              .collection("chats")
+                              .orderBy("timestamp", descending: true)
+                              .limit(1)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              Messages messages = Messages.fromFirebase(
+                                  snapshot.requireData.docs[0]);
+                              bool checkSeen = messages.sender !=
+                                      FirebaseAuth.instance.currentUser!.uid &&
+                                  !messages.seen;
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        check
+                                            ? chatRoom.user2.name
+                                            : chatRoom.user1.name,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        DateFormat.jm()
+                                            .format(messages.timestamp),
+                                        style: const TextStyle(
+                                            color: Colors.black38),
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    contentFCM(messages.content.activity) ??
+                                        messages.content.text!,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: checkSeen
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
+                                  )
+                                ],
+                              );
+                            }
+                            return Container();
+                          }),
                     )
                   ],
                 ),
