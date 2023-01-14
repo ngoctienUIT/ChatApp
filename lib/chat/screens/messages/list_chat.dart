@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/chat/models/chat_room.dart';
+import 'package:chat_app/chat/models/messages.dart';
+import 'package:chat_app/chat/models/user.dart' as myuser;
 import 'package:chat_app/chat/screens/messages/chat.dart';
 import 'package:chat_app/chat/screens/search/search.dart';
 import 'package:chat_app/chat/services/chat.dart';
@@ -11,9 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:chat_app/chat/models/user.dart' as myuser;
 import 'package:intl/intl.dart';
-import 'package:chat_app/chat/models/messages.dart';
 
 class ListChat extends StatelessWidget {
   const ListChat({Key? key}) : super(key: key);
@@ -268,7 +268,7 @@ class ListChat extends StatelessWidget {
               child: Row(
                 children: const [
                   Icon(
-                    FontAwesomeIcons.trash,
+                    FontAwesomeIcons.circle,
                     color: Color.fromRGBO(255, 113, 150, 1),
                   ),
                   SizedBox(width: 15),

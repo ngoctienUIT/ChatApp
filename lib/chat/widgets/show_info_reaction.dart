@@ -61,54 +61,7 @@ class _ShowInfoReactionState extends State<ShowInfoReaction>
                 if (tabController.index == 0 ||
                     widget.messages.reaction!.values.elementAt(index) ==
                         listReact[tabController.index - 1]) {
-                  return FutureBuilder<DocumentSnapshot>(
-                      future: FirebaseFirestore.instance
-                          .collection("users")
-                          .doc(widget.messages.reaction!.keys.elementAt(index))
-                          .get(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          myuser.User user =
-                              myuser.User.fromFirebase(snapshot.requireData);
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5),
-                            child: Row(
-                              children: [
-                                ClipOval(
-                                  child: CachedNetworkImage(
-                                    imageUrl: user.image!,
-                                    width: 40,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => loadingImage(
-                                      width: 40,
-                                      height: 40,
-                                      radius: 90,
-                                    ),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  user.name,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  react[widget.messages.reaction!.values
-                                      .elementAt(index)],
-                                  style: const TextStyle(fontSize: 20),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        return const SizedBox.shrink();
-                      });
+                  return showUser(index);
                 }
                 return const SizedBox.shrink();
               },
@@ -148,5 +101,54 @@ class _ShowInfoReactionState extends State<ShowInfoReaction>
         ],
       ),
     );
+  }
+
+  Widget showUser(int index) {
+    return FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance
+            .collection("users")
+            .doc(widget.messages.reaction!.keys.elementAt(index))
+            .get(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            myuser.User user = myuser.User.fromFirebase(snapshot.requireData);
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: user.image!,
+                      width: 40,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => loadingImage(
+                        width: 40,
+                        height: 40,
+                        radius: 90,
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    user.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    react[widget.messages.reaction!.values.elementAt(index)],
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return const SizedBox.shrink();
+        });
   }
 }
