@@ -19,7 +19,6 @@ class ChatRoom {
   factory ChatRoom.fromFirebase(DocumentSnapshot snapshot) {
     Map<String, dynamic> mapUser1 = snapshot["user1"];
     Map<String, dynamic> mapUser2 = snapshot["user2"];
-    Timestamp time = snapshot["last_message"];
     return ChatRoom(
       id: snapshot.id,
       user1: User(

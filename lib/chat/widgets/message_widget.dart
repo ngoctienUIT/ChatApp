@@ -1,4 +1,5 @@
 import 'package:chat_app/chat/models/messages.dart';
+import 'package:chat_app/chat/widgets/show_info_reaction.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:chat_app/chat/models/user.dart' as myuser;
 
 List<String> react = ["❤", "😯", "😆", "😢", "😠", "👍"];
 
@@ -248,66 +248,7 @@ class _MessageWidgetState extends State<MessageWidget> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
-      Container(
-        height: 300,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.messages.reaction!.keys.length,
-                itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      FutureBuilder<DocumentSnapshot>(
-                          future: FirebaseFirestore.instance
-                              .collection("users")
-                              .doc(widget.messages.reaction!.keys
-                                  .elementAt(index))
-                              .get(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              myuser.User user = myuser.User.fromFirebase(
-                                  snapshot.requireData);
-                              return Text(
-                                user.name,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              );
-                            }
-
-                            return Container();
-                          }),
-                      const Spacer(),
-                      Text(
-                        react[
-                            widget.messages.reaction!.values.elementAt(index)],
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () {},
-                  child: const Text("Tất cả"),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
+      ShowInfoReaction(messages: widget.messages),
     );
   }
 }
